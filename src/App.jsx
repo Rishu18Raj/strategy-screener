@@ -176,7 +176,7 @@ function Sidebar({stocks,betaStatus,collapsed,onToggle}) {
         <div style={{marginTop:"auto"}}>
           <div style={{fontSize:10,color:C.muted,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:8,fontWeight:500}}>About</div>
           <div style={{fontSize:12,color:C.secondary,lineHeight:1.7}}>
-            IIMB MBA · Deutsche Bank IB alumni · Built for hobby investors who want institutional-grade equity screening.
+            Built for hobby investors who want institutional-grade equity screening.
           </div>
         </div>
       </div>
