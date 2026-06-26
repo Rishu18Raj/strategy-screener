@@ -3,49 +3,74 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Strategy 2 Screener</title>
+    <title>Fundamental Screener</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
       *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        background: #0f0f0f;
-        color: #e8e6e1;
-        min-height: 100vh;
-        padding: 24px 16px;
-      }
-      #root { max-width: 1100px; margin: 0 auto; }
 
-      /* Design tokens matching Claude artifact variables */
       :root {
-        --color-background-primary:   #0f0f0f;
-        --color-background-secondary: #1a1a1a;
-        --color-background-success:   #0d2b1a;
-        --color-background-danger:    #2b0d0d;
-        --color-background-warning:   #2b1f0d;
-        --color-background-info:      #0d1a2b;
-        --color-text-primary:         #e8e6e1;
-        --color-text-secondary:       #888780;
-        --color-text-success:         #4caf82;
-        --color-text-danger:          #e05c5c;
-        --color-text-warning:         #e0a84a;
-        --color-text-info:            #4a90e0;
-        --color-border-tertiary:      #2a2a2a;
-        --border-radius-md:           6px;
-        --border-radius-lg:           10px;
-        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        --bg:              #080c14;
+        --bg-card:         #0d1117;
+        --bg-hover:        #111827;
+        --border:          #1e2535;
+        --border-subtle:   #161d2d;
+        --text-primary:    #e8eaf0;
+        --text-secondary:  #5a6480;
+        --text-muted:      #374162;
+        --accent:          #3b82f6;
+        --accent-dim:      #1d3461;
+        --green:           #22c55e;
+        --green-dim:       #052e16;
+        --red:             #ef4444;
+        --red-dim:         #2d0a0a;
+        --amber:           #f59e0b;
+        --amber-dim:       #2d1a00;
+
+        /* legacy compat for existing component vars */
+        --color-background-primary:   var(--bg);
+        --color-background-secondary: var(--bg-card);
+        --color-background-success:   var(--green-dim);
+        --color-background-danger:    var(--red-dim);
+        --color-background-warning:   var(--amber-dim);
+        --color-background-info:      var(--accent-dim);
+        --color-text-primary:         var(--text-primary);
+        --color-text-secondary:       var(--text-secondary);
+        --color-text-success:         var(--green);
+        --color-text-danger:          var(--red);
+        --color-text-warning:         var(--amber);
+        --color-text-info:            var(--accent);
+        --color-border-tertiary:      var(--border);
+        --border-radius-md:           5px;
+        --border-radius-lg:           8px;
+        --font-sans:                  'Inter', sans-serif;
+        --font-mono:                  'JetBrains Mono', monospace;
       }
 
-      input[type="range"] {
-        accent-color: #4a90e0;
-        width: 100%;
+      html, body { height: 100%; }
+
+      body {
+        font-family: 'Inter', sans-serif;
+        background: var(--bg);
+        color: var(--text-primary);
+        min-height: 100vh;
+        -webkit-font-smoothing: antialiased;
       }
-      textarea, input {
-        outline: none;
+
+      #root { height: 100%; }
+
+      input[type="range"] { accent-color: var(--accent); width: 100%; }
+      textarea, input { outline: none; }
+      textarea:focus, input:focus { border-color: var(--accent) !important; }
+      code {
+        font-family: var(--font-mono);
+        background: var(--bg-hover);
+        padding: 1px 6px;
+        border-radius: 4px;
+        font-size: 0.9em;
       }
-      textarea:focus, input:focus {
-        border-color: #4a90e0 !important;
-      }
-      table { border-collapse: collapse; }
+      * { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
     </style>
   </head>
   <body>
