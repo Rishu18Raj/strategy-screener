@@ -1,50 +1,98 @@
 import { useState, useMemo, useEffect } from "react";
 
-// ── constants ─────────────────────────────────────────────────
-const SECTORS = ["Energy","Financial Services","Banks","IT","Telecom","Shipping & Ports"];
-const SECTOR_COLORS = {
-  "Energy":"#f59e0b","Financial Services":"#3b82f6","Banks":"#8b5cf6",
-  "IT":"#ef4444","Telecom":"#22c55e","Shipping & Ports":"#06b6d4",
-};
-const FILTERS_DEFAULT = { roe:13, revCAGR:7, epsCAGR:10, beta:1.2, pe:20 };
-const LAST_REBALANCE  = new Date("2026-06-25");
-const NEXT_REBALANCE  = new Date("2026-09-25");
-const DATA_QUARTER    = "Q4 FY26";
+// ── strategy config ───────────────────────────────────────────
+const SELECTED_SECTORS = new Set([
+  "Banks",
+  "Financial Services",
+  "Media Entertainment & Publication",
+  "Information Technology",
+  "Telecommunication",
+  "Capital Goods",
+  "Construction",
+  "Consumer Services",
+]);
+
+const FILTERS = { roe:13, revCAGR:7, epsCAGR:10, beta:1.2, pe:20 };
+
+const LAST_REBALANCE = new Date("2026-06-25");
+const NEXT_REBALANCE = new Date("2026-09-25");
+const DATA_QUARTER   = "Q4 FY26";
+
 const FUNDAMENTALS_URL = "https://raw.githubusercontent.com/Rishu18Raj/strategy-screener/main/data/fundamentals.csv";
 const BETAS_URL        = "https://raw.githubusercontent.com/Rishu18Raj/strategy-screener/main/data/betas.json";
 
+// sector → colour (generated for all 21 sectors)
+const SECTOR_COLORS = {
+  "Financial Services":                "#3b82f6",
+  "Diversified":                       "#6366f1",
+  "Capital Goods":                     "#8b5cf6",
+  "Construction Materials":            "#a78bfa",
+  "Power":                             "#f59e0b",
+  "Banks":                             "#06b6d4",
+  "Fast Moving Consumer Goods":        "#10b981",
+  "Chemicals":                         "#14b8a6",
+  "Healthcare":                        "#22c55e",
+  "Metals & Mining":                   "#84cc16",
+  "Services":                          "#eab308",
+  "Oil Gas & Consumable Fuels":        "#f97316",
+  "Consumer Services":                 "#ef4444",
+  "Realty":                            "#ec4899",
+  "Construction":                      "#d946ef",
+  "Information Technology":            "#e11d48",
+  "Automobile and Auto Components":    "#fb7185",
+  "Consumer Durables":                 "#fbbf24",
+  "Telecommunication":                 "#34d399",
+  "Textiles":                          "#a3e635",
+  "Media Entertainment & Publication": "#f43f5e",
+};
+
 const TABS = [
-  { id:"overview",    label:"Overview"              },
-  { id:"performance", label:"Portfolio Performance"  },
-  { id:"explore",     label:"Build & Test"           },
-  { id:"resources",   label:"Resources"              },
+  { id:"overview",    label:"Overview"             },
+  { id:"performance", label:"Portfolio Performance" },
+  { id:"explore",     label:"Build & Test"          },
+  { id:"resources",   label:"Resources"             },
 ];
 
 // ── helpers ───────────────────────────────────────────────────
 function parseCSV(text) {
-  const [h,...rows] = text.trim().split("\n");
-  const headers = h.split(",").map(x=>x.trim());
-  return rows.map(row=>{
-    const vals=row.split(",").map(v=>v.trim()), obj={};
-    headers.forEach((hh,i)=>{ obj[hh]=vals[i]; });
+  const [h, ...rows] = text.trim().split("\n");
+  const headers = h.split(",").map(x => x.trim());
+  return rows.map(row => {
+    const vals = row.split(",").map(v => v.trim());
+    const obj  = {};
+    headers.forEach((hh, i) => { obj[hh] = vals[i]; });
     return {
-      ticker:obj.ticker, name:obj.name, sector:obj.sector,
-      roe:parseFloat(obj.roe), revCAGR:parseFloat(obj.revCAGR),
-      epsCAGR:parseFloat(obj.epsCAGR), pe:parseFloat(obj.pe),
-      beta:null, betaStatus:"idle",
+      ticker:   obj.ticker,
+      name:     obj.name,
+      sector:   obj.sector,
+      roe:      parseFloat(obj.roe),
+      revCAGR:  parseFloat(obj.revCAGR),
+      epsCAGR:  parseFloat(obj.epsCAGR),
+      pe:       parseFloat(obj.pe),
+      beta:     null,
+      betaStatus: "idle",
     };
   });
 }
 
-function passes(s,f) {
-  const b=s.beta??0.9;
-  return s.roe>=f.roe && s.revCAGR>=f.revCAGR && s.epsCAGR>=f.epsCAGR && b<=f.beta && s.pe<=f.pe;
+function passesFundamentals(s) {
+  return s.roe >= FILTERS.roe &&
+         s.revCAGR >= FILTERS.revCAGR &&
+         s.epsCAGR >= FILTERS.epsCAGR &&
+         s.pe <= FILTERS.pe;
 }
 
-function daysUntil(d) { return Math.ceil((d-new Date())/864e5); }
+function passesAll(s) {
+  const b = s.beta ?? 999;
+  return passesFundamentals(s) &&
+         SELECTED_SECTORS.has(s.sector) &&
+         b <= FILTERS.beta;
+}
+
+function daysUntil(d) { return Math.ceil((d - new Date()) / 864e5); }
 
 function fmtDate(d) {
-  return d.toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"});
+  return d.toLocaleDateString("en-IN", { day:"2-digit", month:"short", year:"numeric" });
 }
 
 // ── design tokens ─────────────────────────────────────────────
@@ -59,37 +107,37 @@ const C = {
 };
 
 // ── primitives ────────────────────────────────────────────────
-const pill = (bg,color,label) => (
+const pill = (bg, color, label) => (
   <span style={{fontSize:11,padding:"2px 8px",borderRadius:99,background:bg,color,fontWeight:500,letterSpacing:"0.04em",whiteSpace:"nowrap"}}>
     {label}
   </span>
 );
 
-function MetricCard({label,value,sub,color,warn}) {
+function MetricCard({label, value, sub, color, warn}) {
   return (
     <div style={{background:C.card,borderRadius:8,padding:"16px 18px",
-      border:`0.5px solid ${warn?C.amber:C.border}`,transition:"border 0.2s"}}>
+      border:`0.5px solid ${warn ? C.amber : C.border}`,transition:"border 0.2s"}}>
       <div style={{fontSize:11,color:C.secondary,marginBottom:6,textTransform:"uppercase",letterSpacing:"0.08em",fontWeight:500}}>{label}</div>
       <div style={{fontSize:26,fontWeight:700,color:color||C.primary,letterSpacing:"-0.02em",lineHeight:1}}>{value}</div>
-      {sub&&<div style={{fontSize:12,color:C.secondary,marginTop:6,lineHeight:1.4}}>{sub}</div>}
+      {sub && <div style={{fontSize:12,color:C.secondary,marginTop:6,lineHeight:1.4}}>{sub}</div>}
     </div>
   );
 }
 
-function DonutChart({data,size=120}) {
-  const total=data.reduce((s,d)=>s+d.count,0);
-  if(!total) return null;
-  let a=-Math.PI/2;
-  const cx=size/2,cy=size/2,r=size*.38,ri=size*.23;
+function DonutChart({data, size=120}) {
+  const total = data.reduce((s,d) => s+d.count, 0);
+  if (!total) return null;
+  let a = -Math.PI/2;
+  const cx=size/2, cy=size/2, r=size*.38, ri=size*.23;
   return (
     <svg width={size} height={size} style={{flexShrink:0}}>
-      {data.map((d,i)=>{
-        const sw=(d.count/total)*2*Math.PI;
-        const x1=cx+r*Math.cos(a),y1=cy+r*Math.sin(a); a+=sw;
-        const x2=cx+r*Math.cos(a),y2=cy+r*Math.sin(a);
-        const xi1=cx+ri*Math.cos(a-sw),yi1=cy+ri*Math.sin(a-sw);
-        const xi2=cx+ri*Math.cos(a),yi2=cy+ri*Math.sin(a);
-        const lg=sw>Math.PI?1:0;
+      {data.map((d,i) => {
+        const sw = (d.count/total)*2*Math.PI;
+        const x1=cx+r*Math.cos(a), y1=cy+r*Math.sin(a); a+=sw;
+        const x2=cx+r*Math.cos(a), y2=cy+r*Math.sin(a);
+        const xi1=cx+ri*Math.cos(a-sw), yi1=cy+ri*Math.sin(a-sw);
+        const xi2=cx+ri*Math.cos(a), yi2=cy+ri*Math.sin(a);
+        const lg = sw>Math.PI?1:0;
         return <path key={i} d={`M${x1},${y1} A${r},${r} 0 ${lg},1 ${x2},${y2} L${xi2},${yi2} A${ri},${ri} 0 ${lg},0 ${xi1},${yi1} Z`} fill={d.color} opacity={0.85}/>;
       })}
       <text x={cx} y={cy} textAnchor="middle" dominantBaseline="middle" fontSize={17} fontWeight="700" fill={C.primary}>{total}</text>
@@ -98,7 +146,22 @@ function DonutChart({data,size=120}) {
   );
 }
 
-function ComingSoon({title,description,items}) {
+function FunnelBar({label, count, total, color}) {
+  const pct = total > 0 ? (count/total)*100 : 0;
+  return (
+    <div style={{marginBottom:10}}>
+      <div style={{display:"flex",justifyContent:"space-between",fontSize:12,color:C.secondary,marginBottom:4}}>
+        <span>{label}</span>
+        <span style={{fontFamily:"var(--font-mono)",fontWeight:600,color:C.primary}}>{count.toLocaleString()}</span>
+      </div>
+      <div style={{height:4,borderRadius:2,background:C.border}}>
+        <div style={{width:`${pct}%`,height:"100%",borderRadius:2,background:color,transition:"width 0.4s ease"}}/>
+      </div>
+    </div>
+  );
+}
+
+function ComingSoon({title, description, items}) {
   return (
     <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",
       minHeight:"55vh",gap:20,textAlign:"center",padding:"60px 24px"}}>
@@ -123,14 +186,11 @@ function ComingSoon({title,description,items}) {
 }
 
 // ── sidebar ───────────────────────────────────────────────────
-function Sidebar({stocks,betaStatus,collapsed,onToggle}) {
+function Sidebar({collapsed, onToggle}) {
   const daysToNext = daysUntil(NEXT_REBALANCE);
   const W = 210;
-
   return (
     <div style={{position:"relative",flexShrink:0,width:collapsed?0:W,transition:"width 0.25s ease"}}>
-
-      {/* sidebar body */}
       <div style={{position:"absolute",top:0,left:0,bottom:0,width:W,
         borderRight:`0.5px solid ${C.border}`,background:C.bg,
         overflowY:"auto",overflowX:"hidden",
@@ -138,7 +198,6 @@ function Sidebar({stocks,betaStatus,collapsed,onToggle}) {
         transition:"transform 0.25s ease",
         display:"flex",flexDirection:"column",gap:24,padding:"24px 18px"}}>
 
-        {/* rebalance */}
         <div>
           <div style={{fontSize:10,color:C.muted,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:10,fontWeight:500}}>Rebalance</div>
           <div style={{display:"flex",flexDirection:"column",gap:7}}>
@@ -155,7 +214,6 @@ function Sidebar({stocks,betaStatus,collapsed,onToggle}) {
           </div>
         </div>
 
-        {/* strategy stats */}
         <div>
           <div style={{fontSize:10,color:C.muted,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:10,fontWeight:500}}>Strategy stats</div>
           {[
@@ -172,57 +230,60 @@ function Sidebar({stocks,betaStatus,collapsed,onToggle}) {
           ))}
         </div>
 
-        {/* about */}
         <div style={{marginTop:"auto"}}>
           <div style={{fontSize:10,color:C.muted,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:8,fontWeight:500}}>About</div>
           <div style={{fontSize:12,color:C.secondary,lineHeight:1.7}}>
-            Built for hobby investors who want institutional-grade equity screening.
+            IIMB MBA · Deutsche Bank IB alumni · Built for hobby investors who want institutional-grade equity screening.
           </div>
         </div>
       </div>
 
-      {/* collapse toggle — vertically centred on the sidebar edge */}
       <button onClick={onToggle}
         style={{position:"absolute",top:"50%",right:-14,transform:"translateY(-50%)",
           width:14,height:40,border:`0.5px solid ${C.border}`,borderLeft:"none",
           background:C.bg,color:C.secondary,cursor:"pointer",
           display:"flex",alignItems:"center",justifyContent:"center",
-          borderRadius:"0 6px 6px 0",fontSize:10,zIndex:10,
-          transition:"background 0.15s",padding:0}}
+          borderRadius:"0 6px 6px 0",fontSize:10,zIndex:10,padding:0,
+          transition:"background 0.15s"}}
         onMouseEnter={e=>e.currentTarget.style.background=C.hover}
         onMouseLeave={e=>e.currentTarget.style.background=C.bg}>
-        {collapsed ? "›" : "‹"}
+        {collapsed?"›":"‹"}
       </button>
     </div>
   );
 }
 
 // ── overview tab ──────────────────────────────────────────────
-function OverviewTab({stocks,betaStatus}) {
-  const [filters,setFilters]           = useState(FILTERS_DEFAULT);
-  const [sectorFilter,setSectorFilter] = useState("All");
-  const [showFailed,setShowFailed]     = useState(false);
-  const [sortKey,setSortKey]           = useState("roe");
-  const [sortDir,setSortDir]           = useState(-1);
+function OverviewTab({stocks, betaStatus}) {
+  const [sortKey, setSortKey] = useState("roe");
+  const [sortDir, setSortDir] = useState(-1);
 
-  const screened = useMemo(()=>stocks.map(s=>({...s,status:passes(s,filters)?"PASS":"FAIL"})),[stocks,filters]);
-  const passed   = screened.filter(s=>s.status==="PASS");
-  const sectorData = useMemo(()=>SECTORS.map(sec=>({
-    sector:sec, color:SECTOR_COLORS[sec],
-    count:passed.filter(s=>s.sector===sec).length,
-    total:screened.filter(s=>s.sector===sec).length,
-  })),[passed,screened]);
+  // derive all unique sectors from the universe
+  const allSectors = useMemo(()=>[...new Set(stocks.map(s=>s.sector).filter(Boolean))].sort(),[stocks]);
+  const totalSectors = allSectors.length;
+
+  // funnel
+  const universe         = stocks;
+  const fundPass         = useMemo(()=>universe.filter(passesFundamentals),[universe]);
+  const sectorPass       = useMemo(()=>fundPass.filter(s=>SELECTED_SECTORS.has(s.sector)),[fundPass]);
+  const portfolio        = useMemo(()=>sectorPass.filter(s=>s.beta!=null && s.beta<=FILTERS.beta),[sectorPass]);
+
+  // sector allocation of final portfolio
+  const sectorAlloc = useMemo(()=>{
+    const map = {};
+    portfolio.forEach(s=>{
+      if (!map[s.sector]) map[s.sector]={sector:s.sector,count:0,color:SECTOR_COLORS[s.sector]||C.accent};
+      map[s.sector].count++;
+    });
+    return Object.values(map).sort((a,b)=>b.count-a.count);
+  },[portfolio]);
 
   const displayed = useMemo(()=>{
-    let list=showFailed?screened:passed;
-    if(sectorFilter!=="All") list=list.filter(s=>s.sector===sectorFilter);
-    const key=sortKey==="beta"?(s=>s.beta??0.9):(s=>s[sortKey]);
-    return [...list].sort((a,b)=>sortDir*(key(a)>key(b)?1:-1));
-  },[screened,passed,showFailed,sectorFilter,sortKey,sortDir]);
+    const key = sortKey==="beta"?(s=>s.beta??999):(s=>s[sortKey]);
+    return [...portfolio].sort((a,b)=>sortDir*(key(a)>key(b)?1:-1));
+  },[portfolio,sortKey,sortDir]);
 
   const toggleSort = k=>{ if(sortKey===k) setSortDir(d=>-d); else{setSortKey(k);setSortDir(-1);} };
-  const setFilter  = (k,v)=>setFilters(f=>({...f,[k]:parseFloat(v)}));
-  const betaDone   = stocks.filter(s=>s.betaStatus==="done").length;
 
   const Th = ({label,k,right})=>(
     <th onClick={()=>toggleSort(k)} style={{padding:"9px 12px",cursor:"pointer",fontWeight:500,fontSize:11,
@@ -235,86 +296,63 @@ function OverviewTab({stocks,betaStatus}) {
   return (
     <div>
       {/* metric cards */}
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(160px,1fr))",gap:10,marginBottom:24}}>
-        <MetricCard label="Passing screen" value={passed.length} sub={`of ${stocks.length} stocks`} color={C.green}/>
-        <MetricCard label="Sectors active" value={sectorData.filter(s=>s.count>0).length} sub={`of ${SECTORS.length} sectors`}/>
-        <MetricCard label="Sharpe ratio"   value="1.53" sub="5Y backtest vs SENSEX" color={C.accent}/>
-        <MetricCard label="Last rebalance" value={fmtDate(LAST_REBALANCE)} sub="Quarterly cadence"/>
-        <MetricCard label="Next rebalance" value={fmtDate(NEXT_REBALANCE)}
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(155px,1fr))",gap:10,marginBottom:24}}>
+        <MetricCard label="Universe"        value={universe.length.toLocaleString()} sub="Nifty 500 stocks"/>
+        <MetricCard label="Pass fundamental" value={fundPass.length} sub={`RoE · CAGR · P/E filters`} color={C.accent}/>
+        <MetricCard label="Sectors selected" value={`${SELECTED_SECTORS.size} of ${totalSectors}`} sub="Active sector conviction"/>
+        <MetricCard label="In portfolio"    value={portfolio.length} sub="After beta filter" color={C.green}/>
+        <MetricCard label="Sharpe ratio"    value="1.53" sub="5Y backtest vs SENSEX" color={C.accent}/>
+        <MetricCard label="Next rebalance"  value={fmtDate(NEXT_REBALANCE)}
           sub={daysUntil(NEXT_REBALANCE)>0?`${daysUntil(NEXT_REBALANCE)} days away`:"Due now"}
-          color={daysUntil(NEXT_REBALANCE)<=14?C.amber:C.primary} warn={daysUntil(NEXT_REBALANCE)<=14}/>
+          color={daysUntil(NEXT_REBALANCE)<=14?C.amber:C.primary}
+          warn={daysUntil(NEXT_REBALANCE)<=14}/>
       </div>
 
-      {/* sector breakdown */}
-      <div style={{background:C.card,border:`0.5px solid ${C.border}`,borderRadius:8,padding:"18px 20px",marginBottom:14}}>
-        <div style={{fontSize:11,fontWeight:600,marginBottom:14,color:C.secondary,textTransform:"uppercase",letterSpacing:"0.07em"}}>Sector allocation · Equal weight</div>
-        <div style={{display:"flex",gap:24,alignItems:"center",flexWrap:"wrap"}}>
-          <DonutChart data={sectorData.filter(s=>s.count>0)} size={120}/>
-          <div style={{flex:1,minWidth:200}}>
-            {sectorData.map(s=>{
-              const alloc=passed.length>0?((s.count/passed.length)*100).toFixed(1):"0.0";
-              return (
-                <div key={s.sector} onClick={()=>setSectorFilter(f=>f===s.sector?"All":s.sector)}
-                  style={{display:"flex",alignItems:"center",gap:10,padding:"5px 8px",borderRadius:5,
-                    cursor:"pointer",marginBottom:2,transition:"background 0.12s",
-                    background:sectorFilter===s.sector?C.hover:"transparent"}}>
-                  <div style={{width:8,height:8,borderRadius:2,background:s.color,flexShrink:0}}/>
-                  <div style={{flex:1,fontSize:13,color:sectorFilter===s.sector?C.primary:C.secondary}}>{s.sector}</div>
-                  <div style={{fontSize:11,color:C.muted,minWidth:30}}>{s.count}/{s.total}</div>
-                  <div style={{width:64,height:3,borderRadius:2,background:C.border}}>
-                    <div style={{width:`${alloc}%`,height:"100%",borderRadius:2,background:s.color,transition:"width 0.3s"}}/>
+      {/* funnel + donut */}
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:14}}>
+
+        {/* selection funnel */}
+        <div style={{background:C.card,border:`0.5px solid ${C.border}`,borderRadius:8,padding:"18px 20px"}}>
+          <div style={{fontSize:11,fontWeight:600,marginBottom:16,color:C.secondary,textTransform:"uppercase",letterSpacing:"0.07em"}}>Selection funnel</div>
+          <FunnelBar label="Nifty 500 universe"        count={universe.length}   total={universe.length}  color={C.accent}/>
+          <FunnelBar label="Pass fundamental criteria" count={fundPass.length}   total={universe.length}  color="#8b5cf6"/>
+          <FunnelBar label="In target sectors"         count={sectorPass.length} total={universe.length}  color={C.amber}/>
+          <FunnelBar label="Final portfolio (β ≤ 1.2)" count={portfolio.length}  total={universe.length}  color={C.green}/>
+          <div style={{marginTop:14,paddingTop:12,borderTop:`0.5px solid ${C.subtle}`,fontSize:11,color:C.muted}}>
+            Filters: RoE ≥ 13% · Rev CAGR ≥ 7% · EPS CAGR ≥ 10% · P/E ≤ 20x · Beta ≤ 1.2
+          </div>
+        </div>
+
+        {/* sector allocation */}
+        <div style={{background:C.card,border:`0.5px solid ${C.border}`,borderRadius:8,padding:"18px 20px"}}>
+          <div style={{fontSize:11,fontWeight:600,marginBottom:16,color:C.secondary,textTransform:"uppercase",letterSpacing:"0.07em"}}>Sector allocation · Equal weight</div>
+          <div style={{display:"flex",gap:20,alignItems:"center"}}>
+            <DonutChart data={sectorAlloc} size={110}/>
+            <div style={{flex:1}}>
+              {sectorAlloc.map(s=>{
+                const alloc = portfolio.length>0?((s.count/portfolio.length)*100).toFixed(1):"0.0";
+                return (
+                  <div key={s.sector} style={{display:"flex",alignItems:"center",gap:8,padding:"4px 0",marginBottom:2}}>
+                    <div style={{width:7,height:7,borderRadius:2,background:s.color,flexShrink:0}}/>
+                    <div style={{flex:1,fontSize:12,color:C.secondary,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{s.sector}</div>
+                    <div style={{fontSize:11,color:C.muted,minWidth:28}}>{s.count}</div>
+                    <div style={{width:48,height:3,borderRadius:2,background:C.border}}>
+                      <div style={{width:`${alloc}%`,height:"100%",borderRadius:2,background:s.color}}/>
+                    </div>
+                    <div style={{fontSize:11,color:C.secondary,minWidth:32,textAlign:"right"}}>{alloc}%</div>
                   </div>
-                  <div style={{fontSize:11,color:C.secondary,minWidth:34,textAlign:"right"}}>{alloc}%</div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-        {sectorFilter!=="All"&&(
-          <div style={{marginTop:12,fontSize:12,color:C.secondary}}>
-            Sector: <strong style={{color:C.primary}}>{sectorFilter}</strong>
-            <span style={{marginLeft:8,cursor:"pointer",color:C.accent}} onClick={()=>setSectorFilter("All")}>Clear ×</span>
-          </div>
-        )}
-      </div>
-
-      {/* filter sliders */}
-      <div style={{background:C.card,border:`0.5px solid ${C.border}`,borderRadius:8,padding:"18px 20px",marginBottom:14}}>
-        <div style={{fontSize:11,fontWeight:600,marginBottom:14,color:C.secondary,textTransform:"uppercase",letterSpacing:"0.07em"}}>Screening filters</div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(170px,1fr))",gap:16}}>
-          {[
-            {k:"roe",    label:"5Y avg RoE ≥",  min:5,  max:50, step:0.5,  suffix:"%"},
-            {k:"revCAGR",label:"5Y rev CAGR ≥", min:0,  max:30, step:0.5,  suffix:"%"},
-            {k:"epsCAGR",label:"5Y EPS CAGR ≥", min:0,  max:50, step:0.5,  suffix:"%"},
-            {k:"beta",   label:"3Y beta ≤",      min:0.4,max:2,  step:0.05, suffix:""},
-            {k:"pe",     label:"P/E ≤",          min:3,  max:25, step:0.5,  suffix:"x"},
-          ].map(({k,label,min,max,step,suffix})=>(
-            <div key={k}>
-              <div style={{display:"flex",justifyContent:"space-between",fontSize:12,color:C.secondary,marginBottom:6}}>
-                <span>{label}</span>
-                <span style={{fontWeight:600,color:C.primary,fontFamily:"var(--font-mono)"}}>
-                  {parseFloat(filters[k]).toFixed(k==="beta"?2:1)}{suffix}
-                </span>
-              </div>
-              <input type="range" min={min} max={max} step={step} value={filters[k]} onChange={e=>setFilter(k,e.target.value)}/>
+                );
+              })}
             </div>
-          ))}
+          </div>
         </div>
       </div>
 
-      {/* table controls */}
-      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10,flexWrap:"wrap",gap:8}}>
-        <div style={{fontSize:13,fontWeight:500,color:C.secondary}}>
-          {sectorFilter!=="All"?`${sectorFilter} · `:""}
-          <span style={{color:C.primary,fontWeight:600}}>{displayed.length}</span> {showFailed?"total":"passing"} stocks
-        </div>
-        <label style={{fontSize:13,color:C.secondary,display:"flex",alignItems:"center",gap:6,cursor:"pointer"}}>
-          <input type="checkbox" checked={showFailed} onChange={e=>setShowFailed(e.target.checked)}/>
-          Show all
-        </label>
+      {/* portfolio table */}
+      <div style={{fontSize:11,fontWeight:600,marginBottom:10,color:C.secondary,textTransform:"uppercase",letterSpacing:"0.07em"}}>
+        Current portfolio · {portfolio.length} stocks
+        {betaStatus!=="ok" && <span style={{marginLeft:10,color:C.amber,fontWeight:400,textTransform:"none",fontSize:11}}>⚠ Betas loading — portfolio may be incomplete</span>}
       </div>
-
-      {/* table */}
       <div style={{overflowX:"auto",border:`0.5px solid ${C.border}`,borderRadius:8}}>
         <table style={{width:"100%",borderCollapse:"collapse",fontSize:13}}>
           <thead>
@@ -325,55 +363,44 @@ function OverviewTab({stocks,betaStatus}) {
               <Th label="RoE %" k="roe" right/>
               <Th label="Rev CAGR" k="revCAGR" right/>
               <Th label="EPS CAGR" k="epsCAGR" right/>
-              <Th label={`Beta${betaStatus==="ok"?" ⚡":""}`} k="beta" right/>
+              <Th label="Beta ⚡" k="beta" right/>
               <Th label="P/E" k="pe" right/>
-              <th style={{padding:"9px 12px",fontSize:11,fontWeight:500,color:C.secondary,
-                background:C.hover,textAlign:"right",textTransform:"uppercase",letterSpacing:"0.05em"}}>Status</th>
             </tr>
           </thead>
           <tbody>
-            {displayed.map((s,i)=>{
-              const pass=s.status==="PASS";
-              const bv=s.beta??0.9;
-              return (
-                <tr key={s.ticker} style={{borderTop:`0.5px solid ${C.subtle}`,background:i%2===0?"transparent":C.card+"44"}}>
-                  <td style={{padding:"10px 12px",fontWeight:600,fontFamily:"var(--font-mono)",fontSize:12,color:C.primary}}>{s.ticker}</td>
-                  <td style={{padding:"10px 12px",fontSize:13,color:C.secondary,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:160}}>{s.name}</td>
-                  <td style={{padding:"10px 12px"}}>
-                    <span style={{fontSize:11,padding:"2px 7px",borderRadius:4,fontWeight:500,
-                      background:SECTOR_COLORS[s.sector]+"18",color:SECTOR_COLORS[s.sector],whiteSpace:"nowrap"}}>
-                      {s.sector}
-                    </span>
+            {displayed.length===0 ? (
+              <tr><td colSpan={8} style={{padding:"40px",textAlign:"center",color:C.muted,fontSize:13}}>
+                {betaStatus==="loading" ? "Computing portfolio — waiting for beta data..." : "No stocks pass all filters."}
+              </td></tr>
+            ) : displayed.map((s,i)=>(
+              <tr key={s.ticker} style={{borderTop:`0.5px solid ${C.subtle}`,background:i%2===0?"transparent":C.card+"44"}}>
+                <td style={{padding:"10px 12px",fontWeight:600,fontFamily:"var(--font-mono)",fontSize:12,color:C.primary}}>{s.ticker}</td>
+                <td style={{padding:"10px 12px",fontSize:13,color:C.secondary,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:160}}>{s.name}</td>
+                <td style={{padding:"10px 12px"}}>
+                  <span style={{fontSize:11,padding:"2px 7px",borderRadius:4,fontWeight:500,
+                    background:(SECTOR_COLORS[s.sector]||C.accent)+"18",color:SECTOR_COLORS[s.sector]||C.accent,whiteSpace:"nowrap"}}>
+                    {s.sector}
+                  </span>
+                </td>
+                {[
+                  {v:s.roe.toFixed(1)+"%"},
+                  {v:s.revCAGR.toFixed(1)+"%"},
+                  {v:s.epsCAGR.toFixed(1)+"%"},
+                  {v:(s.beta??0).toFixed(2)},
+                  {v:s.pe.toFixed(1)+"x"},
+                ].map((cell,ci)=>(
+                  <td key={ci} style={{padding:"10px 12px",textAlign:"right",
+                    color:C.primary,fontFamily:"var(--font-mono)",fontSize:12}}>
+                    {cell.v}
                   </td>
-                  {[
-                    {v:s.roe.toFixed(1)+"%",     ok:s.roe>=filters.roe},
-                    {v:s.revCAGR.toFixed(1)+"%", ok:s.revCAGR>=filters.revCAGR},
-                    {v:s.epsCAGR.toFixed(1)+"%", ok:s.epsCAGR>=filters.epsCAGR},
-                    {v:bv.toFixed(2),             ok:bv<=filters.beta},
-                    {v:s.pe.toFixed(1)+"x",       ok:s.pe<=filters.pe},
-                  ].map((cell,ci)=>(
-                    <td key={ci} style={{padding:"10px 12px",textAlign:"right",
-                      color:cell.ok?C.primary:C.red,fontWeight:cell.ok?400:500,
-                      fontFamily:"var(--font-mono)",fontSize:12}}>
-                      {cell.v}
-                    </td>
-                  ))}
-                  <td style={{padding:"10px 12px",textAlign:"right"}}>
-                    {pill(pass?C.greenDim:C.redDim,pass?C.green:C.red,pass?"PASS":"FAIL")}
-                  </td>
-                </tr>
-              );
-            })}
+                ))}
+              </tr>
+            ))}
           </tbody>
         </table>
-        {displayed.length===0&&(
-          <div style={{padding:"48px",textAlign:"center",color:C.muted,fontSize:14}}>
-            No stocks match the current filters.
-          </div>
-        )}
       </div>
       <div style={{marginTop:10,fontSize:12,color:C.muted}}>
-        ⚡ Live beta · Failing criteria in red · Click column headers to sort · Click sectors to filter
+        All stocks shown pass RoE ≥ 13% · Rev CAGR ≥ 7% · EPS CAGR ≥ 10% · P/E ≤ 20x · Beta ≤ 1.2 · in target sectors
       </div>
     </div>
   );
@@ -381,11 +408,11 @@ function OverviewTab({stocks,betaStatus}) {
 
 // ── root ──────────────────────────────────────────────────────
 export default function App() {
-  const [activeTab,    setActiveTab]    = useState("overview");
-  const [stocks,       setStocks]       = useState([]);
-  const [dataStatus,   setDataStatus]   = useState("loading");
-  const [betaStatus,   setBetaStatus]   = useState("loading");
-  const [sidebarOpen,  setSidebarOpen]  = useState(true);
+  const [activeTab,   setActiveTab]   = useState("overview");
+  const [stocks,      setStocks]      = useState([]);
+  const [dataStatus,  setDataStatus]  = useState("loading");
+  const [betaStatus,  setBetaStatus]  = useState("loading");
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   useEffect(()=>{
     fetch(FUNDAMENTALS_URL)
@@ -398,7 +425,11 @@ export default function App() {
     fetch(BETAS_URL)
       .then(r=>{ if(!r.ok) throw new Error(r.status); return r.json(); })
       .then(d=>{
-        setStocks(prev=>prev.map(s=>({...s,beta:d[s.ticker]??null,betaStatus:d[s.ticker]!=null?"done":"idle"})));
+        setStocks(prev=>prev.map(s=>({
+          ...s,
+          beta:      d[s.ticker]??null,
+          betaStatus:d[s.ticker]!=null?"done":"idle",
+        })));
         setBetaStatus("ok");
       })
       .catch(()=>setBetaStatus("error"));
@@ -407,17 +438,13 @@ export default function App() {
   return (
     <div style={{display:"flex",flexDirection:"column",height:"100vh",overflow:"hidden"}}>
 
-      {/* ── top bar ── */}
+      {/* top bar */}
       <div style={{flexShrink:0,display:"flex",alignItems:"center",justifyContent:"space-between",
         padding:"0 28px",height:52,borderBottom:`0.5px solid ${C.border}`,background:C.bg,zIndex:20}}>
-
-        {/* wordmark */}
-        <div style={{display:"flex",alignItems:"center",gap:10,minWidth:160}}>
+        <div style={{display:"flex",alignItems:"center",gap:10,minWidth:180}}>
           <div style={{width:7,height:7,borderRadius:"50%",background:C.accent}}/>
           <span style={{fontSize:14,fontWeight:700,letterSpacing:"-0.01em",color:C.primary}}>Fundamental Screener</span>
         </div>
-
-        {/* tabs — centred absolutely */}
         <div style={{position:"absolute",left:"50%",transform:"translateX(-50%)",display:"flex"}}>
           {TABS.map(t=>{
             const active=activeTab===t.id;
@@ -433,26 +460,20 @@ export default function App() {
             );
           })}
         </div>
-
-        {/* data freshness */}
-        <div style={{display:"flex",alignItems:"center",gap:14,fontSize:12,color:C.secondary,minWidth:160,justifyContent:"flex-end"}}>
+        <div style={{display:"flex",alignItems:"center",gap:14,fontSize:12,color:C.secondary,minWidth:180,justifyContent:"flex-end"}}>
           <span>Fundamentals: <span style={{color:C.primary,fontWeight:500}}>{DATA_QUARTER}</span></span>
           <span style={{color:C.muted}}>·</span>
-          <span>Beta: <span style={{color:betaStatus==="ok"?C.green:C.amber,fontWeight:500}}>{betaStatus==="ok"?"Live":"—"}</span></span>
+          <span>Beta: <span style={{color:betaStatus==="ok"?C.green:C.amber,fontWeight:500}}>{betaStatus==="ok"?"Live":"Loading"}</span></span>
         </div>
       </div>
 
-      {/* ── body row ── */}
+      {/* body */}
       <div style={{flex:1,display:"flex",overflow:"hidden",position:"relative"}}>
-
-        {/* collapsible sidebar */}
-        <Sidebar stocks={stocks} betaStatus={betaStatus} collapsed={!sidebarOpen} onToggle={()=>setSidebarOpen(o=>!o)}/>
-
-        {/* main scrollable area */}
+        <Sidebar collapsed={!sidebarOpen} onToggle={()=>setSidebarOpen(o=>!o)}/>
         <div style={{flex:1,overflowY:"auto",padding:"28px 32px",background:C.bg}}>
           {activeTab==="overview" && (
             dataStatus==="loading" ? (
-              <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"50vh",color:C.secondary,fontSize:14}}>Loading...</div>
+              <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"50vh",color:C.secondary,fontSize:14}}>Loading universe...</div>
             ) : dataStatus==="error" ? (
               <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",height:"50vh",gap:10}}>
                 <div style={{fontSize:14,color:C.red}}>Could not load fundamentals.csv from GitHub.</div>
@@ -460,13 +481,13 @@ export default function App() {
               </div>
             ) : <OverviewTab stocks={stocks} betaStatus={betaStatus}/>
           )}
-          {activeTab==="performance"&&<ComingSoon title="Portfolio Performance"
-            description="Track how the Strategy 2 portfolio has performed since inception against the SENSEX, sector by sector, and stock by stock."
-            items={["Cumulative return chart — portfolio vs SENSEX","Quarterly active return bars","Stock-level contribution to return","Key winners since inception","Max drawdown & recovery periods"]}/>}
-          {activeTab==="explore"&&<ComingSoon title="Build & Test"
-            description="Experiment with the strategy parameters and see how portfolio composition would change."
-            items={["Adjust any of the 5 screening filters","See live stock count and sector mix change","Compare your custom screen vs base strategy","What-if scenarios — P/E at 25x, Beta at 1.5x"]}/>}
-          {activeTab==="resources"&&<ComingSoon title="Resources"
+          {activeTab==="performance" && <ComingSoon title="Portfolio Performance"
+            description="Track how the strategy portfolio has performed since inception against the SENSEX, sector by sector, and stock by stock."
+            items={["Cumulative return chart — portfolio vs SENSEX","Quarterly active return bars","Stock-level contribution to return","Key winners since inception","Max drawdown & recovery periods","Sector decomposition & multiple expansion attribution"]}/>}
+          {activeTab==="explore" && <ComingSoon title="Build & Test"
+            description="Experiment with the strategy parameters and see how the portfolio composition would change."
+            items={["Adjust all 5 screening filters with live sliders","Sector inclusion / exclusion toggle","See funnel change in real time","Compare your custom screen vs the base strategy","What-if scenarios — P/E at 25x, Beta at 1.5x"]}/>}
+          {activeTab==="resources" && <ComingSoon title="Resources"
             description="Everything you need to understand how this strategy works, what each metric means, and why we built it this way."
             items={["How this strategy works — plain English","Metric glossary — RoE, CAGR, Beta, P/E explained","Why equal weight? Why quarterly rebalance?","Sector selection rationale","FAQ for first-time investors"]}/>}
         </div>
