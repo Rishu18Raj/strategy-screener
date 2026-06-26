@@ -11,24 +11,23 @@
       *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
       :root {
-        --bg:              #080c14;
-        --bg-card:         #0d1117;
-        --bg-hover:        #111827;
-        --border:          #1e2535;
-        --border-subtle:   #161d2d;
-        --text-primary:    #e8eaf0;
-        --text-secondary:  #5a6480;
-        --text-muted:      #374162;
-        --accent:          #3b82f6;
-        --accent-dim:      #1d3461;
-        --green:           #22c55e;
-        --green-dim:       #052e16;
-        --red:             #ef4444;
-        --red-dim:         #2d0a0a;
-        --amber:           #f59e0b;
-        --amber-dim:       #2d1a00;
+        --bg:            #080c14;
+        --bg-card:       #0d1117;
+        --bg-hover:      #111827;
+        --border:        #1e2535;
+        --border-subtle: #161d2d;
+        --text-primary:  #e8eaf0;
+        --text-secondary:#5a6480;
+        --text-muted:    #374162;
+        --accent:        #3b82f6;
+        --accent-dim:    #1d3461;
+        --green:         #22c55e;
+        --green-dim:     #052e16;
+        --red:           #ef4444;
+        --red-dim:       #2d0a0a;
+        --amber:         #f59e0b;
+        --amber-dim:     #2d1a00;
 
-        /* legacy compat for existing component vars */
         --color-background-primary:   var(--bg);
         --color-background-secondary: var(--bg-card);
         --color-background-success:   var(--green-dim);
@@ -46,19 +45,21 @@
         --border-radius-lg:           8px;
         --font-sans:                  'Inter', sans-serif;
         --font-mono:                  'JetBrains Mono', monospace;
+
+        --sidebar-w: 210px;
+        font-size: 16px; /* base bump — all rem/em scales from here */
       }
 
-      html, body { height: 100%; }
+      html, body { height: 100%; overflow: hidden; }
 
       body {
         font-family: 'Inter', sans-serif;
         background: var(--bg);
         color: var(--text-primary);
-        min-height: 100vh;
         -webkit-font-smoothing: antialiased;
       }
 
-      #root { height: 100%; }
+      #root { height: 100%; display: flex; flex-direction: column; }
 
       input[type="range"] { accent-color: var(--accent); width: 100%; }
       textarea, input { outline: none; }
@@ -68,7 +69,7 @@
         background: var(--bg-hover);
         padding: 1px 6px;
         border-radius: 4px;
-        font-size: 0.9em;
+        font-size: 0.88em;
       }
       * { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
     </style>
