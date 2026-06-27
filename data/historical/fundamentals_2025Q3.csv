@@ -1,0 +1,501 @@
+ticker,name,sector,roe,revCAGR,epsCAGR,pe,fy_window,rebalance_date
+360ONE,360 ONE WAM Ltd,Financial Services,19.52,17.37,19.73,36.03,FY2021-FY2025,2025-09-25
+3MINDIA,3M India Ltd,Diversified,17.86,12.94,26.1,60.65,FY2021-FY2025,2025-09-25
+ABB,ABB India Ltd,Capital Goods,,,,63.66,FY2021-FY2025,2025-09-25
+ACC,ACC Ltd,Construction Materials,14.14,,,10.62,FY2021-FY2025,2025-09-25
+ACMESOLAR,ACME Solar Holdings Ltd,Power,8.46,-3.65,23.35,36.17,FY2021-FY2025,2025-09-25
+AIAENG,AIA Engineering Ltd,Capital Goods,16.45,8.27,13.62,25.3,FY2021-FY2025,2025-09-25
+APLAPOLLO,APL Apollo Tubes Ltd,Capital Goods,24.3,19.47,13.6,44.54,FY2021-FY2025,2025-09-25
+AUBANK,AU Small Finance Bank Ltd,Banks,16.21,26.55,8.57,25.07,FY2021-FY2025,2025-09-25
+AWL,AWL Agri Business Ltd,Fast Moving Consumer Goods,12.52,11.41,-31.76,31.26,FY2021-FY2025,2025-09-25
+AADHARHFC,Aadhar Housing Finance Ltd,Financial Services,15.98,14.56,19.65,23.4,FY2021-FY2025,2025-09-25
+AARTIIND,Aarti Industries Ltd,Chemicals,14.37,10.04,-9.48,48.14,FY2021-FY2025,2025-09-25
+AAVAS,AAVAS Financiers Ltd,Financial Services,13.76,16.38,14.48,21.72,FY2021-FY2025,2025-09-25
+ABBOTINDIA,Abbott India Ltd,Healthcare,31.81,8.26,15.41,42.56,FY2021-FY2025,2025-09-25
+ACE,Action Construction Equipment Ltd,Capital Goods,22.59,22.08,37.35,32.91,FY2021-FY2025,2025-09-25
+ACUTAAS,Acutaas Chemicals Ltd,Healthcare,19.7,24.18,17.73,53.02,FY2021-FY2025,2025-09-25
+ADANIENSOL,Adani Energy Solutions Ltd,Power,10.98,19.08,-4.55,49.26,FY2021-FY2025,2025-09-25
+ADANIENT,Adani Enterprises Ltd,Metals & Mining,9.21,19.88,49.01,44.16,FY2021-FY2025,2025-09-25
+ADANIGREEN,Adani Green Energy Ltd,Power,15.91,29.12,46.75,90.59,FY2021-FY2025,2025-09-25
+ADANIPORTS,Adani Ports & Special Economic Zone Ltd,Services,15.98,19.42,15.88,26.05,FY2021-FY2025,2025-09-25
+ADANIPOWER,Adani Power Ltd,Power,34.28,16.47,59.01,25.98,FY2021-FY2025,2025-09-25
+ATGL,Adani Total Gas Ltd,Oil Gas & Consumable Fuels,21.65,24.14,7.16,127.06,FY2021-FY2025,2025-09-25
+ABCAPITAL,Aditya Birla Capital Ltd,Financial Services,14.65,16.1,22.36,23.3,FY2021-FY2025,2025-09-25
+ABFRL,Aditya Birla Fashion & Retail Ltd,Consumer Services,-8.37,1.6,,,FY2021-FY2025,2025-09-25
+ABLBL,Aditya Birla Lifestyle Brands Ltd,Consumer Services,,,,,FY2021-FY2025,2025-09-25
+ABREL,Aditya Birla Real Estate Ltd,Realty,3.68,-34.16,,351.12,FY2021-FY2025,2025-09-25
+ABSLAMC,Aditya Birla Sun Life AMC Ltd,Financial Services,29.81,10.52,-35.65,24.09,FY2021-FY2025,2025-09-25
+CPPLUS,Aditya Infotech Ltd,Capital Goods,34.61,22.05,-22.88,79.1,FY2021-FY2025,2025-09-25
+AEGISLOG,Aegis Logistics Ltd,Oil Gas & Consumable Fuels,17.41,11.97,24.34,38.3,FY2021-FY2025,2025-09-25
+AEGISVOPAK,Aegis Vopak Terminals Ltd,Oil Gas & Consumable Fuels,4.55,,,161.46,FY2021-FY2025,2025-09-25
+AFCONS,Afcons Infrastructure Ltd,Construction,13.57,6.0,-10.61,33.29,FY2021-FY2025,2025-09-25
+AFFLE,Affle 3i Ltd,Information Technology,24.28,34.39,20.79,69.87,FY2021-FY2025,2025-09-25
+AJANTPHARM,Ajanta Pharma Ltd,Healthcare,22.46,9.97,7.9,32.65,FY2021-FY2025,2025-09-25
+ALKEM,Alkem Laboratories Ltd,Healthcare,18.97,7.9,6.44,28.08,FY2021-FY2025,2025-09-25
+ABDL,Allied Blenders & Distillers Ltd,Fast Moving Consumer Goods,4.41,8.43,129.28,57.92,FY2021-FY2025,2025-09-25
+ARE&M,Amara Raja Energy & Mobility Ltd,Automobile and Auto Components,13.98,12.43,6.39,20.48,FY2021-FY2025,2025-09-25
+AMBER,Amber Enterprises India Ltd,Consumer Durables,8.05,26.9,24.35,125.31,FY2021-FY2025,2025-09-25
+AMBUJACEM,Ambuja Cements Ltd,Construction Materials,6.86,,,32.03,FY2021-FY2025,2025-09-25
+ANANDRATHI,Anand Rathi Wealth Ltd,Financial Services,38.39,29.13,34.77,71.88,FY2021-FY2025,2025-09-25
+ANANTRAJ,Anant Raj Ltd,Realty,5.43,52.47,102.97,46.33,FY2021-FY2025,2025-09-25
+ANGELONE,Angel One Ltd,Financial Services,39.68,32.37,29.02,25.79,FY2021-FY2025,2025-09-25
+ANTHEM,Anthem Biosciences Ltd,Healthcare,30.7,10.84,-52.09,89.23,FY2021-FY2025,2025-09-25
+ANURAS,Anupam Rasayan India Ltd,Chemicals,7.71,12.12,3.82,80.32,FY2021-FY2025,2025-09-25
+APARINDS,Apar Industries Ltd,Capital Goods,21.57,23.81,37.28,37.09,FY2021-FY2025,2025-09-25
+APOLLOHOSP,Apollo Hospitals Enterprise Ltd,Healthcare,14.7,15.59,57.25,66.08,FY2021-FY2025,2025-09-25
+APOLLOTYRE,Apollo Tyres Ltd,Automobile and Auto Components,7.64,8.47,26.23,39.19,FY2021-FY2025,2025-09-25
+APTUS,Aptus Value Housing Finance India Ltd,Financial Services,16.29,22.28,-12.18,19.16,FY2021-FY2025,2025-09-25
+ASAHIINDIA,Asahi India Glass Ltd,Automobile and Auto Components,15.83,13.67,22.79,72.32,FY2021-FY2025,2025-09-25
+ASHOKLEY,Ashok Leyland Ltd,Capital Goods,16.71,20.43,,25.09,FY2021-FY2025,2025-09-25
+ASIANPAINT,Asian Paints Ltd,Consumer Durables,26.15,9.32,3.16,60.22,FY2021-FY2025,2025-09-25
+ASTERDM,Aster DM Healthcare Ltd,Healthcare,37.92,-13.63,105.19,98.09,FY2021-FY2025,2025-09-25
+ASTRAL,Astral Ltd,Capital Goods,19.93,12.92,5.25,75.76,FY2021-FY2025,2025-09-25
+ATHERENERG,Ather Energy Ltd,Automobile and Auto Components,-131.76,94.99,,,FY2021-FY2025,2025-09-25
+ATUL,Atul Ltd,Chemicals,12.13,8.39,-5.8,33.98,FY2021-FY2025,2025-09-25
+AUROPHARMA,Aurobindo Pharma Ltd,Healthcare,13.75,5.07,-8.0,18.83,FY2021-FY2025,2025-09-25
+AIIL,Authum Investment & Infrastructure Ltd,Financial Services,26.01,77.95,97.14,12.75,FY2021-FY2025,2025-09-25
+DMART,Avenue Supermarts Ltd,Consumer Services,13.01,19.71,19.65,110.33,FY2021-FY2025,2025-09-25
+AXISBANK,Axis Bank Ltd,Banks,12.82,14.62,30.99,13.96,FY2021-FY2025,2025-09-25
+BEML,BEML Ltd,Capital Goods,7.39,2.49,33.54,61.02,FY2021-FY2025,2025-09-25
+BLS,BLS International Services Ltd,Consumer Services,26.35,35.62,58.85,24.62,FY2021-FY2025,2025-09-25
+BSE,BSE Ltd,Financial Services,16.58,38.51,55.6,47.59,FY2021-FY2025,2025-09-25
+BAJAJ-AUTO,Bajaj Auto Ltd,Automobile and Auto Components,22.23,12.95,9.34,30.12,FY2021-FY2025,2025-09-25
+BAJFINANCE,Bajaj Finance Ltd,Financial Services,19.01,21.18,29.57,34.8,FY2021-FY2025,2025-09-25
+BAJAJFINSV,Bajaj Finserv Ltd,Financial Services,25.53,17.17,14.62,34.39,FY2021-FY2025,2025-09-25
+BAJAJHLDNG,Bajaj Holdings & Investment Ltd,Financial Services,11.85,10.09,12.31,17.33,FY2021-FY2025,2025-09-25
+BAJAJHFL,Bajaj Housing Finance Ltd,Financial Services,12.44,24.86,22.83,39.79,FY2021-FY2025,2025-09-25
+BALKRISIND,Balkrishna Industries Ltd,Automobile and Auto Components,18.66,12.56,7.05,34.99,FY2021-FY2025,2025-09-25
+BALRAMCHIN,Balrampur Chini Mills Ltd,Fast Moving Consumer Goods,15.09,2.39,-1.08,24.74,FY2021-FY2025,2025-09-25
+BANDHANBNK,Bandhan Bank Ltd,Banks,9.77,11.87,4.48,21.27,FY2021-FY2025,2025-09-25
+BANKBARODA,Bank of Baroda,Banks,11.77,11.48,68.04,6.81,FY2021-FY2025,2025-09-25
+BANKINDIA,Bank of India,Banks,8.03,11.78,26.95,5.73,FY2021-FY2025,2025-09-25
+MAHABANK,Bank of Maharashtra,Banks,15.35,16.02,52.65,7.22,FY2021-FY2025,2025-09-25
+BATAINDIA,Bata India Ltd,Consumer Durables,11.85,15.36,,94.27,FY2021-FY2025,2025-09-25
+BAYERCROP,Bayer CropScience Ltd,Chemicals,24.03,5.13,2.87,37.43,FY2021-FY2025,2025-09-25
+BELRISE,Belrise Industries Ltd,Automobile and Auto Components,14.25,10.48,,28.45,FY2021-FY2025,2025-09-25
+BERGEPAINT,Berger Paints India Ltd,Consumer Durables,22.26,11.11,10.4,57.58,FY2021-FY2025,2025-09-25
+BDL,Bharat Dynamics Ltd,Capital Goods,14.16,11.81,16.35,89.43,FY2021-FY2025,2025-09-25
+BEL,Bharat Electronics Ltd,Capital Goods,23.8,10.99,20.46,51.92,FY2021-FY2025,2025-09-25
+BHARATFORG,Bharat Forge Ltd,Automobile and Auto Components,13.44,19.35,32.79,44.63,FY2021-FY2025,2025-09-25
+BHEL,Bharat Heavy Electricals Ltd,Capital Goods,-0.54,10.36,,153.03,FY2021-FY2025,2025-09-25
+BPCL,Bharat Petroleum Corporation Ltd,Oil Gas & Consumable Fuels,24.65,13.85,-3.77,6.75,FY2021-FY2025,2025-09-25
+BHARTIARTL,Bharti Airtel Ltd,Telecommunication,-1.67,11.11,,41.2,FY2021-FY2025,2025-09-25
+BHARTIHEXA,Bharti Hexacom Ltd,Telecommunication,14.33,13.18,,55.45,FY2021-FY2025,2025-09-25
+BIKAJI,Bikaji Foods International Ltd,Fast Moving Consumer Goods,16.19,14.87,-26.4,90.46,FY2021-FY2025,2025-09-25
+GROWW,Billionbrains Garage Ventures Ltd,Financial Services,7.72,,,,FY2021-FY2025,2025-09-25
+BIOCON,Biocon Ltd,Healthcare,8.02,16.4,6.47,91.24,FY2021-FY2025,2025-09-25
+BSOFT,Birlasoft Ltd,Information Technology,17.41,8.61,9.96,22.4,FY2021-FY2025,2025-09-25
+BLUEDART,Blue Dart Express Ltd,Services,29.61,11.71,19.91,51.26,FY2021-FY2025,2025-09-25
+BLUEJET,Blue Jet Healthcare Ltd,Healthcare,34.76,15.6,-58.5,33.49,FY2021-FY2025,2025-09-25
+BLUESTARCO,Blue Star Ltd,Consumer Durables,21.16,22.93,40.72,73.92,FY2021-FY2025,2025-09-25
+BBTC,The Bombay Burmah Trading Corporation Ltd,Fast Moving Consumer Goods,21.92,6.44,24.89,11.6,FY2021-FY2025,2025-09-25
+BOSCHLTD,Bosch Ltd,Automobile and Auto Components,13.45,13.23,33.12,43.3,FY2021-FY2025,2025-09-25
+FIRSTCRY,Brainbees Solutions Ltd,Consumer Services,1.08,13.55,,239.66,FY2021-FY2025,2025-09-25
+BRIGADE,Brigade Enterprises Ltd,Realty,8.42,6.79,22.14,55.21,FY2021-FY2025,2025-09-25
+BRITANNIA,Britannia Industries Ltd,Fast Moving Consumer Goods,56.37,6.44,3.17,61.69,FY2021-FY2025,2025-09-25
+MAPMYINDIA,C.E. Info Systems Ltd,Information Technology,24.1,24.95,-29.57,61.05,FY2021-FY2025,2025-09-25
+CCL,CCL Products (India) Ltd,Fast Moving Consumer Goods,17.79,20.12,11.15,35.53,FY2021-FY2025,2025-09-25
+CESC,CESC Ltd,Power,13.25,7.89,0.57,15.22,FY2021-FY2025,2025-09-25
+CGPOWER,CG Power & Industrial Solutions Ltd,Capital Goods,88.86,27.3,-8.03,111.61,FY2021-FY2025,2025-09-25
+CIEINDIA,CIE Automotive India Ltd,Automobile and Auto Components,,,,27.18,FY2021-FY2025,2025-09-25
+CRISIL,CRISIL Ltd,Financial Services,,,,53.14,FY2021-FY2025,2025-09-25
+CANFINHOME,Can Fin Homes Ltd,Financial Services,18.25,13.96,13.45,11.28,FY2021-FY2025,2025-09-25
+CANBK,Canara Bank,Banks,13.27,11.6,40.68,6.38,FY2021-FY2025,2025-09-25
+CANHLIFE,Canara HSBC Life Insurance Company Ltd,Financial Services,6.3,2.97,4.23,,FY2021-FY2025,2025-09-25
+CAPLIPOINT,Caplin Point Laboratories Ltd,Healthcare,25.58,12.79,17.11,29.09,FY2021-FY2025,2025-09-25
+CGCL,Capri Global Capital Ltd,Financial Services,9.78,34.53,21.95,24.24,FY2021-FY2025,2025-09-25
+CARBORUNIV,Carborundum Universal Ltd,Capital Goods,14.46,13.21,0.49,92.4,FY2021-FY2025,2025-09-25
+CARTRADE,Cartrade Tech Ltd,Consumer Services,2.04,20.72,-35.69,61.05,FY2021-FY2025,2025-09-25
+CASTROLIND,Castrol India Ltd,Oil Gas & Consumable Fuels,,,,20.58,FY2021-FY2025,2025-09-25
+CEATLTD,CEAT Ltd,Automobile and Auto Components,9.93,11.68,1.81,28.39,FY2021-FY2025,2025-09-25
+CEMPRO,Cemindia Projects Ltd,Construction,12.17,27.65,88.16,31.71,FY2021-FY2025,2025-09-25
+CENTRALBK,Central Bank of India,Banks,5.02,8.17,,7.78,FY2021-FY2025,2025-09-25
+CDSL,Central Depository Services (India) Ltd,Financial Services,28.96,25.76,21.32,68.34,FY2021-FY2025,2025-09-25
+CHALET,Chalet Hotels Ltd,Consumer Services,4.52,42.59,,36.87,FY2021-FY2025,2025-09-25
+CHAMBLFERT,Chambal Fertilisers & Chemicals Ltd,Chemicals,24.09,5.53,0.7,11.56,FY2021-FY2025,2025-09-25
+CHENNPETRO,Chennai Petroleum Corporation Ltd,Oil Gas & Consumable Fuels,37.84,21.56,-3.61,9.57,FY2021-FY2025,2025-09-25
+CHOICEIN,Choice International Ltd,Financial Services,16.0,39.24,47.43,91.26,FY2021-FY2025,2025-09-25
+CHOLAHLDNG,Cholamandalam Financial Holdings Ltd,Financial Services,39.54,19.02,21.38,16.2,FY2021-FY2025,2025-09-25
+CHOLAFIN,Cholamandalam Investment & Finance Company Ltd,Financial Services,19.5,21.99,22.27,29.4,FY2021-FY2025,2025-09-25
+CIPLA,Cipla Ltd,Healthcare,14.92,7.53,16.96,22.67,FY2021-FY2025,2025-09-25
+CUB,City Union Bank Ltd,Banks,12.32,7.13,13.56,12.57,FY2021-FY2025,2025-09-25
+CLEAN,Clean Science & Technology Ltd,Chemicals,31.02,13.56,5.9,45.37,FY2021-FY2025,2025-09-25
+COALINDIA,Coal India Ltd,Oil Gas & Consumable Fuels,46.5,9.75,22.72,7.78,FY2021-FY2025,2025-09-25
+COCHINSHIP,Cochin Shipyard Ltd,Capital Goods,13.65,11.32,6.34,65.28,FY2021-FY2025,2025-09-25
+COFORGE,Coforge Ltd,Information Technology,23.18,20.91,10.06,47.68,FY2021-FY2025,2025-09-25
+COHANCE,Cohance Lifesciences Ltd,Healthcare,24.9,3.47,-5.86,64.42,FY2021-FY2025,2025-09-25
+COLPAL,Colgate-Palmolive (India) Ltd,Fast Moving Consumer Goods,73.01,4.53,6.77,47.69,FY2021-FY2025,2025-09-25
+CAMS,Computer Age Management Services Ltd,Financial Services,42.97,15.03,17.74,42.54,FY2021-FY2025,2025-09-25
+CONCORDBIO,Concord Biotech Ltd,Healthcare,21.48,14.27,-32.17,52.45,FY2021-FY2025,2025-09-25
+CONCOR,Container Corporation Of India Ltd,Services,9.46,6.7,20.61,31.58,FY2021-FY2025,2025-09-25
+COROMANDEL,Coromandel International Ltd,Chemicals,24.37,11.17,9.14,27.68,FY2021-FY2025,2025-09-25
+CRAFTSMAN,Craftsman Automation Ltd,Automobile and Auto Components,15.61,29.54,12.1,67.59,FY2021-FY2025,2025-09-25
+CREDITACC,CreditAccess Grameen Ltd,Financial Services,12.7,18.51,31.04,162.38,FY2021-FY2025,2025-09-25
+CROMPTON,Crompton Greaves Consumer Electricals Ltd,Consumer Durables,22.91,10.36,-2.53,41.54,FY2021-FY2025,2025-09-25
+CUMMINSIND,Cummins India Ltd,Capital Goods,22.33,18.97,25.79,47.97,FY2021-FY2025,2025-09-25
+CYIENT,Cyient Ltd,Information Technology,15.55,12.24,10.9,23.16,FY2021-FY2025,2025-09-25
+DCMSHRIRAM,DCM Shriram Ltd,Diversified,13.61,7.77,-2.14,26.51,FY2021-FY2025,2025-09-25
+DLF,DLF Ltd,Realty,6.1,8.11,31.89,43.87,FY2021-FY2025,2025-09-25
+DOMS,DOMS Industries Ltd,Fast Moving Consumer Goods,15.97,36.4,,77.82,FY2021-FY2025,2025-09-25
+DABUR,Dabur India Ltd,Fast Moving Consumer Goods,20.23,5.61,0.8,50.44,FY2021-FY2025,2025-09-25
+DALBHARAT,Dalmia Bharat Ltd,Construction Materials,6.45,6.7,-10.27,39.01,FY2021-FY2025,2025-09-25
+DATAPATTNS,Data Patterns (India) Ltd,Capital Goods,19.9,25.88,-34.43,66.51,FY2021-FY2025,2025-09-25
+DEEPAKFERT,Deepak Fertilisers & Petrochemicals Corp Ltd,Chemicals,17.93,12.08,13.66,19.48,FY2021-FY2025,2025-09-25
+DEEPAKNTR,Deepak Nitrite Ltd,Chemicals,26.41,13.69,-2.11,46.74,FY2021-FY2025,2025-09-25
+DELHIVERY,Delhivery Ltd,Services,-8.39,18.71,,177.24,FY2021-FY2025,2025-09-25
+DEVYANI,Devyani International Ltd,Consumer Services,2.47,27.37,,,FY2021-FY2025,2025-09-25
+DIVISLAB,Divis Laboratories Ltd,Healthcare,18.89,6.08,2.0,64.64,FY2021-FY2025,2025-09-25
+DIXON,Dixon Technologies (India) Ltd,Consumer Durables,29.37,43.22,46.14,74.62,FY2021-FY2025,2025-09-25
+LALPATHLAB,Dr Lal Pathlabs Ltd,Healthcare,22.35,9.25,10.75,52.15,FY2021-FY2025,2025-09-25
+DRREDDY,Dr Reddys Laboratories Ltd,Healthcare,16.99,11.38,23.62,18.92,FY2021-FY2025,2025-09-25
+EIDPARRY,EID Parry (India) Ltd,Fast Moving Consumer Goods,27.35,11.24,14.36,16.47,FY2021-FY2025,2025-09-25
+EIHOTEL,EIH Ltd,Consumer Services,5.95,40.85,,35.04,FY2021-FY2025,2025-09-25
+EICHERMOT,Eicher Motors Ltd,Automobile and Auto Components,19.19,16.69,28.5,37.53,FY2021-FY2025,2025-09-25
+ELECON,Elecon Engineering Company Ltd,Capital Goods,17.79,16.36,48.4,26.26,FY2021-FY2025,2025-09-25
+ELGIEQUIP,Elgi Equipments Ltd,Capital Goods,20.61,12.78,27.89,40.94,FY2021-FY2025,2025-09-25
+EMAMILTD,Emami Ltd,Fast Moving Consumer Goods,31.87,5.74,12.56,33.38,FY2021-FY2025,2025-09-25
+EMCURE,Emcure Pharmaceuticals Ltd,Healthcare,23.31,9.42,9.21,31.67,FY2021-FY2025,2025-09-25
+EMMVEE,Emmvee Photovoltaic Power Ltd,Capital Goods,28.24,40.68,51.29,,FY2021-FY2025,2025-09-25
+ENDURANCE,Endurance Technologies Ltd,Automobile and Auto Components,13.96,12.04,9.98,45.4,FY2021-FY2025,2025-09-25
+ENGINERSIN,Engineers India Ltd,Construction,16.65,-0.36,18.43,21.31,FY2021-FY2025,2025-09-25
+ERIS,ERIS Lifesciences Ltd,Healthcare,19.32,19.01,-0.25,53.57,FY2021-FY2025,2025-09-25
+ESCORTS,Escorts Kubota Ltd,Capital Goods,13.24,7.87,11.83,17.77,FY2021-FY2025,2025-09-25
+ETERNAL,Eternal Ltd,Consumer Services,4.6,38.12,,138.1,FY2021-FY2025,2025-09-25
+EXIDEIND,Exide Industries Ltd,Automobile and Auto Components,16.28,10.72,-0.38,43.5,FY2021-FY2025,2025-09-25
+NYKAA,FSN E-Commerce Ventures Ltd,Consumer Services,5.99,26.64,-49.23,660.31,FY2021-FY2025,2025-09-25
+FEDERALBNK,Federal Bank Ltd,Banks,13.14,14.45,15.21,12.15,FY2021-FY2025,2025-09-25
+FACT,Fertilizers & Chemicals Travancore Ltd,Chemicals,54.91,4.45,-34.77,608.53,FY2021-FY2025,2025-09-25
+FINCABLES,Finolex Cables Ltd,Capital Goods,14.05,13.95,8.72,19.03,FY2021-FY2025,2025-09-25
+FSL,Firstsource Solutions Ltd,Services,15.46,9.46,10.09,38.2,FY2021-FY2025,2025-09-25
+FIVESTAR,Five-Star Business Finance Ltd,Financial Services,16.62,22.09,-23.85,13.92,FY2021-FY2025,2025-09-25
+FORCEMOT,Force Motors Ltd,Automobile and Auto Components,9.32,32.34,,22.21,FY2021-FY2025,2025-09-25
+FORTIS,Fortis Healthcare Ltd,Healthcare,0.78,17.96,69.52,418.92,FY2021-FY2025,2025-09-25
+GAIL,GAIL (India) Ltd,Oil Gas & Consumable Fuels,14.2,19.86,15.5,10.76,FY2021-FY2025,2025-09-25
+GVT&D,GE Vernova T&D India Ltd,Capital Goods,11.37,4.45,58.7,83.42,FY2021-FY2025,2025-09-25
+GMRAIRPORT,GMR Airports Ltd,Services,-4.35,,,,FY2021-FY2025,2025-09-25
+GABRIEL,Gabriel India Ltd,Automobile and Auto Components,15.33,16.54,28.56,82.55,FY2021-FY2025,2025-09-25
+GALLANTT,Gallantt Ispat Ltd.,Capital Goods,11.09,33.64,10.66,32.53,FY2021-FY2025,2025-09-25
+GRSE,Garden Reach Shipbuilders & Engineers Ltd,Capital Goods,19.63,34.79,28.0,49.82,FY2021-FY2025,2025-09-25
+GICRE,General Insurance Corporation of India,Financial Services,11.42,0.42,30.13,6.66,FY2021-FY2025,2025-09-25
+GILLETTE,Gillette India Ltd,Fast Moving Consumer Goods,,,,56.84,FY2021-FY2025,2025-09-25
+GLAND,Gland Pharma Ltd,Healthcare,13.37,10.15,-7.0,42.05,FY2021-FY2025,2025-09-25
+GLAXO,Glaxosmithkline Pharmaceuticals Ltd,Healthcare,42.93,5.08,20.96,48.97,FY2021-FY2025,2025-09-25
+GLENMARK,Glenmark Pharmaceuticals Ltd,Healthcare,5.43,4.01,1.54,56.37,FY2021-FY2025,2025-09-25
+MEDANTA,Global Health Ltd,Healthcare,12.9,20.6,25.27,63.21,FY2021-FY2025,2025-09-25
+GODIGIT,Go Digit General Insurance Ltd,Financial Services,0.58,33.0,,67.16,FY2021-FY2025,2025-09-25
+GPIL,Godawari Power & Ispat Ltd,Capital Goods,30.96,6.34,6.01,24.15,FY2021-FY2025,2025-09-25
+GODFRYPHLP,Godfrey Phillips India Ltd,Fast Moving Consumer Goods,19.67,17.32,23.27,41.56,FY2021-FY2025,2025-09-25
+GODREJCP,Godrej Consumer Products Ltd,Fast Moving Consumer Goods,12.21,5.43,1.48,66.94,FY2021-FY2025,2025-09-25
+GODREJIND,Godrej Industries Ltd,Diversified,13.22,16.06,24.0,41.27,FY2021-FY2025,2025-09-25
+GODREJPROP,Godrej Properties Ltd,Realty,4.96,27.89,,165.65,FY2021-FY2025,2025-09-25
+GRANULES,Granules India Ltd,Healthcare,18.32,6.72,-1.39,24.78,FY2021-FY2025,2025-09-25
+GRAPHITE,Graphite India Ltd,Capital Goods,10.4,5.64,17.81,37.13,FY2021-FY2025,2025-09-25
+GRASIM,Grasim Industries Ltd,Construction Materials,12.37,14.21,-2.96,44.37,FY2021-FY2025,2025-09-25
+GRAVITA,Gravita India Ltd,Metals & Mining,33.09,22.37,40.98,33.81,FY2021-FY2025,2025-09-25
+GESHIP,Great Eastern Shipping Company Ltd,Services,17.88,9.79,21.31,7.28,FY2021-FY2025,2025-09-25
+FLUOROCHEM,Gujarat Fluorochemicals Ltd,Chemicals,11.64,12.58,,60.65,FY2021-FY2025,2025-09-25
+GMDCLTD,Gujarat Mineral Development Corporation Ltd,Metals & Mining,10.63,16.49,,19.78,FY2021-FY2025,2025-09-25
+HEG,HEG Ltd,Capital Goods,5.97,11.4,,41.92,FY2021-FY2025,2025-09-25
+HBLENGINE,HBL Engineering Ltd,Capital Goods,14.03,16.62,82.02,35.18,FY2021-FY2025,2025-09-25
+HCLTECH,HCL Technologies Ltd,Information Technology,22.87,9.2,9.3,22.85,FY2021-FY2025,2025-09-25
+HDBFS,HDB Financial Services Ltd,Financial Services,16.05,8.29,40.69,29.26,FY2021-FY2025,2025-09-25
+HDFCAMC,HDFC Asset Management Company Ltd,Financial Services,28.7,13.04,13.08,45.82,FY2021-FY2025,2025-09-25
+HDFCBANK,HDFC Bank Ltd,Banks,16.59,21.21,9.89,20.28,FY2021-FY2025,2025-09-25
+HDFCLIFE,HDFC Life Insurance Company Ltd,Financial Services,12.25,5.37,4.56,88.17,FY2021-FY2025,2025-09-25
+HFCL,HFCL Ltd,Telecommunication,10.44,-1.67,-7.94,376.7,FY2021-FY2025,2025-09-25
+HAVELLS,Havells India Ltd,Consumer Durables,19.42,15.8,7.08,67.37,FY2021-FY2025,2025-09-25
+HEROMOTOCO,Hero MotoCorp Ltd,Automobile and Auto Components,19.46,5.74,8.43,20.33,FY2021-FY2025,2025-09-25
+HEXT,Hexaware Technologies Ltd,Information Technology,,,,40.53,FY2021-FY2025,2025-09-25
+HSCL,Himadri Speciality Chemical Ltd,Chemicals,9.41,22.4,58.35,34.01,FY2021-FY2025,2025-09-25
+HINDALCO,Hindalco Industries Ltd,Metals & Mining,12.05,12.56,35.65,9.44,FY2021-FY2025,2025-09-25
+HAL,Hindustan Aeronautics Ltd,Capital Goods,26.82,6.25,20.84,37.9,FY2021-FY2025,2025-09-25
+HINDCOPPER,Hindustan Copper Ltd,Metals & Mining,16.54,2.99,32.23,52.28,FY2021-FY2025,2025-09-25
+HINDPETRO,Hindustan Petroleum Corporation Ltd,Oil Gas & Consumable Fuels,16.89,13.23,-8.3,6.48,FY2021-FY2025,2025-09-25
+HINDUNILVR,Hindustan Unilever Ltd,Fast Moving Consumer Goods,21.78,5.45,5.9,54.42,FY2021-FY2025,2025-09-25
+HINDZINC,Hindustan Zinc Ltd,Metals & Mining,50.3,8.54,5.34,18.45,FY2021-FY2025,2025-09-25
+POWERINDIA,Hitachi Energy India Ltd,Capital Goods,11.51,,,116.89,FY2021-FY2025,2025-09-25
+HOMEFIRST,Home First Finance Company India Ltd,Financial Services,13.33,25.77,29.93,27.09,FY2021-FY2025,2025-09-25
+HONASA,Honasa Consumer Ltd,Fast Moving Consumer Goods,5.51,32.32,,76.62,FY2021-FY2025,2025-09-25
+HONAUT,Honeywell Automation India Ltd,Capital Goods,14.97,6.61,2.62,63.05,FY2021-FY2025,2025-09-25
+HUDCO,Housing & Urban Development Corporation Ltd,Financial Services,13.0,7.32,11.39,16.79,FY2021-FY2025,2025-09-25
+HYUNDAI,Hyundai Motor India Ltd,Automobile and Auto Components,27.67,10.71,,39.4,FY2021-FY2025,2025-09-25
+ICICIBANK,ICICI Bank Ltd,Banks,17.35,15.88,21.94,18.61,FY2021-FY2025,2025-09-25
+ICICIGI,ICICI Lombard General Insurance Company Ltd,Financial Services,17.99,14.53,9.33,33.58,FY2021-FY2025,2025-09-25
+ICICIAMC,ICICI Prudential Asset Management Co Ltd,Financial Services,77.17,17.42,16.31,,FY2021-FY2025,2025-09-25
+ICICIPRULI,ICICI Prudential Life Insurance Company Ltd,Financial Services,9.38,-3.18,4.25,66.47,FY2021-FY2025,2025-09-25
+IDBI,IDBI Bank Ltd,Banks,8.9,7.7,38.17,10.8,FY2021-FY2025,2025-09-25
+IDFCFIRSTB,IDFC First Bank Ltd,Banks,5.7,17.98,19.14,36.16,FY2021-FY2025,2025-09-25
+IFCI,IFCI Ltd,Financial Services,-47.74,-13.31,,65.82,FY2021-FY2025,2025-09-25
+IIFL,IIFL Finance Ltd,Financial Services,16.2,11.39,-13.16,22.33,FY2021-FY2025,2025-09-25
+IRB,IRB Infrastructure Developers Ltd,Construction,10.81,7.52,99.48,3.95,FY2021-FY2025,2025-09-25
+IRCON,Ircon International Ltd,Construction,13.28,15.03,13.19,28.1,FY2021-FY2025,2025-09-25
+ITCHOTELS,ITC Hotels Ltd,Consumer Services,6.99,,,,FY2021-FY2025,2025-09-25
+ITC,ITC Ltd,Fast Moving Consumer Goods,30.71,8.87,21.04,14.41,FY2021-FY2025,2025-09-25
+ITI,ITI Ltd,Telecommunication,-10.24,8.89,,,FY2021-FY2025,2025-09-25
+INDGN,Indegene Ltd,Healthcare,48.38,24.06,-55.32,30.94,FY2021-FY2025,2025-09-25
+INDIACEM,India Cements Ltd,Construction Materials,-2.24,-1.63,,,FY2021-FY2025,2025-09-25
+INDIAMART,Indiamart Intermesh Ltd,Consumer Services,21.39,15.68,14.76,26.69,FY2021-FY2025,2025-09-25
+INDIANB,Indian Bank,Banks,12.84,9.67,24.56,8.3,FY2021-FY2025,2025-09-25
+IEX,Indian Energy Exchange Ltd,Financial Services,43.23,11.05,16.0,27.46,FY2021-FY2025,2025-09-25
+INDHOTEL,Indian Hotels Co Ltd,Consumer Services,4.44,34.12,,72.17,FY2021-FY2025,2025-09-25
+IOC,Indian Oil Corporation Ltd,Oil Gas & Consumable Fuels,16.94,15.81,-8.87,8.41,FY2021-FY2025,2025-09-25
+IOB,Indian Overseas Bank,Banks,9.75,10.64,30.78,17.31,FY2021-FY2025,2025-09-25
+IRCTC,Indian Railway Catering & Tourism Corporation Ltd,Consumer Services,35.31,43.18,47.67,42.16,FY2021-FY2025,2025-09-25
+IRFC,Indian Railway Finance Corporation Ltd,Financial Services,14.03,11.48,8.06,24.29,FY2021-FY2025,2025-09-25
+IREDA,Indian Renewable Energy Development Agency Ltd,Financial Services,15.29,20.91,7.46,24.74,FY2021-FY2025,2025-09-25
+IGL,Indraprastha Gas Ltd,Oil Gas & Consumable Fuels,20.46,24.75,7.92,18.31,FY2021-FY2025,2025-09-25
+INDUSTOWER,Indus Towers Ltd,Telecommunication,25.41,16.64,21.84,10.13,FY2021-FY2025,2025-09-25
+INDUSINDBK,IndusInd Bank Ltd,Banks,10.33,10.91,-2.69,,FY2021-FY2025,2025-09-25
+NAUKRI,Info Edge (India) Ltd,Consumer Services,31.49,20.37,-7.56,68.53,FY2021-FY2025,2025-09-25
+INFY,Infosys Ltd,Information Technology,29.95,10.16,7.21,22.12,FY2021-FY2025,2025-09-25
+INOXWIND,Inox Wind Ltd,Capital Goods,-9.21,47.33,,40.22,FY2021-FY2025,2025-09-25
+INTELLECT,Intellect Design Arena Ltd,Information Technology,16.94,10.8,3.94,36.69,FY2021-FY2025,2025-09-25
+INDIGO,Interglobe Aviation Ltd,Services,-33.71,40.73,,43.75,FY2021-FY2025,2025-09-25
+IGIL,International Gemological Institute Limited,Services,,,,30.06,FY2021-FY2025,2025-09-25
+IKS,Inventurus Knowledge Solutions Ltd,Information Technology,39.67,36.95,-32.36,42.65,FY2021-FY2025,2025-09-25
+IPCALAB,Ipca Laboratories Ltd,Healthcare,14.75,10.52,-8.34,42.56,FY2021-FY2025,2025-09-25
+JBCHEPHARM,J B Chemicals & Pharmaceuticals Ltd,Healthcare,21.25,13.91,7.89,37.42,FY2021-FY2025,2025-09-25
+JKCEMENT,J K Cements Ltd,Construction Materials,15.56,12.45,3.94,51.14,FY2021-FY2025,2025-09-25
+JBMA,JBM Auto Ltd,Automobile and Auto Components,14.69,22.52,32.64,83.6,FY2021-FY2025,2025-09-25
+JKTYRE,JK Tyre & Industries Ltd,Automobile and Auto Components,12.06,10.05,6.86,19.27,FY2021-FY2025,2025-09-25
+JMFINANCIL,JM Financial Ltd,Financial Services,8.83,6.55,6.77,14.45,FY2021-FY2025,2025-09-25
+JSWCEMENT,JSW Cement Ltd,Construction Materials,11.29,9.96,-17.46,,FY2021-FY2025,2025-09-25
+JSWDULUX,JSW Dulux Ltd,Consumer Durables,25.96,10.94,15.65,7.76,FY2021-FY2025,2025-09-25
+JSWENERGY,JSW Energy Ltd,Power,8.48,11.15,18.19,47.01,FY2021-FY2025,2025-09-25
+JSWINFRA,JSW Infrastructure Ltd,Services,15.66,22.78,-31.65,45.3,FY2021-FY2025,2025-09-25
+JSWSTEEL,JSW Steel Ltd,Metals & Mining,15.89,16.16,-15.23,46.18,FY2021-FY2025,2025-09-25
+JAINREC,Jain Resource Recycling Ltd,Metals & Mining,51.61,,,,FY2021-FY2025,2025-09-25
+JPPOWER,Jaiprakash Power Ventures Ltd,Power,4.1,10.59,25.0,16.81,FY2021-FY2025,2025-09-25
+J&KBANK,Jammu and Kashmir Bank Ltd,Banks,11.62,9.11,25.77,5.55,FY2021-FY2025,2025-09-25
+JINDALSAW,Jindal Saw Ltd,Capital Goods,9.43,14.33,40.36,10.02,FY2021-FY2025,2025-09-25
+JSL,Jindal Stainless Ltd,Metals & Mining,23.53,26.39,28.74,23.85,FY2021-FY2025,2025-09-25
+JINDALSTEL,Jindal Steel Ltd,Metals & Mining,12.93,7.71,-4.99,39.51,FY2021-FY2025,2025-09-25
+JIOFIN,Jio Financial Services Ltd,Financial Services,3.6,21.61,,284.14,FY2021-FY2025,2025-09-25
+JUBLFOOD,Jubilant Foodworks Ltd,Consumer Services,17.96,19.71,-1.89,110.32,FY2021-FY2025,2025-09-25
+JUBLINGREA,Jubilant Ingrevia Ltd,Chemicals,11.05,43.61,35.84,37.17,FY2021-FY2025,2025-09-25
+JUBLPHARMA,Jubilant Pharmova Ltd,Healthcare,7.76,3.47,0.08,36.18,FY2021-FY2025,2025-09-25
+JWL,Jupiter Wagons Ltd,Capital Goods,17.16,31.81,8.56,50.24,FY2021-FY2025,2025-09-25
+JYOTICNC,Jyoti CNC Automation Ltd,Capital Goods,7.44,29.88,,59.34,FY2021-FY2025,2025-09-25
+KPRMILL,K P R Mill Ltd,Textiles,23.17,12.61,9.76,45.69,FY2021-FY2025,2025-09-25
+KEI,KEI Industries Ltd,Capital Goods,18.37,18.41,19.16,50.64,FY2021-FY2025,2025-09-25
+KPITTECH,KPIT Technologies Ltd,Information Technology,25.17,23.47,41.87,44.33,FY2021-FY2025,2025-09-25
+KAJARIACER,Kajaria Ceramics Ltd,Consumer Durables,16.13,10.76,-0.93,52.02,FY2021-FY2025,2025-09-25
+KPIL,Kalpataru Projects International Ltd,Construction,12.37,11.5,-5.31,26.03,FY2021-FY2025,2025-09-25
+KALYANKJIL,Kalyan Jewellers India Ltd,Consumer Durables,10.61,24.19,37.89,55.36,FY2021-FY2025,2025-09-25
+KARURVYSYA,Karur Vysya Bank Ltd,Banks,12.63,12.09,39.9,9.79,FY2021-FY2025,2025-09-25
+KAYNES,Kaynes Technology India Ltd,Capital Goods,14.18,45.32,27.16,125.34,FY2021-FY2025,2025-09-25
+KEC,KEC International Ltd,Construction,10.63,10.75,-0.06,34.43,FY2021-FY2025,2025-09-25
+KFINTECH,KFin Technologies Ltd,Financial Services,17.79,17.47,,54.73,FY2021-FY2025,2025-09-25
+KIRLOSENG,Kirloskar Oil Engines Ltd,Capital Goods,13.72,14.01,20.11,27.33,FY2021-FY2025,2025-09-25
+KOTAKBANK,Kotak Mahindra Bank Ltd,Banks,14.27,14.88,17.17,21.92,FY2021-FY2025,2025-09-25
+KIMS,Krishna Institute of Medical Sciences Ltd,Healthcare,24.54,17.94,13.11,87.77,FY2021-FY2025,2025-09-25
+LTF,L&T Finance Ltd,Financial Services,7.92,3.58,21.95,22.79,FY2021-FY2025,2025-09-25
+LTTS,L&T Technology Services Ltd,Information Technology,23.97,14.38,13.64,34.73,FY2021-FY2025,2025-09-25
+LGEINDIA,LG Electronics India Ltd,Consumer Durables,30.54,10.06,,,FY2021-FY2025,2025-09-25
+LICHSGFIN,LIC Housing Finance Ltd,Financial Services,13.52,7.17,12.75,5.8,FY2021-FY2025,2025-09-25
+LTFOODS,L T Foods Ltd,Fast Moving Consumer Goods,17.71,13.33,15.26,23.47,FY2021-FY2025,2025-09-25
+LTM,LTM Ltd,Information Technology,28.45,25.17,6.98,32.03,FY2021-FY2025,2025-09-25
+LT,Larsen & Toubro Ltd,Construction,16.56,13.47,5.8,30.67,FY2021-FY2025,2025-09-25
+LATENTVIEW,Latent View Analytics Ltd,Information Technology,15.83,22.61,-40.42,44.28,FY2021-FY2025,2025-09-25
+LAURUSLABS,Laurus Labs Ltd,Healthcare,21.36,2.9,-18.38,71.83,FY2021-FY2025,2025-09-25
+THELEELA,Leela Palaces Hotels & Resorts Ltd,Consumer Services,1.08,52.14,,,FY2021-FY2025,2025-09-25
+LEMONTREE,Lemon Tree Hotels Ltd,Consumer Services,3.83,36.92,,126.69,FY2021-FY2025,2025-09-25
+LENSKART,Lenskart Solutions Ltd,Consumer Services,-0.09,49.03,0.21,,FY2021-FY2025,2025-09-25
+LICI,Life Insurance Corporation of India,Financial Services,73.95,5.4,,11.11,FY2021-FY2025,2025-09-25
+LINDEINDIA,Linde India Ltd,Chemicals,12.72,,,109.22,FY2021-FY2025,2025-09-25
+LLOYDSME,Lloyds Metals & Energy Ltd,Metals & Mining,22.29,93.0,388.47,38.28,FY2021-FY2025,2025-09-25
+LODHA,Lodha Developers Ltd,Realty,8.9,20.39,122.34,36.12,FY2021-FY2025,2025-09-25
+LUPIN,Lupin Ltd,Healthcare,7.33,8.41,21.8,21.19,FY2021-FY2025,2025-09-25
+MMTC,MMTC Ltd,Services,-3.1,-86.95,,62.07,FY2021-FY2025,2025-09-25
+MRF,MRF Ltd,Automobile and Auto Components,8.81,11.74,7.92,35.71,FY2021-FY2025,2025-09-25
+MGL,Mahanagar Gas Ltd,Oil Gas & Consumable Fuels,20.94,26.32,11.02,13.18,FY2021-FY2025,2025-09-25
+M&MFIN,Mahindra & Mahindra Financial Services Ltd,Financial Services,9.07,8.38,23.95,15.93,FY2021-FY2025,2025-09-25
+M&M,Mahindra & Mahindra Ltd,Automobile and Auto Components,16.34,16.47,48.13,31.58,FY2021-FY2025,2025-09-25
+MANAPPURAM,Manappuram Finance Ltd,Financial Services,18.16,9.59,-6.74,55.33,FY2021-FY2025,2025-09-25
+MRPL,Mangalore Refinery And Petrochemicals Ltd,Oil Gas & Consumable Fuels,20.3,24.26,,21.88,FY2021-FY2025,2025-09-25
+MANKIND,Mankind Pharma Ltd,Healthcare,23.52,14.46,8.84,60.44,FY2021-FY2025,2025-09-25
+MARICO,Marico Ltd,Fast Moving Consumer Goods,39.04,6.12,6.72,54.9,FY2021-FY2025,2025-09-25
+MARUTI,Maruti Suzuki India Ltd,Automobile and Auto Components,12.81,16.79,25.99,34.24,FY2021-FY2025,2025-09-25
+MFSL,Max Financial Services Ltd,Financial Services,12.15,8.24,-5.12,339.29,FY2021-FY2025,2025-09-25
+MAXHEALTH,Max Healthcare Institute Ltd,Healthcare,6.04,20.91,,175.3,FY2021-FY2025,2025-09-25
+MAZDOCK,Mazagon Dock Shipbuilders Ltd,Capital Goods,25.56,23.08,36.25,50.8,FY2021-FY2025,2025-09-25
+MEESHO,Meesho Ltd,Consumer Services,-582.08,63.93,,,FY2021-FY2025,2025-09-25
+MINDACORP,Minda Corporation Ltd,Automobile and Auto Components,13.01,16.38,37.04,47.89,FY2021-FY2025,2025-09-25
+MSUMI,Motherson Sumi Wiring India Ltd,Automobile and Auto Components,47.97,18.8,,51.62,FY2021-FY2025,2025-09-25
+MOTILALOFS,Motilal Oswal Financial Services Ltd,Financial Services,26.61,18.13,14.2,28.39,FY2021-FY2025,2025-09-25
+MPHASIS,Mphasis Ltd,Information Technology,20.01,7.92,6.6,29.46,FY2021-FY2025,2025-09-25
+MCX,Multi Commodity Exchange of India Ltd,Financial Services,15.34,23.27,19.99,58.89,FY2021-FY2025,2025-09-25
+MUTHOOTFIN,Muthoot Finance Ltd,Financial Services,21.65,11.87,6.97,16.82,FY2021-FY2025,2025-09-25
+NATCOPHARM,Natco Pharma Ltd,Healthcare,16.95,16.64,34.2,9.96,FY2021-FY2025,2025-09-25
+NBCC,NBCC (India) Ltd,Construction,17.6,11.6,18.95,50.83,FY2021-FY2025,2025-09-25
+NCC,NCC Ltd,Construction,9.95,22.8,24.31,16.77,FY2021-FY2025,2025-09-25
+NHPC,NHPC Ltd,Power,10.68,1.47,-1.71,27.41,FY2021-FY2025,2025-09-25
+NLCINDIA,NLC India Ltd,Power,10.95,9.05,14.82,14.65,FY2021-FY2025,2025-09-25
+NMDC,NMDC Ltd,Metals & Mining,27.07,9.24,0.8,9.77,FY2021-FY2025,2025-09-25
+NSLNISP,NMDC Steel Ltd,Metals & Mining,-13.09,,,,FY2021-FY2025,2025-09-25
+NTPCGREEN,NTPC Green Energy Ltd,Power,5.29,,,158.48,FY2021-FY2025,2025-09-25
+NTPC,NTPC Ltd,Power,13.02,11.02,9.87,14.0,FY2021-FY2025,2025-09-25
+NH,Narayana Hrudayalaya Ltd,Healthcare,14.29,16.75,,76.22,FY2021-FY2025,2025-09-25
+NATIONALUM,National Aluminium Company Ltd,Metals & Mining,19.27,13.39,32.32,6.27,FY2021-FY2025,2025-09-25
+NAVA,Nava Ltd,Power,17.3,9.35,23.31,21.94,FY2021-FY2025,2025-09-25
+NAVINFLUOR,Navin Fluorine International Ltd,Chemicals,14.81,14.78,2.27,52.96,FY2021-FY2025,2025-09-25
+NESTLEIND,Nestle India Ltd,Fast Moving Consumer Goods,88.88,,,75.24,FY2021-FY2025,2025-09-25
+NETWEB,Netweb Technologies India Ltd,Information Technology,46.34,51.7,6.79,149.27,FY2021-FY2025,2025-09-25
+NEULANDLAB,Neuland Laboratories Ltd,Healthcare,16.29,9.53,26.39,80.06,FY2021-FY2025,2025-09-25
+NEWGEN,Newgen Software Technologies Ltd,Information Technology,21.71,17.18,19.78,38.0,FY2021-FY2025,2025-09-25
+NAM-INDIA,Nippon Life India Asset Management Ltd,Financial Services,25.62,12.15,12.92,39.9,FY2021-FY2025,2025-09-25
+NIVABUPA,Niva Bupa Health Insurance Company Ltd,Financial Services,-6.24,30.63,,160.25,FY2021-FY2025,2025-09-25
+NUVAMA,Nuvama Wealth Management Ltd,Financial Services,11.54,19.1,,44.56,FY2021-FY2025,2025-09-25
+NUVOCO,Nuvoco Vistas Corporation Ltd,Construction Materials,0.83,8.49,9.43,81.82,FY2021-FY2025,2025-09-25
+OBEROIRLTY,Oberoi Realty Ltd,Realty,13.1,20.82,24.66,27.12,FY2021-FY2025,2025-09-25
+ONGC,Oil & Natural Gas Corpn Ltd,Oil Gas & Consumable Fuels,14.35,15.03,17.32,8.14,FY2021-FY2025,2025-09-25
+OIL,Oil India Ltd,Oil Gas & Consumable Fuels,20.29,12.47,13.17,11.02,FY2021-FY2025,2025-09-25
+OLAELEC,Ola Electric Mobility Ltd,Automobile and Auto Components,-3.56,24.57,,,FY2021-FY2025,2025-09-25
+OLECTRA,Olectra Greentech Ltd,Automobile and Auto Components,7.43,45.01,76.78,95.98,FY2021-FY2025,2025-09-25
+PAYTM,One 97 Communications Ltd,Financial Services,-15.05,15.6,,,FY2021-FY2025,2025-09-25
+ONESOURCE,OneSource Specialty Pharma Ltd,Healthcare,-44.87,128.22,,125.04,FY2021-FY2025,2025-09-25
+OFSS,Oracle Financial Services Software Ltd,Information Technology,27.29,6.56,6.0,33.33,FY2021-FY2025,2025-09-25
+POLICYBZR,PB Fintech Ltd,Financial Services,-1.15,4.46,-79.66,15013.33,FY2021-FY2025,2025-09-25
+PCBL,PCBL Chemical Ltd,Chemicals,16.19,25.87,4.81,42.49,FY2021-FY2025,2025-09-25
+PGEL,PG Electroplast Ltd,Consumer Durables,17.53,47.27,76.72,62.09,FY2021-FY2025,2025-09-25
+PIIND,P I Industries Ltd,Chemicals,18.09,11.75,17.6,36.37,FY2021-FY2025,2025-09-25
+PNBHOUSING,PNB Housing Finance Ltd,Financial Services,10.73,0.21,15.68,10.79,FY2021-FY2025,2025-09-25
+PTCIL,PTC Industries Ltd,Capital Goods,8.46,13.57,65.1,367.21,FY2021-FY2025,2025-09-25
+PVRINOX,PVR Inox Ltd,Media Entertainment & Publication,-17.08,88.94,,,FY2021-FY2025,2025-09-25
+PAGEIND,Page Industries Ltd,Textiles,45.55,11.74,16.44,62.44,FY2021-FY2025,2025-09-25
+PARADEEP,Paradeep Phosphates Ltd,Chemicals,12.11,21.76,-55.5,13.63,FY2021-FY2025,2025-09-25
+PATANJALI,Patanjali Foods Ltd,Fast Moving Consumer Goods,12.97,15.92,9.33,45.68,FY2021-FY2025,2025-09-25
+PERSISTENT,Persistent Systems Ltd,Information Technology,22.85,23.31,25.16,48.96,FY2021-FY2025,2025-09-25
+PETRONET,Petronet LNG Ltd,Oil Gas & Consumable Fuels,23.86,14.4,6.21,11.28,FY2021-FY2025,2025-09-25
+PFIZER,Pfizer Ltd,Healthcare,19.39,0.37,9.06,27.4,FY2021-FY2025,2025-09-25
+PHOENIXLTD,Phoenix Mills Ltd,Realty,10.71,29.63,74.94,53.93,FY2021-FY2025,2025-09-25
+PWL,Physicswallah Ltd,Consumer Services,0.05,,,,FY2021-FY2025,2025-09-25
+PIDILITIND,Pidilite Industries Ltd,Chemicals,21.38,12.5,12.89,68.07,FY2021-FY2025,2025-09-25
+PINELABS,Pine Labs Ltd,Financial Services,-3.18,19.7,,,FY2021-FY2025,2025-09-25
+PIRAMALFIN,Piramal Finance Ltd,Financial Services,-6.93,15.43,-62.95,,FY2021-FY2025,2025-09-25
+PPLPHARMA,Piramal Pharma Ltd,Healthcare,6.4,12.46,,37.6,FY2021-FY2025,2025-09-25
+POLYMED,Poly Medicure Ltd,Healthcare,16.83,16.28,18.71,54.67,FY2021-FY2025,2025-09-25
+POLYCAB,Polycab India Ltd,Capital Goods,21.31,20.58,17.82,46.57,FY2021-FY2025,2025-09-25
+POONAWALLA,Poonawalla Fincorp Ltd,Financial Services,3.69,17.78,,175.62,FY2021-FY2025,2025-09-25
+PFC,Power Finance Corporation Ltd,Financial Services,28.1,8.37,14.37,5.5,FY2021-FY2025,2025-09-25
+POWERGRID,Power Grid Corporation of India Ltd,Power,19.17,2.93,5.22,17.67,FY2021-FY2025,2025-09-25
+PREMIERENE,Premier Energies Ltd,Capital Goods,20.29,56.2,85.76,38.27,FY2021-FY2025,2025-09-25
+PRESTIGE,Prestige Estates Projects Ltd,Realty,17.69,0.29,-31.01,90.32,FY2021-FY2025,2025-09-25
+PNB,Punjab National Bank,Banks,6.95,8.64,45.69,7.65,FY2021-FY2025,2025-09-25
+RRKABEL,R R Kabel Ltd,Capital Goods,17.21,22.84,-13.41,36.22,FY2021-FY2025,2025-09-25
+RBLBANK,RBL Bank Ltd,Banks,4.78,10.11,5.92,30.32,FY2021-FY2025,2025-09-25
+RECLTD,REC Ltd,Financial Services,21.28,9.65,13.65,5.9,FY2021-FY2025,2025-09-25
+RHIM,RHI Magnesita India Ltd,Capital Goods,5.18,21.81,-2.91,61.95,FY2021-FY2025,2025-09-25
+RITES,Rites Ltd,Construction,19.47,3.09,-2.3,30.52,FY2021-FY2025,2025-09-25
+RADICO,Radico Khaitan Ltd,Fast Moving Consumer Goods,13.07,15.33,4.48,86.5,FY2021-FY2025,2025-09-25
+RVNL,Rail Vikas Nigam Ltd,Construction,18.05,5.28,5.26,65.98,FY2021-FY2025,2025-09-25
+RAILTEL,Railtel Corporation of India Ltd,Telecommunication,13.22,21.07,16.41,38.28,FY2021-FY2025,2025-09-25
+RAINBOW,Rainbow Childrens Medicare Ltd,Healthcare,19.81,18.46,21.37,56.57,FY2021-FY2025,2025-09-25
+RKFORGE,Ramkrishna Forgings Ltd,Automobile and Auto Components,14.52,25.63,77.81,45.73,FY2021-FY2025,2025-09-25
+REDINGTON,Redington Ltd,Services,20.74,11.77,16.08,12.89,FY2021-FY2025,2025-09-25
+RELIANCE,Reliance Industries Ltd,Oil Gas & Consumable Fuels,9.77,15.6,5.84,22.63,FY2021-FY2025,2025-09-25
+RPOWER,Reliance Power Ltd,Power,-0.81,-0.9,55.02,65.53,FY2021-FY2025,2025-09-25
+SBFC,SBFC Finance Ltd,Financial Services,8.98,20.67,25.29,30.93,FY2021-FY2025,2025-09-25
+SBICARD,SBI Cards & Payment Services Ltd,Financial Services,20.48,14.21,13.98,43.19,FY2021-FY2025,2025-09-25
+SBILIFE,SBI Life Insurance Company Ltd,Financial Services,14.31,7.37,10.59,74.32,FY2021-FY2025,2025-09-25
+SJVN,SJVN Ltd,Power,8.65,4.33,-12.99,65.28,FY2021-FY2025,2025-09-25
+SRF,SRF Ltd,Chemicals,18.07,11.83,0.86,53.2,FY2021-FY2025,2025-09-25
+SAGILITY,Sagility Ltd,Information Technology,2.02,,,51.87,FY2021-FY2025,2025-09-25
+SAILIFE,Sai Life Sciences Ltd,Healthcare,6.61,16.94,,65.99,FY2021-FY2025,2025-09-25
+SAMMAANCAP,Sammaan Capital Ltd,Financial Services,5.4,-2.55,-5.7,9.46,FY2021-FY2025,2025-09-25
+MOTHERSON,Samvardhana Motherson International Ltd,Automobile and Auto Components,10.82,14.65,19.78,36.27,FY2021-FY2025,2025-09-25
+SAPPHIRE,Sapphire Foods India Ltd,Consumer Services,1.9,24.94,,,FY2021-FY2025,2025-09-25
+SARDAEN,Sarda Energy & Minerals Ltd,Metals & Mining,19.26,16.12,13.81,19.4,FY2021-FY2025,2025-09-25
+SAREGAMA,Saregama India Ltd,Media Entertainment & Publication,16.47,21.51,10.36,45.8,FY2021-FY2025,2025-09-25
+SCHAEFFLER,Schaeffler India Ltd,Automobile and Auto Components,,,,57.61,FY2021-FY2025,2025-09-25
+SCHNEIDER,Schneider Electric Infrastructure Ltd,Capital Goods,502.08,15.25,,80.67,FY2021-FY2025,2025-09-25
+SCI,Shipping Corporation of India Ltd,Services,9.97,8.65,3.92,12.95,FY2021-FY2025,2025-09-25
+SHREECEM,Shree Cement Ltd,Construction Materials,10.96,7.3,-13.25,62.53,FY2021-FY2025,2025-09-25
+SHRIRAMFIN,Shriram Finance Ltd,Financial Services,15.08,20.32,23.47,11.99,FY2021-FY2025,2025-09-25
+SHYAMMETL,Shyam Metalics & Energy Ltd,Capital Goods,19.31,19.18,-2.06,25.97,FY2021-FY2025,2025-09-25
+ENRIN,Siemens Energy India Ltd,Capital Goods,,,,,FY2021-FY2025,2025-09-25
+SIEMENS,Siemens Ltd,Capital Goods,,,,56.96,FY2021-FY2025,2025-09-25
+SIGNATURE,SignatureGlobal India Ltd,Realty,-28.18,49.79,,233.91,FY2021-FY2025,2025-09-25
+SOBHA,Sobha Ltd,Realty,3.71,13.87,8.77,113.53,FY2021-FY2025,2025-09-25
+SOLARINDS,Solar Industries India Ltd,Chemicals,28.89,24.55,34.34,97.39,FY2021-FY2025,2025-09-25
+SONACOMS,Sona BLW Precision Forgings Ltd,Automobile and Auto Components,18.48,17.76,20.79,42.73,FY2021-FY2025,2025-09-25
+SONATSOFTW,Sonata Software Ltd,Information Technology,31.25,19.16,11.72,24.53,FY2021-FY2025,2025-09-25
+STARHEALTH,Star Health & Allied Insurance Company Ltd,Financial Services,-6.34,26.1,,49.71,FY2021-FY2025,2025-09-25
+SBIN,State Bank of India,Banks,15.02,12.01,28.19,9.7,FY2021-FY2025,2025-09-25
+SAIL,Steel Authority of India Ltd,Metals & Mining,9.54,8.2,-10.58,22.22,FY2021-FY2025,2025-09-25
+SUMICHEM,Sumitomo Chemical India Ltd,Chemicals,21.4,3.55,7.92,52.18,FY2021-FY2025,2025-09-25
+SUNPHARMA,Sun Pharmaceutical Industries Ltd,Healthcare,12.14,9.44,30.36,37.45,FY2021-FY2025,2025-09-25
+SUNTV,Sun TV Network Ltd,Media Entertainment & Publication,19.97,4.79,2.23,13.35,FY2021-FY2025,2025-09-25
+SUNDARMFIN,Sundaram Finance Ltd,Financial Services,16.37,9.97,10.04,26.0,FY2021-FY2025,2025-09-25
+SUPREMEIND,Supreme Industries Ltd,Capital Goods,24.99,10.45,-0.36,64.8,FY2021-FY2025,2025-09-25
+SPLPETRO,Supreme Petrochem Ltd,Chemicals,34.44,13.59,-3.94,52.68,FY2021-FY2025,2025-09-25
+SUZLON,Suzlon Energy Ltd,Capital Goods,33.81,26.62,72.56,25.11,FY2021-FY2025,2025-09-25
+SWANCORP,Swan Corp Ltd,Chemicals,0.19,-11.81,57.42,831.03,FY2021-FY2025,2025-09-25
+SWIGGY,Swiggy Ltd,Consumer Services,-71.29,34.37,,,FY2021-FY2025,2025-09-25
+SYNGENE,Syngene International Ltd,Healthcare,13.31,10.77,4.03,55.34,FY2021-FY2025,2025-09-25
+SYRMA,Syrma SGS Technology Ltd,Capital Goods,11.48,33.71,-59.88,65.28,FY2021-FY2025,2025-09-25
+TBOTEK,TBO Tek Ltd,Consumer Services,14.15,41.37,-36.09,378.01,FY2021-FY2025,2025-09-25
+TVSMOTOR,TVS Motor Company Ltd,Automobile and Auto Components,24.28,17.82,30.34,63.72,FY2021-FY2025,2025-09-25
+TATACAP,Tata Capital Ltd,Financial Services,16.53,23.56,24.68,,FY2021-FY2025,2025-09-25
+TATACHEM,Tata Chemicals Ltd,Chemicals,5.7,7.86,-1.73,111.23,FY2021-FY2025,2025-09-25
+TATACOMM,Tata Communications Ltd,Telecommunication,141.79,6.21,7.99,28.6,FY2021-FY2025,2025-09-25
+TCS,Tata Consultancy Services Ltd,Information Technology,46.55,9.23,8.89,22.41,FY2021-FY2025,2025-09-25
+TATACONSUM,Tata Consumer Products Ltd,Fast Moving Consumer Goods,7.29,8.71,7.62,81.89,FY2021-FY2025,2025-09-25
+TATAELXSI,Tata Elxsi Ltd,Information Technology,34.43,15.35,16.35,51.6,FY2021-FY2025,2025-09-25
+TATAINVEST,Tata Investment Corporation Ltd,Financial Services,1.3,13.42,15.21,116.93,FY2021-FY2025,2025-09-25
+TMCV,Tata Motors Ltd,Capital Goods,,,,,FY2021-FY2025,2025-09-25
+TMPV,Tata Motors Passenger Vehicles Ltd,Automobile and Auto Components,8.3,10.34,,2.86,FY2021-FY2025,2025-09-25
+TATAPOWER,Tata Power Company Ltd,Power,11.88,14.9,28.63,31.17,FY2021-FY2025,2025-09-25
+TATASTEEL,Tata Steel Ltd,Metals & Mining,12.24,6.91,-15.23,31.85,FY2021-FY2025,2025-09-25
+TATATECH,Tata Technologies Ltd,Information Technology,37.57,23.54,,42.89,FY2021-FY2025,2025-09-25
+TTML,Tata Teleservices (Maharashtra) Ltd,Telecommunication,,4.61,,,FY2021-FY2025,2025-09-25
+TECHM,Tech Mahindra Ltd,Information Technology,16.53,6.96,-1.03,32.13,FY2021-FY2025,2025-09-25
+TECHNOE,Techno Electric & Engineering Company Ltd,Construction,12.87,20.75,17.08,34.68,FY2021-FY2025,2025-09-25
+TEGA,Tega Industries Ltd,Capital Goods,19.3,15.25,4.9,53.86,FY2021-FY2025,2025-09-25
+TEJASNET,Tejas Networks Ltd,Telecommunication,2.54,76.09,44.42,,FY2021-FY2025,2025-09-25
+TENNIND,Tenneco Clean Air India Ltd,Automobile and Auto Components,36.27,18.71,137.65,,FY2021-FY2025,2025-09-25
+NIACL,New India Assurance Company Ltd,Financial Services,3.92,5.57,-8.76,27.78,FY2021-FY2025,2025-09-25
+RAMCOCEM,The Ramco Cements Ltd,Construction Materials,8.46,9.99,-19.06,66.35,FY2021-FY2025,2025-09-25
+THERMAX,Thermax Ltd,Capital Goods,11.39,16.74,25.16,67.41,FY2021-FY2025,2025-09-25
+TIMKEN,Timken India Ltd,Capital Goods,17.47,17.41,25.59,50.37,FY2021-FY2025,2025-09-25
+TITAGARH,Titagarh Rail Systems Ltd,Capital Goods,10.47,30.38,39.86,1137.16,FY2021-FY2025,2025-09-25
+TITAN,Titan Company Ltd,Consumer Durables,27.11,22.81,27.95,73.95,FY2021-FY2025,2025-09-25
+TORNTPHARM,Torrent Pharmaceuticals Ltd,Healthcare,21.8,7.54,8.83,57.76,FY2021-FY2025,2025-09-25
+TORNTPOWER,Torrent Power Ltd,Power,15.14,19.09,17.17,21.56,FY2021-FY2025,2025-09-25
+TARIL,Transformers & Rectifiers India Ltd,Capital Goods,10.28,22.14,92.52,64.38,FY2021-FY2025,2025-09-25
+TRAVELFOOD,Travel Food Services Ltd,Consumer Services,21.44,115.7,,54.36,FY2021-FY2025,2025-09-25
+TRENT,Trent Ltd,Consumer Services,19.08,52.09,,154.1,FY2021-FY2025,2025-09-25
+TRIDENT,Trident Ltd,Textiles,12.07,9.05,4.0,34.32,FY2021-FY2025,2025-09-25
+TRITURBINE,Triveni Turbine Ltd,Capital Goods,28.35,23.33,28.81,49.27,FY2021-FY2025,2025-09-25
+TIINDIA,Tube Investments of India Ltd,Automobile and Auto Components,29.32,26.19,19.51,102.13,FY2021-FY2025,2025-09-25
+UCOBANK,UCO Bank,Banks,6.62,11.65,59.64,15.04,FY2021-FY2025,2025-09-25
+UNOMINDA,Uno Minda Ltd,Automobile and Auto Components,16.89,21.35,34.0,69.25,FY2021-FY2025,2025-09-25
+UPL,UPL Ltd,Chemicals,9.96,3.8,-20.48,26.11,FY2021-FY2025,2025-09-25
+UTIAMC,UTI Asset Management Company Ltd,Financial Services,16.25,9.63,7.96,30.33,FY2021-FY2025,2025-09-25
+ULTRACEMCO,UltraTech Cement Ltd,Construction Materials,11.95,11.17,1.6,49.87,FY2021-FY2025,2025-09-25
+UNIONBANK,Union Bank of India,Banks,11.53,8.99,39.51,5.79,FY2021-FY2025,2025-09-25
+UBL,United Breweries Ltd,Fast Moving Consumer Goods,8.22,16.01,31.31,129.65,FY2021-FY2025,2025-09-25
+UNITDSPR,United Spirits Ltd,Fast Moving Consumer Goods,17.98,8.22,32.73,59.58,FY2021-FY2025,2025-09-25
+URBANCO,Urban Company Ltd,Consumer Services,-13.38,26.79,,0.01,FY2021-FY2025,2025-09-25
+USHAMART,Usha Martin Ltd,Capital Goods,16.85,10.62,22.18,33.39,FY2021-FY2025,2025-09-25
+VTL,Vardhman Textiles Ltd,Textiles,11.03,9.77,16.23,14.34,FY2021-FY2025,2025-09-25
+VBL,Varun Beverages Ltd,Fast Moving Consumer Goods,,,,59.09,FY2021-FY2025,2025-09-25
+VEDL,Vedanta Ltd,Metals & Mining,33.83,-6.55,4.2,14.88,FY2021-FY2025,2025-09-25
+VIJAYA,Vijaya Diagnostic Centre Ltd,Healthcare,22.05,12.55,-5.65,70.93,FY2021-FY2025,2025-09-25
+VMM,Vishal Mega Mart Ltd,Consumer Services,6.51,19.21,39.43,93.71,FY2021-FY2025,2025-09-25
+IDEA,Vodafone Idea Ltd,Telecommunication,,0.7,,,FY2021-FY2025,2025-09-25
+VOLTAS,Voltas Ltd,Consumer Durables,8.29,15.32,9.89,82.94,FY2021-FY2025,2025-09-25
+WAAREEENER,Waaree Energies Ltd,Capital Goods,30.24,49.21,91.86,36.57,FY2021-FY2025,2025-09-25
+WELCORP,Welspun Corp Ltd,Capital Goods,17.73,14.34,19.84,10.73,FY2021-FY2025,2025-09-25
+WELSPUNLIV,Welspun Living Ltd,Textiles,13.41,7.52,4.4,33.14,FY2021-FY2025,2025-09-25
+WHIRLPOOL,Whirlpool of India Ltd,Consumer Durables,10.69,6.06,0.41,47.84,FY2021-FY2025,2025-09-25
+WIPRO,Wipro Ltd,Information Technology,17.48,7.54,4.95,19.37,FY2021-FY2025,2025-09-25
+WOCKPHARMA,Wockhardt Ltd,Healthcare,-1.91,7.27,,170.15,FY2021-FY2025,2025-09-25
+YESBANK,Yes Bank Ltd,Banks,0.17,9.04,,23.49,FY2021-FY2025,2025-09-25
+ZFCVINDIA,ZF Commercial Vehicle Control System India Ltd,Automobile and Auto Components,11.44,15.33,34.61,51.71,FY2021-FY2025,2025-09-25
+ZEEL,Zee Entertainment Enterprises Ltd,Media Entertainment & Publication,5.02,1.42,-3.23,19.82,FY2021-FY2025,2025-09-25
+ZENTEC,Zen Technologies Ltd,Capital Goods,16.26,77.68,139.98,58.39,FY2021-FY2025,2025-09-25
+ZENSARTECH,Zensar Technologies Ltd,Information Technology,15.92,6.91,16.56,26.21,FY2021-FY2025,2025-09-25
+ZYDUSLIFE,Zydus Lifesciences Ltd,Healthcare,20.85,9.01,16.63,21.37,FY2021-FY2025,2025-09-25
+ZYDUSWELL,Zydus Wellness Ltd,Fast Moving Consumer Goods,5.43,7.73,23.92,59.52,FY2021-FY2025,2025-09-25
+ECLERX,eClerx Services Ltd,Services,25.36,16.57,16.04,32.98,FY2021-FY2025,2025-09-25
