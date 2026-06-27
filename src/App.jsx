@@ -484,7 +484,7 @@ function ResourcesTab(){
       </RSection>
 
       <RSection title="FAQ">
-        <div style={{maxWidth:680}}>
+        <div>
           {[
             {q:"Is this a guaranteed return?",a:"No. Past performance, including the 393% 5-year backtest return, does not guarantee future results. This is a rules-based strategy that has historically outperformed — not a promise of future outperformance. Markets can remain irrational for extended periods, and any individual stock can underperform or lose value."},
             {q:"How do I actually invest in this portfolio?",a:"Divide your investment amount equally across all stocks in the current portfolio table. For example, with ₹1,00,000 across 14 stocks, allocate approximately ₹7,143 to each. At the next quarterly rebalance, review the updated portfolio — sell stocks that have been removed, buy new additions, and rebalance to equal weight."},
