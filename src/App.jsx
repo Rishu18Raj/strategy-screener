@@ -59,31 +59,45 @@ const TABS = [
 
 // ── helpers ───────────────────────────────────────────────────
 function parseCSV(text) {
-  const [h, ...rows] = text.trim().split("\n");
-  const headers = h.split(",").map(x => x.trim());
-  return rows.map(row => {
-    const vals = row.split(",").map(v => v.trim());
-    const obj  = {};
-    headers.forEach((hh, i) => { obj[hh] = vals[i]; });
+  const lines = text.trim().split("\n");
+  const headers = lines[0].split(",").map(x => x.trim());
+
+  return lines.slice(1).map(line => {
+    // handle quoted fields (e.g. "3,889")
+    const vals = [];
+    let cur = "", inQ = false;
+    for (let i = 0; i < line.length; i++) {
+      if (line[i] === '"') { inQ = !inQ; continue; }
+      if (line[i] === "," && !inQ) { vals.push(cur.trim()); cur = ""; continue; }
+      cur += line[i];
+    }
+    vals.push(cur.trim());
+
+    const obj = {};
+    headers.forEach((h, i) => { obj[h] = vals[i] ?? ""; });
+
+    // strip % and parse — missing/invalid → NaN
+    const pct = v => parseFloat((v||"").replace("%","").replace(",",""));
+
     return {
-      ticker:   obj.ticker,
-      name:     obj.name,
-      sector:   obj.sector,
-      roe:      parseFloat(obj.roe),
-      revCAGR:  parseFloat(obj.revCAGR),
-      epsCAGR:  parseFloat(obj.epsCAGR),
-      pe:       parseFloat(obj.pe),
-      beta:     null,
-      betaStatus: "idle",
+      ticker:    obj.ticker?.trim(),
+      name:      obj.name?.trim(),
+      sector:    obj.sector?.trim(),
+      roe:       pct(obj.roe),
+      revCAGR:   pct(obj.revCAGR),
+      epsCAGR:   pct(obj.epsCAGR),
+      pe:        pct(obj.pe),
+      beta:      null,
+      betaStatus:"idle",
     };
-  });
+  }).filter(s => s.ticker); // drop empty rows
 }
 
 function passesFundamentals(s) {
-  return s.roe >= FILTERS.roe &&
-         s.revCAGR >= FILTERS.revCAGR &&
-         s.epsCAGR >= FILTERS.epsCAGR &&
-         s.pe <= FILTERS.pe;
+  return !isNaN(s.roe)     && s.roe     >= FILTERS.roe     &&
+         !isNaN(s.revCAGR) && s.revCAGR >= FILTERS.revCAGR &&
+         !isNaN(s.epsCAGR) && s.epsCAGR >= FILTERS.epsCAGR &&
+         !isNaN(s.pe)      && s.pe      <= FILTERS.pe;
 }
 
 // sector cap: min(3, max(1, floor(0.20 × sector_count_in_full_universe)))
