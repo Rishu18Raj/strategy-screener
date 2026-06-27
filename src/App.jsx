@@ -10,6 +10,10 @@ const SELECTED_SECTORS = new Set([
   "Capital Goods",
   "Construction",
   "Consumer Services",
+  "Chemicals",
+  "Oil Gas & Consumable Fuels",
+  "Power",
+  "Textiles",
 ]);
 
 const FILTERS = { roe:13, revCAGR:7, epsCAGR:10, beta:1.2, pe:20 };
@@ -82,11 +86,51 @@ function passesFundamentals(s) {
          s.pe <= FILTERS.pe;
 }
 
-function passesAll(s) {
-  const b = s.beta ?? 999;
-  return passesFundamentals(s) &&
-         SELECTED_SECTORS.has(s.sector) &&
-         b <= FILTERS.beta;
+// sector cap: min(3, max(1, floor(0.20 × sector_count_in_full_universe)))
+function getSectorCaps(allStocks) {
+  const counts = {};
+  allStocks.forEach(s => {
+    if (s.sector) counts[s.sector] = (counts[s.sector] || 0) + 1;
+  });
+  const caps = {};
+  Object.entries(counts).forEach(([sec, n]) => {
+    caps[sec] = Math.min(3, Math.max(1, Math.floor(0.20 * n)));
+  });
+  return caps;
+}
+
+// growth/P/E score — higher is better
+function growthScore(s) {
+  return s.pe > 0 ? s.epsCAGR / s.pe : 0;
+}
+
+function buildPortfolio(allStocks) {
+  const caps = getSectorCaps(allStocks);
+
+  // step 1 — fundamentals
+  const fundPass = allStocks.filter(passesFundamentals);
+
+  // step 2 — sector filter
+  const sectorPass = fundPass.filter(s => SELECTED_SECTORS.has(s.sector));
+
+  // step 3 — beta filter
+  const betaPass = sectorPass.filter(s => s.beta != null && s.beta <= FILTERS.beta);
+
+  // step 4 — within-sector ranking by growth/P/E, apply cap
+  const bySector = {};
+  betaPass.forEach(s => {
+    if (!bySector[s.sector]) bySector[s.sector] = [];
+    bySector[s.sector].push(s);
+  });
+
+  const portfolio = [];
+  Object.entries(bySector).forEach(([sec, stocks]) => {
+    const cap = caps[sec] || 1;
+    const ranked = [...stocks].sort((a, b) => growthScore(b) - growthScore(a));
+    portfolio.push(...ranked.slice(0, cap));
+  });
+
+  return { fundPass, sectorPass, betaPass, portfolio };
 }
 
 function daysUntil(d) { return Math.ceil((d - new Date()) / 864e5); }
@@ -262,11 +306,11 @@ function OverviewTab({stocks, betaStatus}) {
   const allSectors = useMemo(()=>[...new Set(stocks.map(s=>s.sector).filter(Boolean))].sort(),[stocks]);
   const totalSectors = allSectors.length;
 
-  // funnel
-  const universe         = stocks;
-  const fundPass         = useMemo(()=>universe.filter(passesFundamentals),[universe]);
-  const sectorPass       = useMemo(()=>fundPass.filter(s=>SELECTED_SECTORS.has(s.sector)),[fundPass]);
-  const portfolio        = useMemo(()=>sectorPass.filter(s=>s.beta!=null && s.beta<=FILTERS.beta),[sectorPass]);
+  // funnel + portfolio via ranked construction
+  const { fundPass, sectorPass, betaPass, portfolio } = useMemo(
+    ()=> stocks.length > 0 ? buildPortfolio(stocks) : { fundPass:[], sectorPass:[], betaPass:[], portfolio:[] },
+    [stocks]
+  );
 
   // sector allocation of final portfolio
   const sectorAlloc = useMemo(()=>{
@@ -279,7 +323,9 @@ function OverviewTab({stocks, betaStatus}) {
   },[portfolio]);
 
   const displayed = useMemo(()=>{
-    const key = sortKey==="beta"?(s=>s.beta??999):(s=>s[sortKey]);
+    const key = sortKey==="beta" ? (s=>s.beta??999)
+              : sortKey==="gp"   ? (s=>growthScore(s))
+              : (s=>s[sortKey]);
     return [...portfolio].sort((a,b)=>sortDir*(key(a)>key(b)?1:-1));
   },[portfolio,sortKey,sortDir]);
 
@@ -295,14 +341,13 @@ function OverviewTab({stocks, betaStatus}) {
 
   return (
     <div>
-      {/* metric cards */}
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(155px,1fr))",gap:10,marginBottom:24}}>
-        <MetricCard label="Universe"        value={universe.length.toLocaleString()} sub="Nifty 500 stocks"/>
-        <MetricCard label="Pass fundamental" value={fundPass.length} sub={`RoE · CAGR · P/E filters`} color={C.accent}/>
-        <MetricCard label="Sectors selected" value={`${SELECTED_SECTORS.size} of ${totalSectors}`} sub="Active sector conviction"/>
-        <MetricCard label="In portfolio"    value={portfolio.length} sub="After beta filter" color={C.green}/>
-        <MetricCard label="Sharpe ratio"    value="1.53" sub="5Y backtest vs SENSEX" color={C.accent}/>
-        <MetricCard label="Next rebalance"  value={fmtDate(NEXT_REBALANCE)}
+        <MetricCard label="Universe"          value={stocks.length.toLocaleString()} sub="Nifty 500 stocks"/>
+        <MetricCard label="Pass fundamental"  value={fundPass.length} sub="RoE · CAGR · P/E filters" color={C.accent}/>
+        <MetricCard label="Sectors selected"  value={`${SELECTED_SECTORS.size} of ${totalSectors}`} sub="Active sector conviction"/>
+        <MetricCard label="Pass beta filter"  value={betaPass.length} sub="β ≤ 1.2 in target sectors" color="#f97316"/>
+        <MetricCard label="In portfolio"      value={portfolio.length} sub="After sector cap" color={C.green}/>
+        <MetricCard label="Next rebalance"    value={fmtDate(NEXT_REBALANCE)}
           sub={daysUntil(NEXT_REBALANCE)>0?`${daysUntil(NEXT_REBALANCE)} days away`:"Due now"}
           color={daysUntil(NEXT_REBALANCE)<=14?C.amber:C.primary}
           warn={daysUntil(NEXT_REBALANCE)<=14}/>
@@ -314,12 +359,13 @@ function OverviewTab({stocks, betaStatus}) {
         {/* selection funnel */}
         <div style={{background:C.card,border:`0.5px solid ${C.border}`,borderRadius:8,padding:"18px 20px"}}>
           <div style={{fontSize:11,fontWeight:600,marginBottom:16,color:C.secondary,textTransform:"uppercase",letterSpacing:"0.07em"}}>Selection funnel</div>
-          <FunnelBar label="Nifty 500 universe"        count={universe.length}   total={universe.length}  color={C.accent}/>
-          <FunnelBar label="Pass fundamental criteria" count={fundPass.length}   total={universe.length}  color="#8b5cf6"/>
-          <FunnelBar label="In target sectors"         count={sectorPass.length} total={universe.length}  color={C.amber}/>
-          <FunnelBar label="Final portfolio (β ≤ 1.2)" count={portfolio.length}  total={universe.length}  color={C.green}/>
+          <FunnelBar label="Nifty 500 universe"           count={stocks.length}     total={stocks.length}  color={C.accent}/>
+          <FunnelBar label="Pass fundamental criteria"    count={fundPass.length}   total={stocks.length}  color="#8b5cf6"/>
+          <FunnelBar label="In target sectors"            count={sectorPass.length} total={stocks.length}  color={C.amber}/>
+          <FunnelBar label="Pass beta filter (β ≤ 1.2)"  count={betaPass.length}   total={stocks.length}  color="#f97316"/>
+          <FunnelBar label="Final portfolio (sector cap)" count={portfolio.length}  total={stocks.length}  color={C.green}/>
           <div style={{marginTop:14,paddingTop:12,borderTop:`0.5px solid ${C.subtle}`,fontSize:11,color:C.muted}}>
-            Filters: RoE ≥ 13% · Rev CAGR ≥ 7% · EPS CAGR ≥ 10% · P/E ≤ 20x · Beta ≤ 1.2
+            Filters: RoE ≥ 13% · Rev CAGR ≥ 7% · EPS CAGR ≥ 10% · P/E ≤ 20x · Beta ≤ 1.2 · Sector cap: min(3, max(1, ⌊20% × sector size⌋)) · Ranked by EPS CAGR / P/E
           </div>
         </div>
 
@@ -365,6 +411,7 @@ function OverviewTab({stocks, betaStatus}) {
               <Th label="EPS CAGR" k="epsCAGR" right/>
               <Th label="Beta ⚡" k="beta" right/>
               <Th label="P/E" k="pe" right/>
+              <Th label="G/P Score" k="gp" right/>
             </tr>
           </thead>
           <tbody>
@@ -388,6 +435,7 @@ function OverviewTab({stocks, betaStatus}) {
                   {v:s.epsCAGR.toFixed(1)+"%"},
                   {v:(s.beta??0).toFixed(2)},
                   {v:s.pe.toFixed(1)+"x"},
+                  {v:growthScore(s).toFixed(2)},
                 ].map((cell,ci)=>(
                   <td key={ci} style={{padding:"10px 12px",textAlign:"right",
                     color:C.primary,fontFamily:"var(--font-mono)",fontSize:12}}>
