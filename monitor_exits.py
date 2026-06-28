@@ -1,20 +1,15 @@
 """
-monitor_exits.py
+monitor_exits.py — fixed
 ─────────────────────────────────────────────────────────────────────────────
-For each quarterly portfolio, fetches daily EOD prices between rebalance dates
-and applies the intra-quarter exit rule:
+Fixes applied:
+  1. Exit rule baseline resets at each rebalance — 20% measured from the
+     MOST RECENT rebalance date's entry price, not the original entry price.
+  2. No double counting — intra-quarter exits are marked so build_historical
+     portfolios.py won't log them again as rebalance exits.
+  3. Deduplication on rerun — already-logged intra-quarter exits are skipped.
 
-  EXIT if: price_return > 20% AND live_PE > 20x
-  (live_PE = current_price / TTM_EPS_at_entry, TTM EPS fixed at entry date)
-
-Outputs:
-  data/trade_log.json   — updated with intra-quarter exits
-  data/historical/daily_prices_YYYYQN.json  — cached daily prices per quarter
-
-Usage:
-  python monitor_exits.py
-
-Run AFTER build_historical_portfolios.py has produced all portfolio_YYYYQN.json
+Exit rule: price_return > 20% from last rebalance AND live_PE > 20x
+           (TTM EPS fixed at the most recent rebalance entry price / PE)
 ─────────────────────────────────────────────────────────────────────────────
 """
 
@@ -27,52 +22,35 @@ import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
-# ── config ────────────────────────────────────────────────────
-EXIT_RETURN_THRESHOLD = 20.0   # %
-EXIT_PE_THRESHOLD     = 20.0   # x
+EXIT_RETURN_THRESHOLD = 20.0
+EXIT_PE_THRESHOLD     = 20.0
 HISTORICAL_DIR        = "data/historical"
 TRADE_LOG_PATH        = "data/trade_log.json"
 SENSEX_SYMBOL         = "^BSESN"
 
 REBALANCE_DATES = [
-    "2024-06-25",
-    "2024-09-25",
-    "2024-12-25",
-    "2025-03-25",
-    "2025-06-25",
-    "2025-09-25",
-    "2025-12-25",
-    "2026-03-25",
-    "2026-06-25",
+    "2024-06-25","2024-09-25","2024-12-25","2025-03-25",
+    "2025-06-25","2025-09-25","2025-12-25","2026-03-25","2026-06-25",
 ]
 
-# ── http session ──────────────────────────────────────────────
 HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/120.0.0.0 Safari/537.36"
-    ),
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
     "Accept": "application/json",
 }
 
 def make_session():
     s = requests.Session()
-    retry = Retry(connect=3, read=3, backoff_factor=2,
-                  status_forcelist=[429, 500, 502, 503, 504])
+    retry = Retry(connect=3, read=3, backoff_factor=2, status_forcelist=[429,500,502,503,504])
     s.mount("http://",  HTTPAdapter(max_retries=retry))
     s.mount("https://", HTTPAdapter(max_retries=retry))
     return s
 
 SESSION = make_session()
 
-# ── Yahoo Finance ─────────────────────────────────────────────
 def fetch_daily_prices(symbol, date_from, date_to):
-    """Returns {date_str: close} for all trading days in range."""
     url = (
         f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}"
-        f"?period1={int(date_from.timestamp())}"
-        f"&period2={int(date_to.timestamp())}"
+        f"?period1={int(date_from.timestamp())}&period2={int(date_to.timestamp())}"
         f"&interval=1d&events=history"
     )
     for attempt in range(3):
@@ -89,11 +67,10 @@ def fetch_daily_prices(symbol, date_from, date_to):
             result     = data["chart"]["result"][0]
             timestamps = result["timestamp"]
             closes     = result["indicators"]["quote"][0]["close"]
-            prices     = {}
+            prices = {}
             for ts, c in zip(timestamps, closes):
                 if c is not None:
-                    d = datetime.utcfromtimestamp(ts).strftime("%Y-%m-%d")
-                    prices[d] = round(c, 2)
+                    prices[datetime.utcfromtimestamp(ts).strftime("%Y-%m-%d")] = round(c, 2)
             return prices
         except (KeyError, IndexError):
             return {}
@@ -102,7 +79,6 @@ def fetch_daily_prices(symbol, date_from, date_to):
                 time.sleep(5)
     return {}
 
-# ── helpers ───────────────────────────────────────────────────
 def quarter_label(date_str):
     d = datetime.strptime(date_str, "%Y-%m-%d")
     q = {1:"Q1",2:"Q1",3:"Q1",4:"Q2",5:"Q2",6:"Q2",
@@ -110,8 +86,7 @@ def quarter_label(date_str):
     return f"{d.year}{q}"
 
 def load_portfolio(date_str):
-    label = quarter_label(date_str)
-    path  = os.path.join(HISTORICAL_DIR, f"portfolio_{label}.json")
+    path = os.path.join(HISTORICAL_DIR, f"portfolio_{quarter_label(date_str)}.json")
     if not os.path.exists(path):
         return None
     with open(path) as f:
@@ -128,102 +103,90 @@ def save_trade_log(log):
         json.dump(log, f, indent=2)
 
 def annualised(abs_pct, holding_days):
-    if abs_pct is None or holding_days is None or holding_days <= 0:
+    if abs_pct is None or not holding_days or holding_days <= 0:
         return None
-    years = holding_days / 365.25
-    return round(((1 + abs_pct / 100) ** (1 / years) - 1) * 100, 2)
+    return round(((1 + abs_pct/100) ** (365.25/holding_days) - 1) * 100, 2)
 
-def trading_days_between(prices_dict, date_from_str, date_to_str):
-    """Return sorted list of trading day strings strictly between two dates."""
-    return sorted(
-        d for d in prices_dict
-        if date_from_str < d < date_to_str
-    )
+def trading_days_between(prices_dict, after_date_str, before_date_str):
+    return sorted(d for d in prices_dict if after_date_str < d < before_date_str)
 
-# ── main ──────────────────────────────────────────────────────
+# ── rebuild trade log from scratch ───────────────────────────
+# We regenerate intra-quarter exits cleanly to avoid double-counting.
+# First, load the rebalance-exit trade log produced by build_historical_portfolios.py
+# and strip out any previously logged intra-quarter exits (we'll recompute them).
+
 print(f"\n{'─'*62}")
-print(f"  Intra-quarter exit monitor")
-print(f"  Exit rule: return > {EXIT_RETURN_THRESHOLD}% AND P/E > {EXIT_PE_THRESHOLD}x")
+print(f"  Intra-quarter exit monitor (fixed)")
+print(f"  Exit rule: return > {EXIT_RETURN_THRESHOLD}% from last rebalance AND P/E > {EXIT_PE_THRESHOLD}x")
 print(f"{'─'*62}\n")
 
-trade_log = load_trade_log()
+full_log = load_trade_log()
 
-# Build a set of (ticker, entry_date) already in the trade log
-# so we don't double-log exits
-existing_exits = {
-    (t["ticker"], t["entry_date"])
-    for t in trade_log
-    if t.get("exit_type") == "intra_quarter"
-}
+# Separate rebalance exits and open positions from intra-quarter exits
+# We'll recompute intra-quarter exits from scratch
+rebalance_trades = [t for t in full_log if t.get("exit_type") != "intra_quarter"]
+new_intra_exits  = []
 
-new_exits = []
+# Track which (ticker, rebalance_entry_date) have been intra-exited
+# so we can remove the corresponding open/rebalance trade
+intra_exited_keys = set()
 
 for i, entry_date_str in enumerate(REBALANCE_DATES[:-1]):
-    exit_date_str = REBALANCE_DATES[i + 1]   # next rebalance = end of window
-
+    exit_date_str = REBALANCE_DATES[i + 1]
     label = quarter_label(entry_date_str)
+
     print(f"\n{'─'*50}")
-    print(f"  Quarter {label}:  {entry_date_str} → {exit_date_str}")
+    print(f"  Quarter {label}: {entry_date_str} → {exit_date_str}")
     print(f"{'─'*50}")
 
     portfolio_data = load_portfolio(entry_date_str)
-    if portfolio_data is None:
+    if not portfolio_data:
         print(f"  ✗ portfolio_{label}.json not found — skipping")
         continue
 
     stocks = portfolio_data.get("stocks", [])
     if not stocks:
-        print(f"  ✗ No stocks in portfolio — skipping")
+        print(f"  ✗ No stocks — skipping")
         continue
 
+    # ── date range: strictly AFTER entry, strictly BEFORE exit ──
     date_from = datetime.strptime(entry_date_str, "%Y-%m-%d") + timedelta(days=1)
     date_to   = datetime.strptime(exit_date_str,  "%Y-%m-%d")
 
-    # ── fetch SENSEX daily prices for this window ──
-    print(f"  Fetching SENSEX daily prices...")
+    # Fetch SENSEX for this window
+    print(f"  Fetching SENSEX...")
     sensex_prices = fetch_daily_prices(SENSEX_SYMBOL, date_from, date_to)
     time.sleep(0.5)
 
-    # ── cache file for daily prices this quarter ──
+    # Load/build daily price cache
     cache_path = os.path.join(HISTORICAL_DIR, f"daily_prices_{label}.json")
+    daily_cache = {}
     if os.path.exists(cache_path):
         with open(cache_path) as f:
             daily_cache = json.load(f)
-        print(f"  ✓ Loaded cached daily prices ({cache_path})")
-    else:
-        daily_cache = {}
+        print(f"  ✓ Loaded cached daily prices")
 
     cache_updated = False
 
     for stock in stocks:
-        ticker      = stock.get("ticker", "").strip()
-        entry_price = stock.get("entry_price")
-        entry_date  = stock.get("entry_date", entry_date_str)
-        ttm_eps     = stock.get("ttm_eps")    # stored in portfolio JSON if available
-        pe_at_entry = stock.get("pe")          # fallback: use entry P/E to derive EPS
+        ticker      = stock.get("ticker","").strip()
+        # ── KEY FIX: use THIS rebalance's entry price as the baseline ──
+        # Not the original entry (which may be multiple quarters back)
+        rebal_entry_price = stock.get("entry_price")   # price on entry_date_str
+        rebal_entry_date  = entry_date_str              # always THIS rebalance
+        pe_at_entry       = stock.get("pe")
+        original_entry    = stock.get("entry_date", entry_date_str)  # for trade log
 
-        # skip if already logged as intra-quarter exit
-        if (ticker, entry_date) in existing_exits:
-            print(f"  {ticker:<15} already logged — skip")
-            continue
-
-        if not entry_price:
+        if not rebal_entry_price:
             print(f"  {ticker:<15} ✗ no entry price — skip")
             continue
 
-        # derive TTM EPS from entry P/E and entry price if not stored explicitly
-        # TTM EPS = entry_price / pe_at_entry
-        if ttm_eps is None and pe_at_entry and pe_at_entry > 0:
-            ttm_eps = entry_price / pe_at_entry
+        # Derive TTM EPS from THIS rebalance's entry price and PE
+        ttm_eps = (rebal_entry_price / pe_at_entry) if pe_at_entry and pe_at_entry > 0 else None
 
-        if ttm_eps is None or ttm_eps <= 0:
-            print(f"  {ticker:<15} ✗ cannot compute TTM EPS — skip PE check, using return-only")
-            ttm_eps = None   # will skip PE check below
-
-        # ── fetch daily prices for this ticker ──
+        # Fetch daily prices
         if ticker not in daily_cache:
-            yahoo_sym = f"{ticker}.NS"
-            prices    = fetch_daily_prices(yahoo_sym, date_from, date_to)
+            prices = fetch_daily_prices(f"{ticker}.NS", date_from, date_to)
             if prices:
                 daily_cache[ticker] = prices
                 cache_updated = True
@@ -235,7 +198,6 @@ for i, entry_date_str in enumerate(REBALANCE_DATES[:-1]):
             print(f"  {ticker:<15} ✗ no daily prices — skip")
             continue
 
-        # ── scan each trading day for exit trigger ──
         trading_days = trading_days_between(prices, entry_date_str, exit_date_str)
         triggered    = False
 
@@ -244,110 +206,121 @@ for i, entry_date_str in enumerate(REBALANCE_DATES[:-1]):
             if close is None:
                 continue
 
-            ret_pct   = (close - entry_price) / entry_price * 100
-            live_pe   = (close / ttm_eps) if ttm_eps else None
+            # Return measured from THIS REBALANCE entry price
+            ret_pct  = (close - rebal_entry_price) / rebal_entry_price * 100
+            live_pe  = (close / ttm_eps) if ttm_eps else None
+            pe_breach = live_pe is not None and live_pe > EXIT_PE_THRESHOLD
+            ret_breach = ret_pct > EXIT_RETURN_THRESHOLD
 
-            # exit rule: return > 20% AND P/E > 20x
-            pe_breached  = (live_pe is not None and live_pe > EXIT_PE_THRESHOLD)
-            ret_breached = (ret_pct > EXIT_RETURN_THRESHOLD)
+            if ret_breach and pe_breach:
+                # SENSEX return over same window (from rebalance date to exit day)
+                s_start = sensex_prices.get(entry_date_str) or next(
+                    (sensex_prices[d] for d in sorted(sensex_prices) if d >= entry_date_str), None)
+                s_end   = sensex_prices.get(day) or next(
+                    (sensex_prices[d] for d in sorted(sensex_prices, reverse=True) if d <= day), None)
 
-            if ret_breached and pe_breached:
-                # compute SENSEX return over same window
-                sensex_entry_price = sensex_prices.get(entry_date_str) or \
-                                     next((sensex_prices[d] for d in sorted(sensex_prices) if d >= entry_date_str), None)
-                sensex_exit_price  = sensex_prices.get(day) or \
-                                     next((sensex_prices[d] for d in sorted(sensex_prices) if d <= day), None)
-
-                holding_days = (
+                # Holding days from ORIGINAL entry (for full trade P&L)
+                hold_from_original = (
                     datetime.strptime(day, "%Y-%m-%d") -
-                    datetime.strptime(entry_date, "%Y-%m-%d")
+                    datetime.strptime(original_entry, "%Y-%m-%d")
                 ).days
 
-                abs_ret = round(ret_pct, 2)
-                ann_ret = annualised(abs_ret, holding_days)
-
-                sensex_abs = (
-                    round((sensex_exit_price - sensex_entry_price) / sensex_entry_price * 100, 2)
-                    if sensex_entry_price and sensex_exit_price else None
+                # Return from ORIGINAL entry price (for full trade P&L)
+                original_entry_price = stock.get("entry_price")  # same as rebal here if first time held
+                # Find original entry price from previous trade log if carried over
+                orig_trade = next(
+                    (t for t in rebalance_trades
+                     if t["ticker"] == ticker and t.get("status") == "open"
+                     and t.get("entry_date") == original_entry),
+                    None
                 )
-                sensex_ann = annualised(sensex_abs, holding_days)
+                if orig_trade and orig_trade.get("entry_price"):
+                    original_entry_price = orig_trade["entry_price"]
+
+                abs_ret_from_orig = (
+                    round((close - original_entry_price) / original_entry_price * 100, 2)
+                    if original_entry_price else None
+                )
+                ann_ret = annualised(abs_ret_from_orig, hold_from_original)
+
+                sensex_abs = round((s_end - s_start) / s_start * 100, 2) if s_start and s_end else None
+                sensex_ann = annualised(sensex_abs, hold_from_original)
 
                 exit_record = {
-                    "ticker":         ticker,
-                    "name":           stock.get("name"),
-                    "sector":         stock.get("sector"),
-                    "entry_date":     entry_date,
-                    "exit_date":      day,
-                    "entry_price":    entry_price,
-                    "exit_price":     close,
-                    "holding_days":   holding_days,
-                    "abs_return_pct": abs_ret,
-                    "ann_return_pct": ann_ret,
-                    "pe_at_exit":     round(live_pe, 2) if live_pe else None,
-                    "sensex_abs_pct": sensex_abs,
-                    "sensex_ann_pct": sensex_ann,
-                    "alpha_abs":      round(abs_ret - sensex_abs, 2) if sensex_abs is not None else None,
-                    "alpha_ann":      round(ann_ret - sensex_ann, 2) if ann_ret is not None and sensex_ann is not None else None,
-                    "exit_type":      "intra_quarter",
-                    "status":         "closed",
-                    "trigger":        f"ret={abs_ret:.1f}% > {EXIT_RETURN_THRESHOLD}%,  P/E={live_pe:.1f}x > {EXIT_PE_THRESHOLD}x",
+                    "ticker":           ticker,
+                    "name":             stock.get("name"),
+                    "sector":           stock.get("sector"),
+                    "entry_date":       original_entry,       # original entry date
+                    "rebal_baseline":   rebal_entry_date,     # rebalance date used for 20% trigger
+                    "exit_date":        day,
+                    "entry_price":      original_entry_price,
+                    "rebal_price":      rebal_entry_price,    # price at which 20% was measured from
+                    "exit_price":       close,
+                    "holding_days":     hold_from_original,
+                    "abs_return_pct":   abs_ret_from_orig,
+                    "ann_return_pct":   ann_ret,
+                    "pe_at_exit":       round(live_pe, 2) if live_pe else None,
+                    "sensex_abs_pct":   sensex_abs,
+                    "sensex_ann_pct":   sensex_ann,
+                    "alpha_abs":        round(abs_ret_from_orig - sensex_abs, 2) if abs_ret_from_orig is not None and sensex_abs is not None else None,
+                    "alpha_ann":        round(ann_ret - sensex_ann, 2) if ann_ret is not None and sensex_ann is not None else None,
+                    "exit_type":        "intra_quarter",
+                    "status":           "closed",
+                    "trigger":          f"ret={round(ret_pct,1)}% from {rebal_entry_date} > {EXIT_RETURN_THRESHOLD}%,  P/E={round(live_pe,1)}x > {EXIT_PE_THRESHOLD}x",
                 }
 
-                new_exits.append(exit_record)
-                existing_exits.add((ticker, entry_date))
+                new_intra_exits.append(exit_record)
+                # Mark this ticker+original_entry as intra-exited so we remove
+                # its open/rebalance record
+                intra_exited_keys.add((ticker, original_entry))
 
-                print(f"  {ticker:<15} 🔴 EXIT on {day}:  "
-                      f"ret={abs_ret:.1f}%  P/E={live_pe:.1f}x  "
-                      f"price=₹{close}  alpha={exit_record['alpha_abs']}%")
+                print(f"  {ticker:<15} 🔴 EXIT {day}: "
+                      f"ret={round(ret_pct,1)}% from {rebal_entry_date}, "
+                      f"P/E={round(live_pe,1)}x, "
+                      f"full return={abs_ret_from_orig}%")
                 triggered = True
-                break   # no re-entry within this quarter
+                break
 
         if not triggered:
-            print(f"  {ticker:<15} ✓ held through quarter  "
-                  f"(entry ₹{entry_price}  "
+            print(f"  {ticker:<15} ✓ held  "
+                  f"(baseline ₹{rebal_entry_price}  "
                   f"last ₹{prices.get(trading_days[-1]) if trading_days else '—'})")
 
-    # ── save updated daily price cache ──
     if cache_updated:
         with open(cache_path, "w") as f:
             json.dump(daily_cache, f)
-        print(f"\n  ✓ Daily price cache saved → {cache_path}")
 
-# ── merge new exits into trade log ───────────────────────────
-if new_exits:
-    # remove any open trades that were actually exited intra-quarter
-    exited_keys = {(e["ticker"], e["entry_date"]) for e in new_exits}
-    trade_log = [
-        t for t in trade_log
-        if not (t["status"] == "open" and
-                (t["ticker"], t["entry_date"]) in exited_keys)
-    ]
-    trade_log.extend(new_exits)
-    save_trade_log(trade_log)
-    print(f"\n  ✓ {len(new_exits)} intra-quarter exits added to trade log")
-else:
-    print(f"\n  ✓ No intra-quarter exits triggered across all quarters")
-    save_trade_log(trade_log)   # re-save to ensure consistent format
+# ── remove open/rebalance exits that were actually intra-exited ──
+cleaned_rebalance = [
+    t for t in rebalance_trades
+    if not (
+        (t["ticker"], t.get("entry_date")) in intra_exited_keys and
+        t.get("status") in ("open", "closed")
+    )
+]
+
+# ── merge and save ────────────────────────────────────────────
+final_log = cleaned_rebalance + new_intra_exits
+save_trade_log(final_log)
 
 # ── summary ───────────────────────────────────────────────────
-intra = [t for t in trade_log if t.get("exit_type") == "intra_quarter"]
-rebal = [t for t in trade_log if t.get("exit_type") != "intra_quarter" and t.get("status") == "closed"]
-open_ = [t for t in trade_log if t.get("status") == "open"]
+intra  = [t for t in final_log if t.get("exit_type") == "intra_quarter"]
+rebal  = [t for t in final_log if t.get("exit_type") != "intra_quarter" and t.get("status") == "closed"]
+open_  = [t for t in final_log if t.get("status") == "open"]
+closed = intra + rebal
+
+rets    = [t["abs_return_pct"] for t in closed if t.get("abs_return_pct") is not None]
+alphas  = [t["alpha_abs"]      for t in closed if t.get("alpha_abs")      is not None]
+winners = [r for r in rets if r > 0]
 
 print(f"\n{'─'*62}")
 print(f"  TRADE LOG SUMMARY")
 print(f"  Intra-quarter exits : {len(intra)}")
 print(f"  Rebalance exits     : {len(rebal)}")
 print(f"  Open positions      : {len(open_)}")
-
-all_closed = intra + rebal
-if all_closed:
-    rets    = [t["abs_return_pct"] for t in all_closed if t.get("abs_return_pct") is not None]
-    alphas  = [t["alpha_abs"]      for t in all_closed if t.get("alpha_abs")      is not None]
-    winners = [r for r in rets if r > 0]
-    if rets:
-        print(f"  Avg closed return   : {sum(rets)/len(rets):.1f}%")
-        print(f"  Win rate            : {len(winners)/len(rets)*100:.0f}%  ({len(winners)}/{len(rets)})")
-    if alphas:
-        print(f"  Avg alpha (abs)     : {sum(alphas)/len(alphas):.1f}%")
+if rets:
+    print(f"  Avg closed return   : {sum(rets)/len(rets):.1f}%")
+    print(f"  Win rate            : {len(winners)/len(rets)*100:.0f}%  ({len(winners)}/{len(closed)})")
+if alphas:
+    print(f"  Avg alpha (abs)     : {sum(alphas)/len(alphas):.1f}%")
 print(f"{'─'*62}\n")

@@ -19,12 +19,26 @@ const DATA_QUARTER   = "Q4 FY26";
 
 const BASE = "https://raw.githubusercontent.com/Rishu18Raj/strategy-screener/main/data";
 const URLS = {
-  fundamentals: `${BASE}/fundamentals.csv`,
-  betas:        `${BASE}/betas.json`,
-  perfSummary:  `${BASE}/performance_summary.json`,
-  nav:          `${BASE}/nav.json`,
-  tradeLog:     `${BASE}/trade_log.json`,
+  fundamentals:     `${BASE}/fundamentals.csv`,
+  betas:            `${BASE}/betas.json`,
+  perfSummary:      `${BASE}/performance_summary.json`,
+  nav:              `${BASE}/nav.json`,
+  tradeLog:         `${BASE}/trade_log.json`,
+  portfolioCurrent: `${BASE}/portfolio_current.json`,
 };
+
+// historical portfolio URLs by label
+const PORTFOLIO_SNAPSHOTS = [
+  {label:"Jun 2024", year:"2024", month:"Jun", file:"portfolio_2024Q2.json"},
+  {label:"Sep 2024", year:"2024", month:"Sep", file:"portfolio_2024Q3.json"},
+  {label:"Dec 2024", year:"2024", month:"Dec", file:"portfolio_2024Q4.json"},
+  {label:"Mar 2025", year:"2025", month:"Mar", file:"portfolio_2025Q1.json"},
+  {label:"Jun 2025", year:"2025", month:"Jun", file:"portfolio_2025Q2.json"},
+  {label:"Sep 2025", year:"2025", month:"Sep", file:"portfolio_2025Q3.json"},
+  {label:"Dec 2025", year:"2025", month:"Dec", file:"portfolio_2025Q4.json"},
+  {label:"Mar 2026", year:"2026", month:"Mar", file:"portfolio_2026Q1.json"},
+  {label:"Jun 2026", year:"2026", month:"Jun", file:"portfolio_2026Q2.json"},
+];
 
 const REBALANCE_DATES = new Set([
   "2024-06-25","2024-09-25","2024-12-25","2025-03-25",
@@ -257,6 +271,10 @@ function PerformanceTab({perf,nav,trades}){
   const [tradeFilter,setTradeFilter]=useState("all");
   const [tradeSortKey,setTradeSortKey]=useState("entry_date");
   const [tradeSortDir,setTradeSortDir]=useState(-1);
+  const [snapYear,setSnapYear]=useState("2026");
+  const [snapMonth,setSnapMonth]=useState("Jun");
+  const [snapData,setSnapData]=useState(null);
+  const [snapLoading,setSnapLoading]=useState(false);
 
   if(!perf||!nav||!trades){
     return(
@@ -268,17 +286,32 @@ function PerformanceTab({perf,nav,trades}){
 
   const {returns,risk,trades:tradeStats,quarterly_returns,period}=perf;
 
-  // ── subsample NAV for chart (every 3rd point to keep it fast) ──
-  const navChart=nav.filter((_,i)=>i%3===0||i===nav.length-1).map(d=>({
-    date:     d.date.slice(5),   // MM-DD for display
-    full_date:d.date,
-    portfolio_nav: d.portfolio_nav,
-    sensex_nav:    d.sensex_nav,
-    is_rebalance:  REBALANCE_DATES.has(d.date),
-  }));
+// ── NAV chart: deduplicate dates and subsample ────────────────
+  const navChart = useMemo(()=>{
+    const seen = new Set();
+    return nav
+      .filter(d=>{ if(seen.has(d.date))return false; seen.add(d.date); return true; })
+      .filter((_,i,arr)=>i%3===0||i===arr.length-1)
+      .map(d=>({
+        date:      d.date.slice(5),
+        full_date: d.date,
+        portfolio_nav: +d.portfolio_nav,
+        sensex_nav:    +d.sensex_nav,
+      }));
+  },[nav]);
 
-  // ── filtered & sorted trades ──
-  const filteredTrades=useMemo(()=>{
+  // load snapshot when year/month changes
+  useEffect(()=>{
+    const snap = PORTFOLIO_SNAPSHOTS.find(s=>s.year===snapYear&&s.month===snapMonth);
+    if(!snap) return;
+    setSnapLoading(true);
+    fetch(`${BASE}/historical/${snap.file}`)
+      .then(r=>r.json()).then(d=>{ setSnapData(d); setSnapLoading(false); })
+      .catch(()=>setSnapLoading(false));
+  },[snapYear,snapMonth]);
+
+  const availableYears = [...new Set(PORTFOLIO_SNAPSHOTS.map(s=>s.year))];
+  const availableMonths = PORTFOLIO_SNAPSHOTS.filter(s=>s.year===snapYear).map(s=>s.month);
     let t=[...trades];
     if(tradeFilter==="closed") t=t.filter(x=>x.status==="closed");
     if(tradeFilter==="open")   t=t.filter(x=>x.status==="open");
@@ -302,10 +335,36 @@ function PerformanceTab({perf,nav,trades}){
     </th>
   );
 
+  const availableYears  = [...new Set(PORTFOLIO_SNAPSHOTS.map(s=>s.year))];
+  const availableMonths = PORTFOLIO_SNAPSHOTS.filter(s=>s.year===snapYear).map(s=>s.month);
+
   const sectionLabel={fontSize:11,fontWeight:600,color:C.secondary,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:14};
 
   return(
     <div>
+      {/* ── period header ── */}
+      <div style={{background:C.card,border:`0.5px solid ${C.border}`,borderRadius:8,padding:"12px 18px",marginBottom:18,display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:8}}>
+        <div style={{display:"flex",alignItems:"center",gap:16}}>
+          <div>
+            <div style={{fontSize:10,color:C.muted,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:2}}>Track record period</div>
+            <div style={{fontSize:14,fontWeight:600,color:C.primary,fontFamily:"var(--font-mono)"}}>25 Jun 2024 → 25 Jun 2026 &nbsp;<span style={{color:C.secondary,fontWeight:400}}>· 2 years</span></div>
+          </div>
+          <div style={{width:"0.5px",height:32,background:C.border}}/>
+          <div>
+            <div style={{fontSize:10,color:C.muted,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:2}}>Portfolio return</div>
+            <div style={{fontSize:14,fontWeight:700,color:C.green}}>{returns.total_pct>0?"+":""}{returns.total_pct}%</div>
+          </div>
+          <div>
+            <div style={{fontSize:10,color:C.muted,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:2}}>SENSEX return</div>
+            <div style={{fontSize:14,fontWeight:700,color:C.secondary}}>{returns.sensex_total>0?"+":""}{returns.sensex_total}%</div>
+          </div>
+          <div>
+            <div style={{fontSize:10,color:C.muted,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:2}}>Alpha</div>
+            <div style={{fontSize:14,fontWeight:700,color:returns.alpha_total>=0?C.green:C.red}}>{returns.alpha_total>0?"+":""}{returns.alpha_total}%</div>
+          </div>
+        </div>
+        <div style={{fontSize:11,color:C.muted}}>Includes 2Y backfill (Jun 2024 – Jun 2026) · Equal weight · Quarterly rebalance</div>
+      </div>
       {/* ── hero metrics ── */}
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(145px,1fr))",gap:10,marginBottom:24}}>
         <StatCard label="Total return"   value={`${returns.total_pct>0?"+":""}${returns.total_pct}%`} sub={`SENSEX ${returns.sensex_total>0?"+":""}${returns.sensex_total}%`} color={C.green}/>

@@ -1,43 +1,43 @@
 {
-  "generated": "2026-06-28",
+  "generated": "2026-06-29",
   "period": {
     "start": "2024-06-25",
     "end": "2026-06-25",
     "days": 730
   },
   "returns": {
-    "total_pct": 76.02,
-    "annualised_pct": 32.67,
+    "total_pct": 76.56,
+    "annualised_pct": 32.88,
     "sensex_total": -1.22,
     "sensex_ann": -0.61,
-    "alpha_total": 77.24,
-    "alpha_ann": 33.28
+    "alpha_total": 77.78,
+    "alpha_ann": 33.49
   },
   "risk": {
-    "sharpe": 1.1351,
-    "sortino": 1.4463,
-    "treynor": 25.59,
-    "jensen_alpha": 33.56,
-    "info_ratio": 1.915,
-    "tracking_error": 17.38,
-    "beta": 1.0421,
-    "correlation": 0.6227,
+    "sharpe": 1.1257,
+    "sortino": 1.4128,
+    "treynor": 25.27,
+    "jensen_alpha": 33.91,
+    "info_ratio": 1.8942,
+    "tracking_error": 17.68,
+    "beta": 1.0636,
+    "correlation": 0.6241,
     "max_drawdown_pct": 17.33,
     "drawdown_start": "2026-01-07",
     "drawdown_end": "2026-03-23",
     "risk_free_rate": 0.06
   },
   "trades": {
-    "total_closed": 34,
+    "total_closed": 36,
     "total_open": 8,
-    "intra_quarter": 9,
-    "rebalance_exits": 25,
-    "win_rate_pct": 79.4,
-    "avg_return_pct": 13.92,
-    "avg_winner_pct": 21.44,
+    "intra_quarter": 18,
+    "rebalance_exits": 18,
+    "win_rate_pct": 80.6,
+    "avg_return_pct": 16.01,
+    "avg_winner_pct": 23.52,
     "avg_loser_pct": -15.09,
-    "avg_alpha_pct": 12.24,
-    "avg_hold_days": 159,
+    "avg_alpha_pct": 14.5,
+    "avg_hold_days": 209,
     "best_trade": {
       "ticker": "CHOLAHLDNG",
       "return_pct": 62.38,
@@ -64,17 +64,17 @@
       "label": "Q2",
       "start_date": "2024-09-25",
       "end_date": "2024-12-25",
-      "portfolio_ret": -9.12,
+      "portfolio_ret": -9.71,
       "sensex_ret": -7.86,
-      "active_ret": -1.26
+      "active_ret": -1.85
     },
     {
       "label": "Q3",
       "start_date": "2024-12-25",
       "end_date": "2025-03-25",
-      "portfolio_ret": 5.83,
+      "portfolio_ret": 6.85,
       "sensex_ret": -0.58,
-      "active_ret": 6.41
+      "active_ret": 7.43
     },
     {
       "label": "Q4",
