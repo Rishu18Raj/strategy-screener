@@ -312,6 +312,7 @@ function PerformanceTab({perf,nav,trades}){
 
   const availableYears = [...new Set(PORTFOLIO_SNAPSHOTS.map(s=>s.year))];
   const availableMonths = PORTFOLIO_SNAPSHOTS.filter(s=>s.year===snapYear).map(s=>s.month);
+  const processedTrades = useMemo(() => {
     let t=[...trades];
     if(tradeFilter==="closed") t=t.filter(x=>x.status==="closed");
     if(tradeFilter==="open")   t=t.filter(x=>x.status==="open");
