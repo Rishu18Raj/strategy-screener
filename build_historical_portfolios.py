@@ -155,14 +155,21 @@ def growth_score(row):
     pe = row.get("pe") or 0
     return (row.get("epsCAGR") or 0) / pe if pe > 0 else 0
 
-def passes_fundamentals(row):
+def passes_fundamentals(row, eps_threshold, pe_threshold):
     try:
         return (
-            float(row["roe"])     >= FILTERS["roe"]     and
-            float(row["revCAGR"]) >= FILTERS["revCAGR"] and
-            float(row["epsCAGR"]) >= FILTERS["epsCAGR"] and
-            float(row["pe"])      <= FILTERS["pe"]
+            float(row["roe"])     >= FILTERS_FIXED["roe"]     and
+            float(row["revCAGR"]) >= FILTERS_FIXED["revCAGR"] and
+            float(row["epsCAGR"]) >= eps_threshold             and
+            float(row["pe"])      <= pe_threshold
         )
+    except (TypeError, ValueError):
+        return False
+
+def passes_beta(row):
+    try:
+        b = row.get("beta")
+        return b is not None and float(b) <= FILTERS_FIXED["beta"]
     except (TypeError, ValueError):
         return False
 
@@ -176,10 +183,6 @@ def get_sector_caps(all_stocks):
     return {sec: min(3, max(1, math.floor(0.2 * n))) for sec, n in counts.items()}
 
 def build_portfolio(fundamentals, betas):
-    """
-    Run the 5-step pipeline and return list of selected stock dicts.
-    """
-    # merge betas into fundamentals
     stocks = []
     for row in fundamentals:
         t = row.get("ticker","").strip()
@@ -189,29 +192,53 @@ def build_portfolio(fundamentals, betas):
 
     caps = get_sector_caps(stocks)
 
-    # step 1 — fundamentals
-    fund_pass = [s for s in stocks if passes_fundamentals(s)]
+    fund_pass_count = 0
+    sec_pass_count  = 0
+    beta_pass_count = 0
+    portfolio       = []
+    round_used      = 0
+    round_label     = "base"
 
-    # step 2 — sector
-    sec_pass = [s for s in fund_pass if s.get("sector","") in SELECTED_SECTORS]
+    for eps_thresh, pe_thresh, round_num, r_label in RELAXATION_ROUNDS:
+        fund_pass = [s for s in stocks if passes_fundamentals(s, eps_thresh, pe_thresh)]
+        sec_pass  = [s for s in fund_pass if s.get("sector","") in SELECTED_SECTORS]
+        beta_pass = [s for s in sec_pass  if passes_beta(s)]
 
-    # step 3 — beta
-    beta_pass = [s for s in sec_pass
-                 if s.get("beta") is not None and float(s["beta"]) <= FILTERS["beta"]]
+        if round_num == 0:
+            fund_pass_count = len(fund_pass)
+            sec_pass_count  = len(sec_pass)
+            beta_pass_count = len(beta_pass)
 
-    # step 4+5 — sector cap + rank by G/P score
-    by_sector = {}
-    for s in beta_pass:
-        sec = s.get("sector","")
-        by_sector.setdefault(sec, []).append(s)
+        by_sector = {}
+        for s in beta_pass:
+            by_sector.setdefault(s.get("sector",""), []).append(s)
 
-    portfolio = []
-    for sec, stocks_in_sec in by_sector.items():
-        cap     = caps.get(sec, 1)
-        ranked  = sorted(stocks_in_sec, key=growth_score, reverse=True)
-        portfolio.extend(ranked[:cap])
+        candidate_portfolio = []
+        for sec, sec_stocks in by_sector.items():
+            cap    = caps.get(sec, 1)
+            ranked = sorted(sec_stocks, key=growth_score, reverse=True)
+            for stock in ranked[:cap]:
+                candidate_portfolio.append({
+                    **{k: stock.get(k) for k in
+                       ("ticker","name","sector","roe","revCAGR","epsCAGR","pe","beta")},
+                    "growth_score": round(growth_score(stock), 4),
+                    "filter_round": round_num,
+                    "filter_label": r_label,
+                })
 
-    return portfolio, len(fund_pass), len(sec_pass), len(beta_pass)
+        if len(candidate_portfolio) >= MIN_PORTFOLIO_SIZE or \
+           round_num == RELAXATION_ROUNDS[-1][2]:
+            portfolio   = candidate_portfolio
+            round_used  = round_num
+            round_label = r_label
+            if round_num > 0:
+                print(f"  ⚡ Filter relaxation: Round {round_num} ({r_label}) → {len(portfolio)} stocks")
+            break
+        else:
+            print(f"  ↩  Round {round_num} ({r_label}): {len(candidate_portfolio)} stocks — relaxing...")
+
+    return portfolio, fund_pass_count, sec_pass_count, beta_pass_count, round_used, round_label
+
 
 def annualised_return(abs_return_pct, holding_days):
     """Convert absolute return % to annualised % using CAGR formula."""
@@ -262,7 +289,7 @@ for i, date_str in enumerate(REBALANCE_DATES):
         continue
 
     df   = pd.read_csv(csv_path)
-    df.columns = [c.strip().lower() for c in df.columns]
+    df.columns = [c.strip() for c in df.columns]
     fundamentals = df.to_dict("records")
 
     # ── load betas ──
@@ -291,7 +318,7 @@ for i, date_str in enumerate(REBALANCE_DATES):
             "entry_price":    price,
             "sensex_entry":   sensex_entry,
         })
-        time.sleep(0.1)   # polite to Yahoo
+        time.sleep(0.3)   # polite to Yahoo
 
     # ── process exits from previous portfolio ──
     current_tickers = {s["ticker"] for s in portfolio_with_prices}

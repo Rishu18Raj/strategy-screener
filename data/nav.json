@@ -1,0 +1,2497 @@
+[
+  {
+    "date": "2024-06-25",
+    "portfolio_nav": 99.0372,
+    "sensex_nav": 100.0
+  },
+  {
+    "date": "2024-06-26",
+    "portfolio_nav": 99.7819,
+    "sensex_nav": 100.7953
+  },
+  {
+    "date": "2024-06-27",
+    "portfolio_nav": 99.9412,
+    "sensex_nav": 101.5242
+  },
+  {
+    "date": "2024-06-28",
+    "portfolio_nav": 101.6666,
+    "sensex_nav": 101.2545
+  },
+  {
+    "date": "2024-07-01",
+    "portfolio_nav": 102.9083,
+    "sensex_nav": 101.8227
+  },
+  {
+    "date": "2024-07-02",
+    "portfolio_nav": 101.9528,
+    "sensex_nav": 101.7782
+  },
+  {
+    "date": "2024-07-03",
+    "portfolio_nav": 101.9752,
+    "sensex_nav": 102.4769
+  },
+  {
+    "date": "2024-07-04",
+    "portfolio_nav": 101.9051,
+    "sensex_nav": 102.5574
+  },
+  {
+    "date": "2024-07-05",
+    "portfolio_nav": 101.6839,
+    "sensex_nav": 102.4894
+  },
+  {
+    "date": "2024-07-08",
+    "portfolio_nav": 100.68,
+    "sensex_nav": 102.443
+  },
+  {
+    "date": "2024-07-09",
+    "portfolio_nav": 100.7028,
+    "sensex_nav": 102.9443
+  },
+  {
+    "date": "2024-07-10",
+    "portfolio_nav": 100.2497,
+    "sensex_nav": 102.3974
+  },
+  {
+    "date": "2024-07-11",
+    "portfolio_nav": 101.5939,
+    "sensex_nav": 102.3623
+  },
+  {
+    "date": "2024-07-12",
+    "portfolio_nav": 100.3447,
+    "sensex_nav": 103.1591
+  },
+  {
+    "date": "2024-07-15",
+    "portfolio_nav": 100.8775,
+    "sensex_nav": 103.3456
+  },
+  {
+    "date": "2024-07-16",
+    "portfolio_nav": 101.7668,
+    "sensex_nav": 103.4118
+  },
+  {
+    "date": "2024-07-18",
+    "portfolio_nav": 101.5697,
+    "sensex_nav": 104.215
+  },
+  {
+    "date": "2024-07-19",
+    "portfolio_nav": 99.7876,
+    "sensex_nav": 103.2684
+  },
+  {
+    "date": "2024-07-22",
+    "portfolio_nav": 100.2454,
+    "sensex_nav": 103.137
+  },
+  {
+    "date": "2024-07-23",
+    "portfolio_nav": 99.5476,
+    "sensex_nav": 103.0435
+  },
+  {
+    "date": "2024-07-24",
+    "portfolio_nav": 100.6844,
+    "sensex_nav": 102.6845
+  },
+  {
+    "date": "2024-07-25",
+    "portfolio_nav": 102.0508,
+    "sensex_nav": 102.5448
+  },
+  {
+    "date": "2024-07-26",
+    "portfolio_nav": 103.1178,
+    "sensex_nav": 104.2012
+  },
+  {
+    "date": "2024-07-29",
+    "portfolio_nav": 103.7833,
+    "sensex_nav": 104.2308
+  },
+  {
+    "date": "2024-07-30",
+    "portfolio_nav": 104.9812,
+    "sensex_nav": 104.3584
+  },
+  {
+    "date": "2024-07-31",
+    "portfolio_nav": 105.6015,
+    "sensex_nav": 104.7247
+  },
+  {
+    "date": "2024-08-01",
+    "portfolio_nav": 105.9435,
+    "sensex_nav": 104.8864
+  },
+  {
+    "date": "2024-08-02",
+    "portfolio_nav": 105.5492,
+    "sensex_nav": 103.7518
+  },
+  {
+    "date": "2024-08-05",
+    "portfolio_nav": 102.2594,
+    "sensex_nav": 100.9044
+  },
+  {
+    "date": "2024-08-06",
+    "portfolio_nav": 101.0077,
+    "sensex_nav": 100.6913
+  },
+  {
+    "date": "2024-08-07",
+    "portfolio_nav": 103.0881,
+    "sensex_nav": 101.8122
+  },
+  {
+    "date": "2024-08-08",
+    "portfolio_nav": 102.1199,
+    "sensex_nav": 101.0668
+  },
+  {
+    "date": "2024-08-09",
+    "portfolio_nav": 102.1593,
+    "sensex_nav": 102.117
+  },
+  {
+    "date": "2024-08-12",
+    "portfolio_nav": 101.7829,
+    "sensex_nav": 102.044
+  },
+  {
+    "date": "2024-08-13",
+    "portfolio_nav": 99.6719,
+    "sensex_nav": 101.1563
+  },
+  {
+    "date": "2024-08-14",
+    "portfolio_nav": 100.5188,
+    "sensex_nav": 101.3483
+  },
+  {
+    "date": "2024-08-16",
+    "portfolio_nav": 102.4445,
+    "sensex_nav": 103.0534
+  },
+  {
+    "date": "2024-08-19",
+    "portfolio_nav": 104.4162,
+    "sensex_nav": 103.0379
+  },
+  {
+    "date": "2024-08-20",
+    "portfolio_nav": 106.38,
+    "sensex_nav": 103.5224
+  },
+  {
+    "date": "2024-08-21",
+    "portfolio_nav": 107.6193,
+    "sensex_nav": 103.6536
+  },
+  {
+    "date": "2024-08-22",
+    "portfolio_nav": 107.979,
+    "sensex_nav": 103.8431
+  },
+  {
+    "date": "2024-08-23",
+    "portfolio_nav": 108.1371,
+    "sensex_nav": 103.8854
+  },
+  {
+    "date": "2024-08-26",
+    "portfolio_nav": 109.2674,
+    "sensex_nav": 104.6693
+  },
+  {
+    "date": "2024-08-27",
+    "portfolio_nav": 108.938,
+    "sensex_nav": 104.6868
+  },
+  {
+    "date": "2024-08-28",
+    "portfolio_nav": 108.3902,
+    "sensex_nav": 104.7814
+  },
+  {
+    "date": "2024-08-29",
+    "portfolio_nav": 108.7576,
+    "sensex_nav": 105.2286
+  },
+  {
+    "date": "2024-08-30",
+    "portfolio_nav": 108.6226,
+    "sensex_nav": 105.5247
+  },
+  {
+    "date": "2024-09-02",
+    "portfolio_nav": 110.1377,
+    "sensex_nav": 105.7734
+  },
+  {
+    "date": "2024-09-03",
+    "portfolio_nav": 110.554,
+    "sensex_nav": 105.7677
+  },
+  {
+    "date": "2024-09-04",
+    "portfolio_nav": 111.5679,
+    "sensex_nav": 105.5079
+  },
+  {
+    "date": "2024-09-05",
+    "portfolio_nav": 113.2001,
+    "sensex_nav": 105.3138
+  },
+  {
+    "date": "2024-09-06",
+    "portfolio_nav": 111.4071,
+    "sensex_nav": 104.0106
+  },
+  {
+    "date": "2024-09-09",
+    "portfolio_nav": 110.5525,
+    "sensex_nav": 104.4918
+  },
+  {
+    "date": "2024-09-10",
+    "portfolio_nav": 110.9963,
+    "sensex_nav": 104.9553
+  },
+  {
+    "date": "2024-09-11",
+    "portfolio_nav": 109.7442,
+    "sensex_nav": 104.4452
+  },
+  {
+    "date": "2024-09-12",
+    "portfolio_nav": 111.7053,
+    "sensex_nav": 106.2895
+  },
+  {
+    "date": "2024-09-13",
+    "portfolio_nav": 112.8736,
+    "sensex_nav": 106.1976
+  },
+  {
+    "date": "2024-09-16",
+    "portfolio_nav": 112.9148,
+    "sensex_nav": 106.3229
+  },
+  {
+    "date": "2024-09-17",
+    "portfolio_nav": 113.6089,
+    "sensex_nav": 106.4394
+  },
+  {
+    "date": "2024-09-18",
+    "portfolio_nav": 113.8534,
+    "sensex_nav": 106.271
+  },
+  {
+    "date": "2024-09-19",
+    "portfolio_nav": 112.2086,
+    "sensex_nav": 106.5741
+  },
+  {
+    "date": "2024-09-20",
+    "portfolio_nav": 115.4276,
+    "sensex_nav": 108.3158
+  },
+  {
+    "date": "2024-09-23",
+    "portfolio_nav": 115.6123,
+    "sensex_nav": 108.8082
+  },
+  {
+    "date": "2024-09-24",
+    "portfolio_nav": 115.9009,
+    "sensex_nav": 108.7895
+  },
+  {
+    "date": "2024-09-25",
+    "portfolio_nav": 128.5211,
+    "sensex_nav": 109.1173
+  },
+  {
+    "date": "2024-09-26",
+    "portfolio_nav": 129.2161,
+    "sensex_nav": 109.9709
+  },
+  {
+    "date": "2024-09-27",
+    "portfolio_nav": 129.1418,
+    "sensex_nav": 109.6323
+  },
+  {
+    "date": "2024-09-30",
+    "portfolio_nav": 129.1847,
+    "sensex_nav": 108.0025
+  },
+  {
+    "date": "2024-10-01",
+    "portfolio_nav": 129.6218,
+    "sensex_nav": 107.9596
+  },
+  {
+    "date": "2024-10-03",
+    "portfolio_nav": 126.6434,
+    "sensex_nav": 105.693
+  },
+  {
+    "date": "2024-10-04",
+    "portfolio_nav": 124.8634,
+    "sensex_nav": 104.657
+  },
+  {
+    "date": "2024-10-07",
+    "portfolio_nav": 122.4627,
+    "sensex_nav": 103.839
+  },
+  {
+    "date": "2024-10-08",
+    "portfolio_nav": 123.8699,
+    "sensex_nav": 104.5882
+  },
+  {
+    "date": "2024-10-09",
+    "portfolio_nav": 124.5476,
+    "sensex_nav": 104.3734
+  },
+  {
+    "date": "2024-10-10",
+    "portfolio_nav": 123.8951,
+    "sensex_nav": 104.5583
+  },
+  {
+    "date": "2024-10-11",
+    "portfolio_nav": 123.8874,
+    "sensex_nav": 104.2635
+  },
+  {
+    "date": "2024-10-14",
+    "portfolio_nav": 124.611,
+    "sensex_nav": 105.0216
+  },
+  {
+    "date": "2024-10-15",
+    "portfolio_nav": 127.2705,
+    "sensex_nav": 104.8257
+  },
+  {
+    "date": "2024-10-16",
+    "portfolio_nav": 128.0459,
+    "sensex_nav": 104.4173
+  },
+  {
+    "date": "2024-10-17",
+    "portfolio_nav": 126.2365,
+    "sensex_nav": 103.7834
+  },
+  {
+    "date": "2024-10-18",
+    "portfolio_nav": 128.2325,
+    "sensex_nav": 104.0629
+  },
+  {
+    "date": "2024-10-21",
+    "portfolio_nav": 125.4348,
+    "sensex_nav": 103.9688
+  },
+  {
+    "date": "2024-10-22",
+    "portfolio_nav": 122.8228,
+    "sensex_nav": 102.7766
+  },
+  {
+    "date": "2024-10-23",
+    "portfolio_nav": 124.4603,
+    "sensex_nav": 102.5988
+  },
+  {
+    "date": "2024-10-24",
+    "portfolio_nav": 123.678,
+    "sensex_nav": 102.5773
+  },
+  {
+    "date": "2024-10-25",
+    "portfolio_nav": 120.8183,
+    "sensex_nav": 101.728
+  },
+  {
+    "date": "2024-10-28",
+    "portfolio_nav": 120.9008,
+    "sensex_nav": 102.5002
+  },
+  {
+    "date": "2024-10-29",
+    "portfolio_nav": 122.7822,
+    "sensex_nav": 102.9666
+  },
+  {
+    "date": "2024-10-30",
+    "portfolio_nav": 121.8011,
+    "sensex_nav": 102.4197
+  },
+  {
+    "date": "2024-10-31",
+    "portfolio_nav": 122.6451,
+    "sensex_nav": 101.7111
+  },
+  {
+    "date": "2024-11-01",
+    "portfolio_nav": 124.2938,
+    "sensex_nav": 102.1403
+  },
+  {
+    "date": "2024-11-04",
+    "portfolio_nav": 121.8801,
+    "sensex_nav": 100.9336
+  },
+  {
+    "date": "2024-11-05",
+    "portfolio_nav": 122.583,
+    "sensex_nav": 101.8232
+  },
+  {
+    "date": "2024-11-06",
+    "portfolio_nav": 123.3384,
+    "sensex_nav": 102.9782
+  },
+  {
+    "date": "2024-11-07",
+    "portfolio_nav": 122.3661,
+    "sensex_nav": 101.9067
+  },
+  {
+    "date": "2024-11-08",
+    "portfolio_nav": 122.3647,
+    "sensex_nav": 101.8357
+  },
+  {
+    "date": "2024-11-11",
+    "portfolio_nav": 121.4132,
+    "sensex_nav": 101.8483
+  },
+  {
+    "date": "2024-11-12",
+    "portfolio_nav": 120.6805,
+    "sensex_nav": 100.7965
+  },
+  {
+    "date": "2024-11-13",
+    "portfolio_nav": 117.5602,
+    "sensex_nav": 99.5355
+  },
+  {
+    "date": "2024-11-14",
+    "portfolio_nav": 117.452,
+    "sensex_nav": 99.3937
+  },
+  {
+    "date": "2024-11-18",
+    "portfolio_nav": 116.4354,
+    "sensex_nav": 99.0846
+  },
+  {
+    "date": "2024-11-19",
+    "portfolio_nav": 117.101,
+    "sensex_nav": 99.3913
+  },
+  {
+    "date": "2024-11-21",
+    "portfolio_nav": 115.5671,
+    "sensex_nav": 98.8499
+  },
+  {
+    "date": "2024-11-22",
+    "portfolio_nav": 117.213,
+    "sensex_nav": 101.3626
+  },
+  {
+    "date": "2024-11-25",
+    "portfolio_nav": 119.3444,
+    "sensex_nav": 102.6345
+  },
+  {
+    "date": "2024-11-26",
+    "portfolio_nav": 119.8424,
+    "sensex_nav": 102.499
+  },
+  {
+    "date": "2024-11-27",
+    "portfolio_nav": 120.2072,
+    "sensex_nav": 102.7937
+  },
+  {
+    "date": "2024-11-28",
+    "portfolio_nav": 119.9749,
+    "sensex_nav": 101.2686
+  },
+  {
+    "date": "2024-11-29",
+    "portfolio_nav": 120.2571,
+    "sensex_nav": 102.2411
+  },
+  {
+    "date": "2024-12-02",
+    "portfolio_nav": 119.9705,
+    "sensex_nav": 102.8116
+  },
+  {
+    "date": "2024-12-03",
+    "portfolio_nav": 120.55,
+    "sensex_nav": 103.5773
+  },
+  {
+    "date": "2024-12-04",
+    "portfolio_nav": 120.9931,
+    "sensex_nav": 103.719
+  },
+  {
+    "date": "2024-12-05",
+    "portfolio_nav": 121.7806,
+    "sensex_nav": 104.7561
+  },
+  {
+    "date": "2024-12-06",
+    "portfolio_nav": 121.8947,
+    "sensex_nav": 104.6835
+  },
+  {
+    "date": "2024-12-09",
+    "portfolio_nav": 122.8759,
+    "sensex_nav": 104.4264
+  },
+  {
+    "date": "2024-12-10",
+    "portfolio_nav": 122.2735,
+    "sensex_nav": 104.4284
+  },
+  {
+    "date": "2024-12-11",
+    "portfolio_nav": 122.7014,
+    "sensex_nav": 104.449
+  },
+  {
+    "date": "2024-12-12",
+    "portfolio_nav": 122.1662,
+    "sensex_nav": 104.1464
+  },
+  {
+    "date": "2024-12-13",
+    "portfolio_nav": 122.2312,
+    "sensex_nav": 105.2267
+  },
+  {
+    "date": "2024-12-16",
+    "portfolio_nav": 122.345,
+    "sensex_nav": 104.734
+  },
+  {
+    "date": "2024-12-17",
+    "portfolio_nav": 120.546,
+    "sensex_nav": 103.3707
+  },
+  {
+    "date": "2024-12-18",
+    "portfolio_nav": 118.8377,
+    "sensex_nav": 102.7272
+  },
+  {
+    "date": "2024-12-19",
+    "portfolio_nav": 118.2619,
+    "sensex_nav": 101.492
+  },
+  {
+    "date": "2024-12-20",
+    "portfolio_nav": 116.4282,
+    "sensex_nav": 99.9847
+  },
+  {
+    "date": "2024-12-23",
+    "portfolio_nav": 116.7324,
+    "sensex_nav": 100.6235
+  },
+  {
+    "date": "2024-12-24",
+    "portfolio_nav": 116.6561,
+    "sensex_nav": 100.5373
+  },
+  {
+    "date": "2024-12-26",
+    "portfolio_nav": 116.8017,
+    "sensex_nav": 100.5368
+  },
+  {
+    "date": "2024-12-27",
+    "portfolio_nav": 116.7467,
+    "sensex_nav": 100.8271
+  },
+  {
+    "date": "2024-12-30",
+    "portfolio_nav": 117.8894,
+    "sensex_nav": 100.2493
+  },
+  {
+    "date": "2024-12-31",
+    "portfolio_nav": 117.6186,
+    "sensex_nav": 100.1095
+  },
+  {
+    "date": "2025-01-01",
+    "portfolio_nav": 118.115,
+    "sensex_nav": 100.5815
+  },
+  {
+    "date": "2025-01-02",
+    "portfolio_nav": 120.8535,
+    "sensex_nav": 102.4217
+  },
+  {
+    "date": "2025-01-03",
+    "portfolio_nav": 120.8034,
+    "sensex_nav": 101.4984
+  },
+  {
+    "date": "2025-01-06",
+    "portfolio_nav": 118.0378,
+    "sensex_nav": 99.8866
+  },
+  {
+    "date": "2025-01-07",
+    "portfolio_nav": 119.2602,
+    "sensex_nav": 100.1865
+  },
+  {
+    "date": "2025-01-08",
+    "portfolio_nav": 120.0949,
+    "sensex_nav": 100.1217
+  },
+  {
+    "date": "2025-01-09",
+    "portfolio_nav": 118.7023,
+    "sensex_nav": 99.4449
+  },
+  {
+    "date": "2025-01-10",
+    "portfolio_nav": 116.6804,
+    "sensex_nav": 99.1357
+  },
+  {
+    "date": "2025-01-13",
+    "portfolio_nav": 113.1598,
+    "sensex_nav": 97.7919
+  },
+  {
+    "date": "2025-01-14",
+    "portfolio_nav": 115.749,
+    "sensex_nav": 98.0092
+  },
+  {
+    "date": "2025-01-15",
+    "portfolio_nav": 114.6609,
+    "sensex_nav": 98.2968
+  },
+  {
+    "date": "2025-01-16",
+    "portfolio_nav": 113.9106,
+    "sensex_nav": 98.7051
+  },
+  {
+    "date": "2025-01-17",
+    "portfolio_nav": 113.6016,
+    "sensex_nav": 98.1626
+  },
+  {
+    "date": "2025-01-20",
+    "portfolio_nav": 116.2882,
+    "sensex_nav": 98.7443
+  },
+  {
+    "date": "2025-01-21",
+    "portfolio_nav": 114.262,
+    "sensex_nav": 97.162
+  },
+  {
+    "date": "2025-01-22",
+    "portfolio_nav": 113.9504,
+    "sensex_nav": 97.8879
+  },
+  {
+    "date": "2025-01-23",
+    "portfolio_nav": 113.788,
+    "sensex_nav": 98.0358
+  },
+  {
+    "date": "2025-01-24",
+    "portfolio_nav": 111.8705,
+    "sensex_nav": 97.6131
+  },
+  {
+    "date": "2025-01-27",
+    "portfolio_nav": 110.7455,
+    "sensex_nav": 96.557
+  },
+  {
+    "date": "2025-01-28",
+    "portfolio_nav": 111.1265,
+    "sensex_nav": 97.2428
+  },
+  {
+    "date": "2025-01-29",
+    "portfolio_nav": 113.645,
+    "sensex_nav": 98.0519
+  },
+  {
+    "date": "2025-01-30",
+    "portfolio_nav": 113.93,
+    "sensex_nav": 98.3425
+  },
+  {
+    "date": "2025-01-31",
+    "portfolio_nav": 114.3051,
+    "sensex_nav": 99.2916
+  },
+  {
+    "date": "2025-02-01",
+    "portfolio_nav": 113.5626,
+    "sensex_nav": 99.2916
+  },
+  {
+    "date": "2025-02-03",
+    "portfolio_nav": 111.7572,
+    "sensex_nav": 98.8895
+  },
+  {
+    "date": "2025-02-04",
+    "portfolio_nav": 113.3022,
+    "sensex_nav": 100.6794
+  },
+  {
+    "date": "2025-02-05",
+    "portfolio_nav": 115.4403,
+    "sensex_nav": 100.279
+  },
+  {
+    "date": "2025-02-06",
+    "portfolio_nav": 114.9607,
+    "sensex_nav": 100.0059
+  },
+  {
+    "date": "2025-02-07",
+    "portfolio_nav": 114.2762,
+    "sensex_nav": 99.7523
+  },
+  {
+    "date": "2025-02-10",
+    "portfolio_nav": 113.1838,
+    "sensex_nav": 99.0497
+  },
+  {
+    "date": "2025-02-11",
+    "portfolio_nav": 111.789,
+    "sensex_nav": 97.7452
+  },
+  {
+    "date": "2025-02-12",
+    "portfolio_nav": 112.0081,
+    "sensex_nav": 97.5883
+  },
+  {
+    "date": "2025-02-13",
+    "portfolio_nav": 112.6331,
+    "sensex_nav": 97.5471
+  },
+  {
+    "date": "2025-02-14",
+    "portfolio_nav": 110.7956,
+    "sensex_nav": 97.2912
+  },
+  {
+    "date": "2025-02-17",
+    "portfolio_nav": 110.9864,
+    "sensex_nav": 97.3651
+  },
+  {
+    "date": "2025-02-18",
+    "portfolio_nav": 111.1395,
+    "sensex_nav": 97.3273
+  },
+  {
+    "date": "2025-02-19",
+    "portfolio_nav": 111.2474,
+    "sensex_nav": 97.2912
+  },
+  {
+    "date": "2025-02-20",
+    "portfolio_nav": 111.086,
+    "sensex_nav": 97.0308
+  },
+  {
+    "date": "2025-02-21",
+    "portfolio_nav": 110.1543,
+    "sensex_nav": 96.4864
+  },
+  {
+    "date": "2025-02-24",
+    "portfolio_nav": 109.3584,
+    "sensex_nav": 95.3889
+  },
+  {
+    "date": "2025-02-25",
+    "portfolio_nav": 109.8148,
+    "sensex_nav": 95.5782
+  },
+  {
+    "date": "2025-02-27",
+    "portfolio_nav": 110.6195,
+    "sensex_nav": 95.5914
+  },
+  {
+    "date": "2025-02-28",
+    "portfolio_nav": 109.476,
+    "sensex_nav": 93.7794
+  },
+  {
+    "date": "2025-03-03",
+    "portfolio_nav": 108.6744,
+    "sensex_nav": 93.6357
+  },
+  {
+    "date": "2025-03-04",
+    "portfolio_nav": 109.4567,
+    "sensex_nav": 93.5127
+  },
+  {
+    "date": "2025-03-05",
+    "portfolio_nav": 110.9037,
+    "sensex_nav": 94.4611
+  },
+  {
+    "date": "2025-03-06",
+    "portfolio_nav": 112.4254,
+    "sensex_nav": 95.2425
+  },
+  {
+    "date": "2025-03-07",
+    "portfolio_nav": 111.8245,
+    "sensex_nav": 95.2328
+  },
+  {
+    "date": "2025-03-10",
+    "portfolio_nav": 110.706,
+    "sensex_nav": 94.9543
+  },
+  {
+    "date": "2025-03-11",
+    "portfolio_nav": 111.4738,
+    "sensex_nav": 94.9378
+  },
+  {
+    "date": "2025-03-12",
+    "portfolio_nav": 111.6924,
+    "sensex_nav": 94.8449
+  },
+  {
+    "date": "2025-03-13",
+    "portfolio_nav": 111.5779,
+    "sensex_nav": 94.5875
+  },
+  {
+    "date": "2025-03-17",
+    "portfolio_nav": 111.5075,
+    "sensex_nav": 95.0245
+  },
+  {
+    "date": "2025-03-18",
+    "portfolio_nav": 111.5097,
+    "sensex_nav": 96.4739
+  },
+  {
+    "date": "2025-03-19",
+    "portfolio_nav": 114.6228,
+    "sensex_nav": 96.6632
+  },
+  {
+    "date": "2025-03-20",
+    "portfolio_nav": 115.7559,
+    "sensex_nav": 97.815
+  },
+  {
+    "date": "2025-03-21",
+    "portfolio_nav": 117.9353,
+    "sensex_nav": 98.5292
+  },
+  {
+    "date": "2025-03-24",
+    "portfolio_nav": 119.977,
+    "sensex_nav": 99.9114
+  },
+  {
+    "date": "2025-03-25",
+    "portfolio_nav": 123.609,
+    "sensex_nav": 99.9535
+  },
+  {
+    "date": "2025-03-26",
+    "portfolio_nav": 121.2757,
+    "sensex_nav": 99.0199
+  },
+  {
+    "date": "2025-03-27",
+    "portfolio_nav": 121.3386,
+    "sensex_nav": 99.4272
+  },
+  {
+    "date": "2025-03-28",
+    "portfolio_nav": 121.9313,
+    "sensex_nav": 99.1818
+  },
+  {
+    "date": "2025-04-01",
+    "portfolio_nav": 121.1423,
+    "sensex_nav": 97.4005
+  },
+  {
+    "date": "2025-04-02",
+    "portfolio_nav": 122.8086,
+    "sensex_nav": 98.1601
+  },
+  {
+    "date": "2025-04-03",
+    "portfolio_nav": 122.8355,
+    "sensex_nav": 97.7475
+  },
+  {
+    "date": "2025-04-04",
+    "portfolio_nav": 120.145,
+    "sensex_nav": 96.5551
+  },
+  {
+    "date": "2025-04-07",
+    "portfolio_nav": 115.7642,
+    "sensex_nav": 93.7022
+  },
+  {
+    "date": "2025-04-08",
+    "portfolio_nav": 118.9831,
+    "sensex_nav": 95.0977
+  },
+  {
+    "date": "2025-04-09",
+    "portfolio_nav": 118.0585,
+    "sensex_nav": 94.6109
+  },
+  {
+    "date": "2025-04-11",
+    "portfolio_nav": 120.9455,
+    "sensex_nav": 96.2894
+  },
+  {
+    "date": "2025-04-15",
+    "portfolio_nav": 123.0479,
+    "sensex_nav": 98.3106
+  },
+  {
+    "date": "2025-04-16",
+    "portfolio_nav": 123.9306,
+    "sensex_nav": 98.707
+  },
+  {
+    "date": "2025-04-17",
+    "portfolio_nav": 125.9008,
+    "sensex_nav": 100.6402
+  },
+  {
+    "date": "2025-04-21",
+    "portfolio_nav": 129.4945,
+    "sensex_nav": 101.736
+  },
+  {
+    "date": "2025-04-22",
+    "portfolio_nav": 129.9839,
+    "sensex_nav": 101.9757
+  },
+  {
+    "date": "2025-04-23",
+    "portfolio_nav": 130.9933,
+    "sensex_nav": 102.643
+  },
+  {
+    "date": "2025-04-24",
+    "portfolio_nav": 130.4717,
+    "sensex_nav": 102.2394
+  },
+  {
+    "date": "2025-04-25",
+    "portfolio_nav": 129.1405,
+    "sensex_nav": 101.4849
+  },
+  {
+    "date": "2025-04-28",
+    "portfolio_nav": 129.8469,
+    "sensex_nav": 102.7735
+  },
+  {
+    "date": "2025-04-29",
+    "portfolio_nav": 130.0223,
+    "sensex_nav": 102.8632
+  },
+  {
+    "date": "2025-04-30",
+    "portfolio_nav": 128.4453,
+    "sensex_nav": 102.8041
+  },
+  {
+    "date": "2025-05-02",
+    "portfolio_nav": 127.7028,
+    "sensex_nav": 103.1369
+  },
+  {
+    "date": "2025-05-05",
+    "portfolio_nav": 129.4883,
+    "sensex_nav": 103.5147
+  },
+  {
+    "date": "2025-05-06",
+    "portfolio_nav": 128.1165,
+    "sensex_nav": 103.3151
+  },
+  {
+    "date": "2025-05-07",
+    "portfolio_nav": 128.6779,
+    "sensex_nav": 103.4505
+  },
+  {
+    "date": "2025-05-08",
+    "portfolio_nav": 127.219,
+    "sensex_nav": 102.9227
+  },
+  {
+    "date": "2025-05-09",
+    "portfolio_nav": 125.1094,
+    "sensex_nav": 101.7949
+  },
+  {
+    "date": "2025-05-12",
+    "portfolio_nav": 128.9606,
+    "sensex_nav": 105.6069
+  },
+  {
+    "date": "2025-05-13",
+    "portfolio_nav": 128.2742,
+    "sensex_nav": 103.9648
+  },
+  {
+    "date": "2025-05-14",
+    "portfolio_nav": 129.6802,
+    "sensex_nav": 104.1985
+  },
+  {
+    "date": "2025-05-15",
+    "portfolio_nav": 130.896,
+    "sensex_nav": 105.7361
+  },
+  {
+    "date": "2025-05-16",
+    "portfolio_nav": 131.7736,
+    "sensex_nav": 105.4797
+  },
+  {
+    "date": "2025-05-19",
+    "portfolio_nav": 132.2609,
+    "sensex_nav": 105.1322
+  },
+  {
+    "date": "2025-05-20",
+    "portfolio_nav": 131.0987,
+    "sensex_nav": 104.0138
+  },
+  {
+    "date": "2025-05-21",
+    "portfolio_nav": 131.5414,
+    "sensex_nav": 104.5393
+  },
+  {
+    "date": "2025-05-22",
+    "portfolio_nav": 130.9524,
+    "sensex_nav": 103.7134
+  },
+  {
+    "date": "2025-05-23",
+    "portfolio_nav": 131.7206,
+    "sensex_nav": 104.6988
+  },
+  {
+    "date": "2025-05-26",
+    "portfolio_nav": 132.408,
+    "sensex_nav": 105.2822
+  },
+  {
+    "date": "2025-05-27",
+    "portfolio_nav": 132.7325,
+    "sensex_nav": 104.4817
+  },
+  {
+    "date": "2025-05-28",
+    "portfolio_nav": 133.3878,
+    "sensex_nav": 104.1751
+  },
+  {
+    "date": "2025-05-29",
+    "portfolio_nav": 132.5006,
+    "sensex_nav": 104.586
+  },
+  {
+    "date": "2025-05-30",
+    "portfolio_nav": 131.7388,
+    "sensex_nav": 104.3528
+  },
+  {
+    "date": "2025-06-02",
+    "portfolio_nav": 131.6639,
+    "sensex_nav": 104.2538
+  },
+  {
+    "date": "2025-06-03",
+    "portfolio_nav": 130.6866,
+    "sensex_nav": 103.4387
+  },
+  {
+    "date": "2025-06-04",
+    "portfolio_nav": 130.0278,
+    "sensex_nav": 103.7727
+  },
+  {
+    "date": "2025-06-05",
+    "portfolio_nav": 129.9255,
+    "sensex_nav": 104.3413
+  },
+  {
+    "date": "2025-06-06",
+    "portfolio_nav": 132.8242,
+    "sensex_nav": 105.2982
+  },
+  {
+    "date": "2025-06-09",
+    "portfolio_nav": 134.7705,
+    "sensex_nav": 105.6265
+  },
+  {
+    "date": "2025-06-10",
+    "portfolio_nav": 134.7581,
+    "sensex_nav": 105.558
+  },
+  {
+    "date": "2025-06-11",
+    "portfolio_nav": 135.7207,
+    "sensex_nav": 105.7161
+  },
+  {
+    "date": "2025-06-12",
+    "portfolio_nav": 134.0917,
+    "sensex_nav": 104.6615
+  },
+  {
+    "date": "2025-06-13",
+    "portfolio_nav": 133.3895,
+    "sensex_nav": 103.9269
+  },
+  {
+    "date": "2025-06-16",
+    "portfolio_nav": 134.5975,
+    "sensex_nav": 104.795
+  },
+  {
+    "date": "2025-06-17",
+    "portfolio_nav": 134.5504,
+    "sensex_nav": 104.5223
+  },
+  {
+    "date": "2025-06-18",
+    "portfolio_nav": 134.1849,
+    "sensex_nav": 104.3446
+  },
+  {
+    "date": "2025-06-19",
+    "portfolio_nav": 133.0551,
+    "sensex_nav": 104.2386
+  },
+  {
+    "date": "2025-06-20",
+    "portfolio_nav": 133.8174,
+    "sensex_nav": 105.5791
+  },
+  {
+    "date": "2025-06-23",
+    "portfolio_nav": 133.8426,
+    "sensex_nav": 104.9239
+  },
+  {
+    "date": "2025-06-24",
+    "portfolio_nav": 134.9785,
+    "sensex_nav": 105.1267
+  },
+  {
+    "date": "2025-06-25",
+    "portfolio_nav": 153.4954,
+    "sensex_nav": 106.0241
+  },
+  {
+    "date": "2025-06-26",
+    "portfolio_nav": 154.4211,
+    "sensex_nav": 107.3057
+  },
+  {
+    "date": "2025-06-27",
+    "portfolio_nav": 155.1112,
+    "sensex_nav": 107.6939
+  },
+  {
+    "date": "2025-06-30",
+    "portfolio_nav": 157.3817,
+    "sensex_nav": 107.1143
+  },
+  {
+    "date": "2025-07-01",
+    "portfolio_nav": 156.5464,
+    "sensex_nav": 107.2306
+  },
+  {
+    "date": "2025-07-02",
+    "portfolio_nav": 156.8534,
+    "sensex_nav": 106.8622
+  },
+  {
+    "date": "2025-07-03",
+    "portfolio_nav": 155.4736,
+    "sensex_nav": 106.6441
+  },
+  {
+    "date": "2025-07-04",
+    "portfolio_nav": 155.7675,
+    "sensex_nav": 106.8919
+  },
+  {
+    "date": "2025-07-07",
+    "portfolio_nav": 154.9788,
+    "sensex_nav": 106.9042
+  },
+  {
+    "date": "2025-07-08",
+    "portfolio_nav": 155.3324,
+    "sensex_nav": 107.2501
+  },
+  {
+    "date": "2025-07-09",
+    "portfolio_nav": 155.4594,
+    "sensex_nav": 107.0241
+  },
+  {
+    "date": "2025-07-10",
+    "portfolio_nav": 154.9869,
+    "sensex_nav": 106.5811
+  },
+  {
+    "date": "2025-07-11",
+    "portfolio_nav": 153.5488,
+    "sensex_nav": 105.6973
+  },
+  {
+    "date": "2025-07-14",
+    "portfolio_nav": 153.3613,
+    "sensex_nav": 105.3808
+  },
+  {
+    "date": "2025-07-15",
+    "portfolio_nav": 155.0229,
+    "sensex_nav": 105.7876
+  },
+  {
+    "date": "2025-07-16",
+    "portfolio_nav": 156.264,
+    "sensex_nav": 105.869
+  },
+  {
+    "date": "2025-07-17",
+    "portfolio_nav": 156.7654,
+    "sensex_nav": 105.3883
+  },
+  {
+    "date": "2025-07-18",
+    "portfolio_nav": 156.4811,
+    "sensex_nav": 104.7457
+  },
+  {
+    "date": "2025-07-21",
+    "portfolio_nav": 157.2913,
+    "sensex_nav": 105.3128
+  },
+  {
+    "date": "2025-07-22",
+    "portfolio_nav": 157.0504,
+    "sensex_nav": 105.2955
+  },
+  {
+    "date": "2025-07-23",
+    "portfolio_nav": 157.4399,
+    "sensex_nav": 105.9871
+  },
+  {
+    "date": "2025-07-24",
+    "portfolio_nav": 156.2227,
+    "sensex_nav": 105.2921
+  },
+  {
+    "date": "2025-07-25",
+    "portfolio_nav": 153.9388,
+    "sensex_nav": 104.3682
+  },
+  {
+    "date": "2025-07-28",
+    "portfolio_nav": 151.8651,
+    "sensex_nav": 103.6353
+  },
+  {
+    "date": "2025-07-29",
+    "portfolio_nav": 152.8343,
+    "sensex_nav": 104.2079
+  },
+  {
+    "date": "2025-07-30",
+    "portfolio_nav": 152.0761,
+    "sensex_nav": 104.3923
+  },
+  {
+    "date": "2025-07-31",
+    "portfolio_nav": 150.6296,
+    "sensex_nav": 104.0127
+  },
+  {
+    "date": "2025-08-01",
+    "portfolio_nav": 147.9451,
+    "sensex_nav": 103.2624
+  },
+  {
+    "date": "2025-08-04",
+    "portfolio_nav": 148.5874,
+    "sensex_nav": 103.7989
+  },
+  {
+    "date": "2025-08-05",
+    "portfolio_nav": 148.3873,
+    "sensex_nav": 103.4037
+  },
+  {
+    "date": "2025-08-06",
+    "portfolio_nav": 148.1683,
+    "sensex_nav": 103.1907
+  },
+  {
+    "date": "2025-08-07",
+    "portfolio_nav": 149.1295,
+    "sensex_nav": 103.2923
+  },
+  {
+    "date": "2025-08-08",
+    "portfolio_nav": 148.8479,
+    "sensex_nav": 102.3116
+  },
+  {
+    "date": "2025-08-11",
+    "portfolio_nav": 149.5639,
+    "sensex_nav": 103.2677
+  },
+  {
+    "date": "2025-08-12",
+    "portfolio_nav": 149.5466,
+    "sensex_nav": 102.7956
+  },
+  {
+    "date": "2025-08-13",
+    "portfolio_nav": 149.904,
+    "sensex_nav": 103.1855
+  },
+  {
+    "date": "2025-08-14",
+    "portfolio_nav": 150.393,
+    "sensex_nav": 103.2595
+  },
+  {
+    "date": "2025-08-18",
+    "portfolio_nav": 153.1668,
+    "sensex_nav": 104.1257
+  },
+  {
+    "date": "2025-08-19",
+    "portfolio_nav": 151.907,
+    "sensex_nav": 104.6005
+  },
+  {
+    "date": "2025-08-20",
+    "portfolio_nav": 152.0831,
+    "sensex_nav": 104.874
+  },
+  {
+    "date": "2025-08-21",
+    "portfolio_nav": 151.9794,
+    "sensex_nav": 105.057
+  },
+  {
+    "date": "2025-08-22",
+    "portfolio_nav": 150.5293,
+    "sensex_nav": 104.1681
+  },
+  {
+    "date": "2025-08-25",
+    "portfolio_nav": 150.2111,
+    "sensex_nav": 104.5897
+  },
+  {
+    "date": "2025-08-26",
+    "portfolio_nav": 147.8778,
+    "sensex_nav": 103.5015
+  },
+  {
+    "date": "2025-08-28",
+    "portfolio_nav": 146.449,
+    "sensex_nav": 102.597
+  },
+  {
+    "date": "2025-08-29",
+    "portfolio_nav": 146.4956,
+    "sensex_nav": 102.2499
+  },
+  {
+    "date": "2025-09-01",
+    "portfolio_nav": 148.2751,
+    "sensex_nav": 102.9608
+  },
+  {
+    "date": "2025-09-02",
+    "portfolio_nav": 148.108,
+    "sensex_nav": 102.696
+  },
+  {
+    "date": "2025-09-03",
+    "portfolio_nav": 148.913,
+    "sensex_nav": 103.2211
+  },
+  {
+    "date": "2025-09-04",
+    "portfolio_nav": 148.2868,
+    "sensex_nav": 103.4137
+  },
+  {
+    "date": "2025-09-05",
+    "portfolio_nav": 149.0315,
+    "sensex_nav": 103.4044
+  },
+  {
+    "date": "2025-09-08",
+    "portfolio_nav": 148.7846,
+    "sensex_nav": 103.5024
+  },
+  {
+    "date": "2025-09-09",
+    "portfolio_nav": 149.6001,
+    "sensex_nav": 103.9048
+  },
+  {
+    "date": "2025-09-10",
+    "portfolio_nav": 150.6453,
+    "sensex_nav": 104.3196
+  },
+  {
+    "date": "2025-09-11",
+    "portfolio_nav": 152.3732,
+    "sensex_nav": 104.478
+  },
+  {
+    "date": "2025-09-12",
+    "portfolio_nav": 152.1544,
+    "sensex_nav": 104.934
+  },
+  {
+    "date": "2025-09-15",
+    "portfolio_nav": 152.5959,
+    "sensex_nav": 104.7816
+  },
+  {
+    "date": "2025-09-16",
+    "portfolio_nav": 154.2261,
+    "sensex_nav": 105.5438
+  },
+  {
+    "date": "2025-09-17",
+    "portfolio_nav": 155.6271,
+    "sensex_nav": 105.9449
+  },
+  {
+    "date": "2025-09-18",
+    "portfolio_nav": 155.7014,
+    "sensex_nav": 106.3552
+  },
+  {
+    "date": "2025-09-19",
+    "portfolio_nav": 156.0466,
+    "sensex_nav": 105.8584
+  },
+  {
+    "date": "2025-09-22",
+    "portfolio_nav": 154.7761,
+    "sensex_nav": 105.2611
+  },
+  {
+    "date": "2025-09-23",
+    "portfolio_nav": 154.4415,
+    "sensex_nav": 105.1869
+  },
+  {
+    "date": "2025-09-24",
+    "portfolio_nav": 153.4044,
+    "sensex_nav": 104.6918
+  },
+  {
+    "date": "2025-09-25",
+    "portfolio_nav": 158.9338,
+    "sensex_nav": 103.9795
+  },
+  {
+    "date": "2025-09-26",
+    "portfolio_nav": 155.9844,
+    "sensex_nav": 103.0401
+  },
+  {
+    "date": "2025-09-29",
+    "portfolio_nav": 156.2124,
+    "sensex_nav": 102.9613
+  },
+  {
+    "date": "2025-09-30",
+    "portfolio_nav": 156.0382,
+    "sensex_nav": 102.8366
+  },
+  {
+    "date": "2025-10-01",
+    "portfolio_nav": 157.9499,
+    "sensex_nav": 103.7536
+  },
+  {
+    "date": "2025-10-03",
+    "portfolio_nav": 157.3902,
+    "sensex_nav": 104.0404
+  },
+  {
+    "date": "2025-10-06",
+    "portfolio_nav": 158.3346,
+    "sensex_nav": 104.7872
+  },
+  {
+    "date": "2025-10-07",
+    "portfolio_nav": 159.0931,
+    "sensex_nav": 104.9623
+  },
+  {
+    "date": "2025-10-08",
+    "portfolio_nav": 159.5041,
+    "sensex_nav": 104.7661
+  },
+  {
+    "date": "2025-10-09",
+    "portfolio_nav": 159.9762,
+    "sensex_nav": 105.2766
+  },
+  {
+    "date": "2025-10-10",
+    "portfolio_nav": 160.0933,
+    "sensex_nav": 105.6978
+  },
+  {
+    "date": "2025-10-13",
+    "portfolio_nav": 160.0473,
+    "sensex_nav": 105.4751
+  },
+  {
+    "date": "2025-10-14",
+    "portfolio_nav": 160.2085,
+    "sensex_nav": 105.0945
+  },
+  {
+    "date": "2025-10-15",
+    "portfolio_nav": 161.5079,
+    "sensex_nav": 105.8318
+  },
+  {
+    "date": "2025-10-16",
+    "portfolio_nav": 163.4045,
+    "sensex_nav": 106.9364
+  },
+  {
+    "date": "2025-10-17",
+    "portfolio_nav": 162.2468,
+    "sensex_nav": 107.5572
+  },
+  {
+    "date": "2025-10-20",
+    "portfolio_nav": 162.942,
+    "sensex_nav": 108.084
+  },
+  {
+    "date": "2025-10-21",
+    "portfolio_nav": 163.1599,
+    "sensex_nav": 108.1647
+  },
+  {
+    "date": "2025-10-23",
+    "portfolio_nav": 164.4262,
+    "sensex_nav": 108.3313
+  },
+  {
+    "date": "2025-10-24",
+    "portfolio_nav": 165.7092,
+    "sensex_nav": 107.8899
+  },
+  {
+    "date": "2025-10-27",
+    "portfolio_nav": 165.0978,
+    "sensex_nav": 108.6163
+  },
+  {
+    "date": "2025-10-28",
+    "portfolio_nav": 164.2824,
+    "sensex_nav": 108.4232
+  },
+  {
+    "date": "2025-10-29",
+    "portfolio_nav": 164.1924,
+    "sensex_nav": 108.896
+  },
+  {
+    "date": "2025-10-30",
+    "portfolio_nav": 164.181,
+    "sensex_nav": 108.1366
+  },
+  {
+    "date": "2025-10-31",
+    "portfolio_nav": 163.5258,
+    "sensex_nav": 107.5399
+  },
+  {
+    "date": "2025-11-03",
+    "portfolio_nav": 165.2757,
+    "sensex_nav": 107.5909
+  },
+  {
+    "date": "2025-11-04",
+    "portfolio_nav": 164.1981,
+    "sensex_nav": 106.9255
+  },
+  {
+    "date": "2025-11-06",
+    "portfolio_nav": 161.2546,
+    "sensex_nav": 106.7358
+  },
+  {
+    "date": "2025-11-07",
+    "portfolio_nav": 159.991,
+    "sensex_nav": 106.6144
+  },
+  {
+    "date": "2025-11-10",
+    "portfolio_nav": 162.0793,
+    "sensex_nav": 107.0232
+  },
+  {
+    "date": "2025-11-11",
+    "portfolio_nav": 162.414,
+    "sensex_nav": 107.4536
+  },
+  {
+    "date": "2025-11-12",
+    "portfolio_nav": 163.8766,
+    "sensex_nav": 108.2161
+  },
+  {
+    "date": "2025-11-13",
+    "portfolio_nav": 164.2167,
+    "sensex_nav": 108.2317
+  },
+  {
+    "date": "2025-11-14",
+    "portfolio_nav": 163.0959,
+    "sensex_nav": 108.3395
+  },
+  {
+    "date": "2025-11-17",
+    "portfolio_nav": 163.681,
+    "sensex_nav": 108.8368
+  },
+  {
+    "date": "2025-11-18",
+    "portfolio_nav": 162.7743,
+    "sensex_nav": 108.4807
+  },
+  {
+    "date": "2025-11-19",
+    "portfolio_nav": 162.3162,
+    "sensex_nav": 109.1385
+  },
+  {
+    "date": "2025-11-20",
+    "portfolio_nav": 161.843,
+    "sensex_nav": 109.7102
+  },
+  {
+    "date": "2025-11-21",
+    "portfolio_nav": 160.4734,
+    "sensex_nav": 109.1968
+  },
+  {
+    "date": "2025-11-24",
+    "portfolio_nav": 161.0168,
+    "sensex_nav": 108.7724
+  },
+  {
+    "date": "2025-11-25",
+    "portfolio_nav": 160.5455,
+    "sensex_nav": 108.3705
+  },
+  {
+    "date": "2025-11-26",
+    "portfolio_nav": 161.8185,
+    "sensex_nav": 109.6805
+  },
+  {
+    "date": "2025-11-27",
+    "portfolio_nav": 161.6707,
+    "sensex_nav": 109.8226
+  },
+  {
+    "date": "2025-11-28",
+    "portfolio_nav": 162.0722,
+    "sensex_nav": 109.805
+  },
+  {
+    "date": "2025-12-01",
+    "portfolio_nav": 163.1874,
+    "sensex_nav": 109.722
+  },
+  {
+    "date": "2025-12-02",
+    "portfolio_nav": 162.4218,
+    "sensex_nav": 109.0768
+  },
+  {
+    "date": "2025-12-03",
+    "portfolio_nav": 162.7354,
+    "sensex_nav": 109.0365
+  },
+  {
+    "date": "2025-12-04",
+    "portfolio_nav": 162.5339,
+    "sensex_nav": 109.2396
+  },
+  {
+    "date": "2025-12-05",
+    "portfolio_nav": 162.8577,
+    "sensex_nav": 109.8123
+  },
+  {
+    "date": "2025-12-08",
+    "portfolio_nav": 161.115,
+    "sensex_nav": 109.0312
+  },
+  {
+    "date": "2025-12-09",
+    "portfolio_nav": 162.0513,
+    "sensex_nav": 108.4721
+  },
+  {
+    "date": "2025-12-10",
+    "portfolio_nav": 161.4866,
+    "sensex_nav": 108.1197
+  },
+  {
+    "date": "2025-12-11",
+    "portfolio_nav": 162.9148,
+    "sensex_nav": 108.6666
+  },
+  {
+    "date": "2025-12-12",
+    "portfolio_nav": 163.3329,
+    "sensex_nav": 109.2426
+  },
+  {
+    "date": "2025-12-15",
+    "portfolio_nav": 163.4309,
+    "sensex_nav": 109.173
+  },
+  {
+    "date": "2025-12-16",
+    "portfolio_nav": 161.4524,
+    "sensex_nav": 108.4895
+  },
+  {
+    "date": "2025-12-17",
+    "portfolio_nav": 160.0749,
+    "sensex_nav": 108.3355
+  },
+  {
+    "date": "2025-12-18",
+    "portfolio_nav": 159.7665,
+    "sensex_nav": 108.2357
+  },
+  {
+    "date": "2025-12-19",
+    "portfolio_nav": 160.8469,
+    "sensex_nav": 108.8091
+  },
+  {
+    "date": "2025-12-22",
+    "portfolio_nav": 161.3454,
+    "sensex_nav": 109.6267
+  },
+  {
+    "date": "2025-12-23",
+    "portfolio_nav": 162.947,
+    "sensex_nav": 109.572
+  },
+  {
+    "date": "2025-12-24",
+    "portfolio_nav": 162.9449,
+    "sensex_nav": 109.4233
+  },
+  {
+    "date": "2025-12-26",
+    "portfolio_nav": 162.3435,
+    "sensex_nav": 108.9527
+  },
+  {
+    "date": "2025-12-29",
+    "portfolio_nav": 161.2965,
+    "sensex_nav": 108.5096
+  },
+  {
+    "date": "2025-12-30",
+    "portfolio_nav": 160.8842,
+    "sensex_nav": 108.4834
+  },
+  {
+    "date": "2025-12-31",
+    "portfolio_nav": 162.0431,
+    "sensex_nav": 109.1823
+  },
+  {
+    "date": "2026-01-01",
+    "portfolio_nav": 163.3106,
+    "sensex_nav": 109.1413
+  },
+  {
+    "date": "2026-01-02",
+    "portfolio_nav": 165.6054,
+    "sensex_nav": 109.8759
+  },
+  {
+    "date": "2026-01-05",
+    "portfolio_nav": 166.9709,
+    "sensex_nav": 109.4629
+  },
+  {
+    "date": "2026-01-06",
+    "portfolio_nav": 166.3871,
+    "sensex_nav": 108.9808
+  },
+  {
+    "date": "2026-01-07",
+    "portfolio_nav": 167.1498,
+    "sensex_nav": 108.8499
+  },
+  {
+    "date": "2026-01-08",
+    "portfolio_nav": 165.4104,
+    "sensex_nav": 107.8503
+  },
+  {
+    "date": "2026-01-09",
+    "portfolio_nav": 162.6478,
+    "sensex_nav": 107.0756
+  },
+  {
+    "date": "2026-01-12",
+    "portfolio_nav": 163.0473,
+    "sensex_nav": 107.4624
+  },
+  {
+    "date": "2026-01-13",
+    "portfolio_nav": 163.2646,
+    "sensex_nav": 107.1415
+  },
+  {
+    "date": "2026-01-14",
+    "portfolio_nav": 162.2192,
+    "sensex_nav": 106.8276
+  },
+  {
+    "date": "2026-01-15",
+    "portfolio_nav": 162.2192,
+    "sensex_nav": 106.8276
+  },
+  {
+    "date": "2026-01-16",
+    "portfolio_nav": 163.0564,
+    "sensex_nav": 107.068
+  },
+  {
+    "date": "2026-01-19",
+    "portfolio_nav": 161.978,
+    "sensex_nav": 106.6527
+  },
+  {
+    "date": "2026-01-20",
+    "portfolio_nav": 158.7178,
+    "sensex_nav": 105.2873
+  },
+  {
+    "date": "2026-01-21",
+    "portfolio_nav": 157.4272,
+    "sensex_nav": 104.9403
+  },
+  {
+    "date": "2026-01-22",
+    "portfolio_nav": 159.2567,
+    "sensex_nav": 105.4499
+  },
+  {
+    "date": "2026-01-23",
+    "portfolio_nav": 157.0484,
+    "sensex_nav": 104.4638
+  },
+  {
+    "date": "2026-01-27",
+    "portfolio_nav": 158.168,
+    "sensex_nav": 104.8735
+  },
+  {
+    "date": "2026-01-28",
+    "portfolio_nav": 159.8319,
+    "sensex_nav": 105.4977
+  },
+  {
+    "date": "2026-01-29",
+    "portfolio_nav": 160.0487,
+    "sensex_nav": 105.7817
+  },
+  {
+    "date": "2026-01-30",
+    "portfolio_nav": 160.5573,
+    "sensex_nav": 105.4018
+  },
+  {
+    "date": "2026-02-02",
+    "portfolio_nav": 158.4463,
+    "sensex_nav": 104.6288
+  },
+  {
+    "date": "2026-02-03",
+    "portfolio_nav": 162.0771,
+    "sensex_nav": 107.2842
+  },
+  {
+    "date": "2026-02-04",
+    "portfolio_nav": 162.1372,
+    "sensex_nav": 107.3849
+  },
+  {
+    "date": "2026-02-05",
+    "portfolio_nav": 160.8286,
+    "sensex_nav": 106.7395
+  },
+  {
+    "date": "2026-02-06",
+    "portfolio_nav": 160.3076,
+    "sensex_nav": 107.0809
+  },
+  {
+    "date": "2026-02-09",
+    "portfolio_nav": 161.862,
+    "sensex_nav": 107.7027
+  },
+  {
+    "date": "2026-02-10",
+    "portfolio_nav": 162.8284,
+    "sensex_nav": 107.9694
+  },
+  {
+    "date": "2026-02-11",
+    "portfolio_nav": 161.789,
+    "sensex_nav": 107.9178
+  },
+  {
+    "date": "2026-02-12",
+    "portfolio_nav": 159.9474,
+    "sensex_nav": 107.202
+  },
+  {
+    "date": "2026-02-13",
+    "portfolio_nav": 157.7775,
+    "sensex_nav": 105.8591
+  },
+  {
+    "date": "2026-02-16",
+    "portfolio_nav": 158.2468,
+    "sensex_nav": 106.6924
+  },
+  {
+    "date": "2026-02-17",
+    "portfolio_nav": 159.1291,
+    "sensex_nav": 106.9151
+  },
+  {
+    "date": "2026-02-18",
+    "portfolio_nav": 160.162,
+    "sensex_nav": 107.278
+  },
+  {
+    "date": "2026-02-19",
+    "portfolio_nav": 157.924,
+    "sensex_nav": 105.6943
+  },
+  {
+    "date": "2026-02-20",
+    "portfolio_nav": 158.5274,
+    "sensex_nav": 106.0999
+  },
+  {
+    "date": "2026-02-23",
+    "portfolio_nav": 159.1294,
+    "sensex_nav": 106.7148
+  },
+  {
+    "date": "2026-02-24",
+    "portfolio_nav": 157.8221,
+    "sensex_nav": 105.3456
+  },
+  {
+    "date": "2026-02-25",
+    "portfolio_nav": 159.1302,
+    "sensex_nav": 105.4098
+  },
+  {
+    "date": "2026-02-26",
+    "portfolio_nav": 159.4181,
+    "sensex_nav": 105.3746
+  },
+  {
+    "date": "2026-02-27",
+    "portfolio_nav": 157.1972,
+    "sensex_nav": 104.1429
+  },
+  {
+    "date": "2026-03-02",
+    "portfolio_nav": 154.591,
+    "sensex_nav": 102.7998
+  },
+  {
+    "date": "2026-03-04",
+    "portfolio_nav": 152.3123,
+    "sensex_nav": 101.3615
+  },
+  {
+    "date": "2026-03-05",
+    "portfolio_nav": 153.5336,
+    "sensex_nav": 102.5141
+  },
+  {
+    "date": "2026-03-06",
+    "portfolio_nav": 151.3714,
+    "sensex_nav": 101.1087
+  },
+  {
+    "date": "2026-03-09",
+    "portfolio_nav": 148.0776,
+    "sensex_nav": 99.3756
+  },
+  {
+    "date": "2026-03-10",
+    "portfolio_nav": 151.0786,
+    "sensex_nav": 100.1953
+  },
+  {
+    "date": "2026-03-11",
+    "portfolio_nav": 150.3536,
+    "sensex_nav": 98.4756
+  },
+  {
+    "date": "2026-03-12",
+    "portfolio_nav": 148.9909,
+    "sensex_nav": 97.4132
+  },
+  {
+    "date": "2026-03-13",
+    "portfolio_nav": 146.6552,
+    "sensex_nav": 95.5292
+  },
+  {
+    "date": "2026-03-16",
+    "portfolio_nav": 146.2207,
+    "sensex_nav": 96.7322
+  },
+  {
+    "date": "2026-03-17",
+    "portfolio_nav": 146.0238,
+    "sensex_nav": 97.4598
+  },
+  {
+    "date": "2026-03-18",
+    "portfolio_nav": 146.8161,
+    "sensex_nav": 98.2712
+  },
+  {
+    "date": "2026-03-19",
+    "portfolio_nav": 142.9692,
+    "sensex_nav": 95.0723
+  },
+  {
+    "date": "2026-03-20",
+    "portfolio_nav": 143.575,
+    "sensex_nav": 95.4896
+  },
+  {
+    "date": "2026-03-23",
+    "portfolio_nav": 138.1878,
+    "sensex_nav": 93.1366
+  },
+  {
+    "date": "2026-03-24",
+    "portfolio_nav": 140.3373,
+    "sensex_nav": 94.8944
+  },
+  {
+    "date": "2026-03-25",
+    "portfolio_nav": 150.8623,
+    "sensex_nav": 96.4383
+  },
+  {
+    "date": "2026-03-27",
+    "portfolio_nav": 147.4962,
+    "sensex_nav": 94.2728
+  },
+  {
+    "date": "2026-03-30",
+    "portfolio_nav": 143.2241,
+    "sensex_nav": 92.1772
+  },
+  {
+    "date": "2026-04-01",
+    "portfolio_nav": 147.2345,
+    "sensex_nav": 93.6977
+  },
+  {
+    "date": "2026-04-02",
+    "portfolio_nav": 148.316,
+    "sensex_nav": 93.935
+  },
+  {
+    "date": "2026-04-06",
+    "portfolio_nav": 150.8273,
+    "sensex_nav": 94.9436
+  },
+  {
+    "date": "2026-04-07",
+    "portfolio_nav": 151.5587,
+    "sensex_nav": 95.5967
+  },
+  {
+    "date": "2026-04-08",
+    "portfolio_nav": 159.7228,
+    "sensex_nav": 99.3714
+  },
+  {
+    "date": "2026-04-09",
+    "portfolio_nav": 158.4474,
+    "sensex_nav": 98.1783
+  },
+  {
+    "date": "2026-04-10",
+    "portfolio_nav": 160.6794,
+    "sensex_nav": 99.3552
+  },
+  {
+    "date": "2026-04-13",
+    "portfolio_nav": 159.5471,
+    "sensex_nav": 98.455
+  },
+  {
+    "date": "2026-04-15",
+    "portfolio_nav": 161.6034,
+    "sensex_nav": 100.0739
+  },
+  {
+    "date": "2026-04-16",
+    "portfolio_nav": 164.5624,
+    "sensex_nav": 99.9169
+  },
+  {
+    "date": "2026-04-17",
+    "portfolio_nav": 166.4802,
+    "sensex_nav": 100.5637
+  },
+  {
+    "date": "2026-04-20",
+    "portfolio_nav": 166.0709,
+    "sensex_nav": 100.598
+  },
+  {
+    "date": "2026-04-21",
+    "portfolio_nav": 166.9098,
+    "sensex_nav": 101.5628
+  },
+  {
+    "date": "2026-04-22",
+    "portfolio_nav": 165.9078,
+    "sensex_nav": 100.5931
+  },
+  {
+    "date": "2026-04-23",
+    "portfolio_nav": 164.8042,
+    "sensex_nav": 99.501
+  },
+  {
+    "date": "2026-04-24",
+    "portfolio_nav": 164.0669,
+    "sensex_nav": 98.2201
+  },
+  {
+    "date": "2026-04-27",
+    "portfolio_nav": 164.4985,
+    "sensex_nav": 99.0393
+  },
+  {
+    "date": "2026-04-28",
+    "portfolio_nav": 163.5519,
+    "sensex_nav": 98.5054
+  },
+  {
+    "date": "2026-04-29",
+    "portfolio_nav": 163.7509,
+    "sensex_nav": 99.2862
+  },
+  {
+    "date": "2026-04-30",
+    "portfolio_nav": 162.3868,
+    "sensex_nav": 98.5394
+  },
+  {
+    "date": "2026-05-01",
+    "portfolio_nav": 162.3899,
+    "sensex_nav": 98.5394
+  },
+  {
+    "date": "2026-05-04",
+    "portfolio_nav": 164.5711,
+    "sensex_nav": 98.9954
+  },
+  {
+    "date": "2026-05-05",
+    "portfolio_nav": 164.7002,
+    "sensex_nav": 98.6731
+  },
+  {
+    "date": "2026-05-06",
+    "portfolio_nav": 167.4804,
+    "sensex_nav": 99.8783
+  },
+  {
+    "date": "2026-05-07",
+    "portfolio_nav": 168.4729,
+    "sensex_nav": 99.7322
+  },
+  {
+    "date": "2026-05-08",
+    "portfolio_nav": 167.9583,
+    "sensex_nav": 99.0707
+  },
+  {
+    "date": "2026-05-11",
+    "portfolio_nav": 165.9265,
+    "sensex_nav": 97.3887
+  },
+  {
+    "date": "2026-05-12",
+    "portfolio_nav": 162.129,
+    "sensex_nav": 95.5232
+  },
+  {
+    "date": "2026-05-13",
+    "portfolio_nav": 161.1622,
+    "sensex_nav": 95.587
+  },
+  {
+    "date": "2026-05-14",
+    "portfolio_nav": 161.0328,
+    "sensex_nav": 96.5987
+  },
+  {
+    "date": "2026-05-15",
+    "portfolio_nav": 160.6872,
+    "sensex_nav": 96.3928
+  },
+  {
+    "date": "2026-05-18",
+    "portfolio_nav": 159.8895,
+    "sensex_nav": 96.4915
+  },
+  {
+    "date": "2026-05-19",
+    "portfolio_nav": 160.2251,
+    "sensex_nav": 96.3452
+  },
+  {
+    "date": "2026-05-20",
+    "portfolio_nav": 160.1558,
+    "sensex_nav": 96.4958
+  },
+  {
+    "date": "2026-05-21",
+    "portfolio_nav": 159.4954,
+    "sensex_nav": 96.3228
+  },
+  {
+    "date": "2026-05-22",
+    "portfolio_nav": 159.5462,
+    "sensex_nav": 96.62
+  },
+  {
+    "date": "2026-05-25",
+    "portfolio_nav": 161.8427,
+    "sensex_nav": 97.9955
+  },
+  {
+    "date": "2026-05-26",
+    "portfolio_nav": 161.8799,
+    "sensex_nav": 97.3815
+  },
+  {
+    "date": "2026-05-27",
+    "portfolio_nav": 160.9319,
+    "sensex_nav": 97.1997
+  },
+  {
+    "date": "2026-05-28",
+    "portfolio_nav": 160.935,
+    "sensex_nav": 97.1997
+  },
+  {
+    "date": "2026-05-29",
+    "portfolio_nav": 159.4424,
+    "sensex_nav": 95.8006
+  },
+  {
+    "date": "2026-06-01",
+    "portfolio_nav": 158.2272,
+    "sensex_nav": 95.1493
+  },
+  {
+    "date": "2026-06-02",
+    "portfolio_nav": 158.4313,
+    "sensex_nav": 95.6393
+  },
+  {
+    "date": "2026-06-03",
+    "portfolio_nav": 158.4809,
+    "sensex_nav": 95.2502
+  },
+  {
+    "date": "2026-06-04",
+    "portfolio_nav": 158.5498,
+    "sensex_nav": 95.268
+  },
+  {
+    "date": "2026-06-05",
+    "portfolio_nav": 158.8161,
+    "sensex_nav": 95.1185
+  },
+  {
+    "date": "2026-06-08",
+    "portfolio_nav": 157.4015,
+    "sensex_nav": 94.1972
+  },
+  {
+    "date": "2026-06-09",
+    "portfolio_nav": 159.6402,
+    "sensex_nav": 94.7027
+  },
+  {
+    "date": "2026-06-10",
+    "portfolio_nav": 158.1433,
+    "sensex_nav": 94.7852
+  },
+  {
+    "date": "2026-06-11",
+    "portfolio_nav": 157.6599,
+    "sensex_nav": 94.5922
+  },
+  {
+    "date": "2026-06-12",
+    "portfolio_nav": 160.4227,
+    "sensex_nav": 96.7643
+  },
+  {
+    "date": "2026-06-15",
+    "portfolio_nav": 163.0159,
+    "sensex_nav": 97.7077
+  },
+  {
+    "date": "2026-06-16",
+    "portfolio_nav": 167.8039,
+    "sensex_nav": 98.4049
+  },
+  {
+    "date": "2026-06-17",
+    "portfolio_nav": 167.7976,
+    "sensex_nav": 98.8496
+  },
+  {
+    "date": "2026-06-18",
+    "portfolio_nav": 167.8616,
+    "sensex_nav": 99.1755
+  },
+  {
+    "date": "2026-06-19",
+    "portfolio_nav": 167.7864,
+    "sensex_nav": 98.3977
+  },
+  {
+    "date": "2026-06-22",
+    "portfolio_nav": 168.6292,
+    "sensex_nav": 98.7708
+  },
+  {
+    "date": "2026-06-23",
+    "portfolio_nav": 167.3293,
+    "sensex_nav": 97.6262
+  },
+  {
+    "date": "2026-06-24",
+    "portfolio_nav": 169.1405,
+    "sensex_nav": 98.639
+  },
+  {
+    "date": "2026-06-25",
+    "portfolio_nav": 174.3213,
+    "sensex_nav": 98.779
+  }
+]
