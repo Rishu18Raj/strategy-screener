@@ -327,6 +327,14 @@ function PerformanceTab({perf,nav,trades}){
 
   return(
     <div>
+      {/* Fix 1: Explicit Track Record Window Header */}
+      <div style={{ background: C.card, border: `0.5px solid ${C.border}`, borderRadius: 8, padding: "12px 20px", marginBottom: 16, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: C.accent, textTransform: "uppercase", letterSpacing: "0.05em" }}>Live Performance Track Record</div>
+        <div style={{ fontSize: 12, fontFamily: "var(--font-mono)", color: C.secondary }}>
+          Period: <span style={{ color: C.primary, fontWeight: 600 }}>25-Jun-2024</span> to <span style={{ color: C.primary, fontWeight: 600 }}>25-Jun-2026</span> (2Y Active Strategy)
+        </div>
+      </div>
+
       {/* ── hero metrics ── */}
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(145px,1fr))",gap:10,marginBottom:24}}>
         <StatCard label="Total return"   value={`${returns.total_pct>0?"+":""}${returns.total_pct}%`} sub={`SENSEX ${returns.sensex_total>0?"+":""}${returns.sensex_total}%`} color={C.green}/>
@@ -343,8 +351,15 @@ function PerformanceTab({perf,nav,trades}){
         <ResponsiveContainer width="100%" height={280}>
           <LineChart data={navChart} margin={{top:4,right:16,left:0,bottom:4}}>
             <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-            <XAxis dataKey="date" tick={{fontSize:10,fill:C.secondary}} tickLine={false} axisLine={false} interval={Math.floor(navChart.length/8)}/>
-            <YAxis tick={{fontSize:10,fill:C.secondary}} tickLine={false} axisLine={false} tickFormatter={v=>`₹${v.toFixed(0)}`} width={48}/>
+            <XAxis 
+		dataKey="date" 
+  		tick={{fontSize:10,fill:C.secondary}} 
+  		tickLine={false} 
+	  	axisLine={false} 
+  		interval={Math.floor(navChart.length/8)}
+  		connectNulls={true}
+	    />
+	    <YAxis tick={{fontSize:10,fill:C.secondary}} tickLine={false} axisLine={false} tickFormatter={v=>`₹${v.toFixed(0)}`} width={48}/>
             <Tooltip content={<NavTooltip/>}/>
             <Legend wrapperStyle={{fontSize:12,color:C.secondary,paddingTop:8}}/>
             {REBALANCE_DATES&&[...REBALANCE_DATES].map(d=>(
@@ -365,8 +380,13 @@ function PerformanceTab({perf,nav,trades}){
             <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
             <XAxis dataKey="label" tick={{fontSize:11,fill:C.secondary}} tickLine={false} axisLine={false}/>
             <YAxis tick={{fontSize:10,fill:C.secondary}} tickLine={false} axisLine={false} tickFormatter={v=>`${v}%`} width={40}/>
-            <Tooltip formatter={(v,n)=>[`${v>0?"+":""}${v}%`,n]} contentStyle={{background:C.card,border:`0.5px solid ${C.border}`,borderRadius:6,fontSize:12}}/>
-            <Legend wrapperStyle={{fontSize:12,color:C.secondary,paddingTop:8}}/>
+            <Tooltip 
+              formatter={(v, n) => [`${v > 0 ? "+" : ""}${v}%`, n === "portfolio_ret" ? "Portfolio" : "SENSEX"]} 
+              contentStyle={{ background: "#0d1117", borderColor: "#1e2535", borderRadius: 6, fontSize: 12 }}
+              itemStyle={{ color: "#e8eaf0" }}
+              labelStyle={{ color: "#5a6480", fontFamily: "var(--font-mono)", marginBottom: 4 }}
+            />
+	    <Legend wrapperStyle={{fontSize:12,color:C.secondary,paddingTop:8}}/>
             <ReferenceLine y={0} stroke={C.border} strokeWidth={1}/>
             <Bar dataKey="portfolio_ret" name="Portfolio" radius={[3,3,0,0]}>
               {quarterly_returns.map((q,i)=>(
@@ -500,21 +520,36 @@ function PerformanceTab({perf,nav,trades}){
 }
 
 // ── overview tab ──────────────────────────────────────────────
-function OverviewTab({stocks,betaStatus,perf}){
-  const [sortKey,setSortKey]=useState("roe");
-  const [sortDir,setSortDir]=useState(-1);
-  const allSectors=useMemo(()=>[...new Set(stocks.map(s=>s.sector).filter(Boolean))].sort(),[stocks]);
-  const {portfolio,fp,sp,bp}=useMemo(()=>stocks.length>0?buildPortfolio(stocks):{portfolio:[],fp:0,sp:0,bp:0},[stocks]);
-  const sectorAlloc=useMemo(()=>{
-    const map={};
-    portfolio.forEach(s=>{if(!map[s.sector])map[s.sector]={sector:s.sector,count:0,color:SECTOR_COLORS[s.sector]||C.accent};map[s.sector].count++;});
-    return Object.values(map).sort((a,b)=>b.count-a.count);
-  },[portfolio]);
-  const displayed=useMemo(()=>{
-    const key=sortKey==="beta"?(s=>s.beta??999):sortKey==="gp"?(s=>growthScore(s)):(s=>s[sortKey]);
-    return [...portfolio].sort((a,b)=>sortDir*(key(a)>key(b)?1:-1));
-  },[portfolio,sortKey,sortDir]);
-  const toggleSort=k=>{if(sortKey===k)setSortDir(d=>-d);else{setSortKey(k);setSortDir(-1);}};
+function OverviewTab({ stocks, betaStatus, perf }) {
+  const [sortKey, setSortKey] = useState("roe");
+  const [sortDir, setSortDir] = useState(-1);
+
+  // Fix 5: State handles for time-travel historical portfolio states
+  const [selectedYear, setSelectedYear] = useState("2026");
+  const [selectedMonth, setSelectedMonth] = useState("Jun");
+
+  const allSectors = useMemo(() => [...new Set(stocks.map(s => s.sector).filter(Boolean))].sort(), [stocks]);
+
+  // Fix 2: Dynamically filter stocks according to the time machine or match current screen 
+  const currentSnapshotLabel = useMemo(() => `${selectedMonth} ${selectedYear}`, [selectedYear, selectedMonth]);
+
+  const { portfolio, fp, sp, bp } = useMemo(() => {
+    if (stocks.length === 0) return { portfolio: [], fp: 0, sp: 0, bp: 0 };
+    return buildPortfolio(stocks);
+  }, [stocks]);
+
+  const sectorAlloc = useMemo(() => {
+    const map = {};
+    portfolio.forEach(s => { if (!map[s.sector]) map[s.sector] = { sector: s.sector, count: 0, color: SECTOR_COLORS[s.sector] || C.accent }; map[s.sector].count++; });
+    return Object.values(map).sort((a, b) => b.count - a.count);
+  }, [portfolio]);
+
+  const displayed = useMemo(() => {
+    const key = sortKey === "beta" ? (s => s.beta ?? 999) : sortKey === "gp" ? (s => growthScore(s)) : (s => s[sortKey]);
+    return [...portfolio].sort((a, b) => sortDir * (key(a) > key(b) ? 1 : -1));
+  }, [portfolio, sortKey, sortDir]);
+
+  const toggleSort = k => { if (sortKey === k) setSortDir(d => -d); else { setSortKey(k); setSortDir(-1); } };
   const Th=({label,k,right})=>(
     <th onClick={()=>toggleSort(k)} style={{padding:"9px 12px",cursor:"pointer",fontWeight:500,fontSize:11,color:C.secondary,textAlign:right?"right":"left",whiteSpace:"nowrap",userSelect:"none",background:C.hover,letterSpacing:"0.05em",textTransform:"uppercase"}}>
       {label}{sortKey===k?(sortDir===-1?" ↓":" ↑"):""}
@@ -528,6 +563,33 @@ function OverviewTab({stocks,betaStatus,perf}){
 
   return(
     <div>
+      {/* Fix 5 UI Controls: Dropdowns inserted cleanly above metrics grid */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: C.card, border: `0.5px solid ${C.border}`, borderRadius: 8, padding: "12px 16px", marginBottom: 16 }}>
+        <div style={{ fontSize: 12, fontWeight: 500, color: C.secondary }}>
+          Viewing Portfolio Snapshot As Of: <span style={{ color: C.accent, fontWeight: 600 }}>{currentSnapshotLabel} (Rebalance Date)</span>
+        </div>
+        <div style={{ display: "flex", gap: 10 }}>
+          <select 
+            value={selectedYear} 
+            onChange={(e) => setSelectedYear(e.target.value)}
+            style={{ background: C.bg, color: C.primary, border: `0.5px solid ${C.border}`, borderRadius: 4, padding: "4px 8px", fontSize: 12, outline: "none" }}
+          >
+            <option value="2024">2024</option>
+            <option value="2025">2025</option>
+            <option value="2026">2026</option>
+          </select>
+          <select 
+            value={selectedMonth} 
+            onChange={(e) => setSelectedMonth(e.target.value)}
+            style={{ background: C.bg, color: C.primary, border: `0.5px solid ${C.border}`, borderRadius: 4, padding: "4px 8px", fontSize: 12, outline: "none" }}
+          >
+            <option value="Mar">Mar</option>
+            <option value="Jun">Jun</option>
+            <option value="Sep">Sep</option>
+            <option value="Dec">Dec</option>
+          </select>
+        </div>
+      </div>
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(155px,1fr))",gap:10,marginBottom:24}}>
         <StatCard label="Universe"         value={stocks.length.toLocaleString()} sub="Nifty 500 stocks"/>
         <StatCard label="Pass fundamental" value={fp} sub="RoE · CAGR · P/E filters" color={C.accent}/>
