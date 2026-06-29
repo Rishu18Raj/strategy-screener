@@ -291,8 +291,8 @@ function PerformanceTab({perf,nav,trades}){
       .filter(d=>{ if(seen.has(d.date))return false; seen.add(d.date); return true; })
       .filter((_,i,arr)=>i%3===0||i===arr.length-1)
       .map(d=>({
-        date:      d.date.slice(5),
-        full_date: d.date,
+        // Fix 1: Keep the full date string so Recharts has a unique ID for the axis
+        date:      d.date, 
         portfolio_nav: +d.portfolio_nav,
         sensex_nav:    +d.sensex_nav,
       }));
@@ -381,11 +381,15 @@ function PerformanceTab({perf,nav,trades}){
             <XAxis dataKey="label" tick={{fontSize:11,fill:C.secondary}} tickLine={false} axisLine={false}/>
             <YAxis tick={{fontSize:10,fill:C.secondary}} tickLine={false} axisLine={false} tickFormatter={v=>`${v}%`} width={40}/>
             <Tooltip 
-              formatter={(v, n) => [`${v > 0 ? "+" : ""}${v}%`, n === "portfolio_ret" ? "Portfolio" : "SENSEX"]} 
-              contentStyle={{ background: "#0d1117", borderColor: "#1e2535", borderRadius: 6, fontSize: 12 }}
-              itemStyle={{ color: "#e8eaf0" }}
-              labelStyle={{ color: "#5a6480", fontFamily: "var(--font-mono)", marginBottom: 4 }}
-            />
+  		// Fix 2: Use the dataKey (first argument) to determine the label
+  		formatter={(value, dataKey) => [
+  		  `${value > 0 ? "+" : ""}${value}%`, 
+  		  dataKey === "portfolio_ret" ? "Portfolio" : "SENSEX"
+  		]}
+  		contentStyle={{ background: "#0d1117", borderColor: "#1e2535", borderRadius: 6, fontSize: 12 }}
+  		itemStyle={{ color: "#e8eaf0" }}
+  		labelStyle={{ color: "#5a6480", fontFamily: "var(--font-mono)", marginBottom: 4 }}
+	    />
 	    <Legend wrapperStyle={{fontSize:12,color:C.secondary,paddingTop:8}}/>
             <ReferenceLine y={0} stroke={C.border} strokeWidth={1}/>
             <Bar dataKey="portfolio_ret" name="Portfolio" radius={[3,3,0,0]}>
