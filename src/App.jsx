@@ -381,15 +381,16 @@ function PerformanceTab({perf,nav,trades}){
             <XAxis dataKey="label" tick={{fontSize:11,fill:C.secondary}} tickLine={false} axisLine={false}/>
             <YAxis tick={{fontSize:10,fill:C.secondary}} tickLine={false} axisLine={false} tickFormatter={v=>`${v}%`} width={40}/>
             <Tooltip 
-  		// Fix 2: Use the dataKey (first argument) to determine the label
-  		formatter={(value, dataKey) => [
-  		  `${value > 0 ? "+" : ""}${value}%`, 
-  		  dataKey === "portfolio_ret" ? "Portfolio" : "SENSEX"
-  		]}
-  		contentStyle={{ background: "#0d1117", borderColor: "#1e2535", borderRadius: 6, fontSize: 12 }}
-  		itemStyle={{ color: "#e8eaf0" }}
-  		labelStyle={{ color: "#5a6480", fontFamily: "var(--font-mono)", marginBottom: 4 }}
-	    />
+              // Fix: Use 'name' directly (which is 'Portfolio' or 'SENSEX') 
+              // instead of checking the dataKey ('portfolio_ret')
+              formatter={(value, name) => [
+                `${value > 0 ? "+" : ""}${value}%`, 
+                name.toUpperCase() // Uppercased to match your request
+              ]} 
+              contentStyle={{ background: "#0d1117", borderColor: "#1e2535", borderRadius: 6, fontSize: 12 }}
+              itemStyle={{ color: "#e8eaf0" }}
+              labelStyle={{ color: "#5a6480", fontFamily: "var(--font-mono)", marginBottom: 4 }}
+            />
 	    <Legend wrapperStyle={{fontSize:12,color:C.secondary,paddingTop:8}}/>
             <ReferenceLine y={0} stroke={C.border} strokeWidth={1}/>
             <Bar dataKey="portfolio_ret" name="Portfolio" radius={[3,3,0,0]}>
