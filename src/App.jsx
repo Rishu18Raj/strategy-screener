@@ -312,7 +312,6 @@ function PerformanceTab({perf,nav,trades}){
 
   const availableYears = [...new Set(PORTFOLIO_SNAPSHOTS.map(s=>s.year))];
   const availableMonths = PORTFOLIO_SNAPSHOTS.filter(s=>s.year===snapYear).map(s=>s.month);
-  const processedTrades = useMemo(() => {
     let t=[...trades];
     if(tradeFilter==="closed") t=t.filter(x=>x.status==="closed");
     if(tradeFilter==="open")   t=t.filter(x=>x.status==="open");
@@ -336,6 +335,8 @@ function PerformanceTab({perf,nav,trades}){
     </th>
   );
 
+  const availableYears  = [...new Set(PORTFOLIO_SNAPSHOTS.map(s=>s.year))];
+  const availableMonths = PORTFOLIO_SNAPSHOTS.filter(s=>s.year===snapYear).map(s=>s.month);
 
   const sectionLabel={fontSize:11,fontWeight:600,color:C.secondary,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:14};
 
