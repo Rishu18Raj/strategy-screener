@@ -271,10 +271,6 @@ function PerformanceTab({perf,nav,trades}){
   const [tradeFilter,setTradeFilter]=useState("all");
   const [tradeSortKey,setTradeSortKey]=useState("entry_date");
   const [tradeSortDir,setTradeSortDir]=useState(-1);
-  const [snapYear,setSnapYear]=useState("2026");
-  const [snapMonth,setSnapMonth]=useState("Jun");
-  const [snapData,setSnapData]=useState(null);
-  const [snapLoading,setSnapLoading]=useState(false);
 
   if(!perf||!nav||!trades){
     return(
@@ -300,18 +296,8 @@ function PerformanceTab({perf,nav,trades}){
       }));
   },[nav]);
 
-  // load snapshot when year/month changes
-  useEffect(()=>{
-    const snap = PORTFOLIO_SNAPSHOTS.find(s=>s.year===snapYear&&s.month===snapMonth);
-    if(!snap) return;
-    setSnapLoading(true);
-    fetch(`${BASE}/historical/${snap.file}`)
-      .then(r=>r.json()).then(d=>{ setSnapData(d); setSnapLoading(false); })
-      .catch(()=>setSnapLoading(false));
-  },[snapYear,snapMonth]);
-
-  const availableYears = [...new Set(PORTFOLIO_SNAPSHOTS.map(s=>s.year))];
-  const availableMonths = PORTFOLIO_SNAPSHOTS.filter(s=>s.year===snapYear).map(s=>s.month);
+  // ── filtered & sorted trades ──
+  const filteredTrades=useMemo(()=>{
     let t=[...trades];
     if(tradeFilter==="closed") t=t.filter(x=>x.status==="closed");
     if(tradeFilter==="open")   t=t.filter(x=>x.status==="open");
