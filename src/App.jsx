@@ -3,6 +3,7 @@ import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip, Legend, ResponsiveContainer, ReferenceLine, Cell,
 } from "recharts";
+import Papa from "papaparse"; 
 
 // ── strategy config ───────────────────────────────────────────
 const SELECTED_SECTORS = new Set([
@@ -65,25 +66,26 @@ const SECTOR_COLORS = {
 
 // ── helpers ───────────────────────────────────────────────────
 function parseCSV(text) {
-  const lines = text.trim().split("\n");
-  const headers = lines[0].split(",").map(x=>x.trim());
-  return lines.slice(1).map(line=>{
-    const vals=[]; let cur="", inQ=false;
-    for (let i=0;i<line.length;i++){
-      if(line[i]==='"'){inQ=!inQ;continue;}
-      if(line[i]===','&&!inQ){vals.push(cur.trim());cur="";continue;}
-      cur+=line[i];
-    }
-    vals.push(cur.trim());
-    const obj={};
-    headers.forEach((h,i)=>{obj[h]=vals[i]??""});
-    const pct=v=>parseFloat((v||"").replace("%","").replace(",",""));
-    return {
-      ticker:obj.ticker?.trim(),name:obj.name?.trim(),sector:obj.sector?.trim(),
-      roe:pct(obj.roe),revCAGR:pct(obj.revCAGR),epsCAGR:pct(obj.epsCAGR),pe:pct(obj.pe),
-      beta:null,betaStatus:"idle",
-    };
-  }).filter(s=>s.ticker);
+  // Use PapaParse to handle quoted strings and headers natively
+  const { data } = Papa.parse(text, {
+    header: true,
+    skipEmptyLines: true,
+    transformHeader: h => h.trim()
+  });
+
+  const pct = v => parseFloat((v || "").toString().replace("%", "").replace(",", ""));
+
+  return data.map(obj => ({
+    ticker: obj.ticker?.trim(),
+    name: obj.name?.trim(),
+    sector: obj.sector?.trim(),
+    roe: pct(obj.roe),
+    revCAGR: pct(obj.revCAGR),
+    epsCAGR: pct(obj.epsCAGR),
+    pe: pct(obj.pe),
+    beta: null,
+    betaStatus: "idle",
+  })).filter(s => s.ticker);
 }
 
 function passesFundamentals(s){
@@ -763,11 +765,26 @@ export default function App(){
       .catch(()=>setBetaStatus("error"));
   },[]);
 
-  useEffect(()=>{
-    fetch(URLS.perfSummary).then(r=>r.json()).then(setPerf).catch(()=>{});
-    fetch(URLS.nav).then(r=>r.json()).then(setNav).catch(()=>{});
-    fetch(URLS.tradeLog).then(r=>r.json()).then(setTrades).catch(()=>{});
-  },[]);
+  useEffect(() => {
+    const loadPerformanceData = async () => {
+      const results = await Promise.allSettled([
+        fetch(URLS.perfSummary).then(r => { if (!r.ok) throw new Error("perf_err"); return r.json(); }),
+        fetch(URLS.nav).then(r => { if (!r.ok) throw new Error("nav_err"); return r.json(); }),
+        fetch(URLS.tradeLog).then(r => { if (!r.ok) throw new Error("trade_err"); return r.json(); })
+      ]);
+
+      if (results[0].status === "fulfilled") setPerf(results[0].value);
+      else console.warn("Failed to load Performance Summary.");
+
+      if (results[1].status === "fulfilled") setNav(results[1].value);
+      else console.warn("Failed to load NAV data.");
+
+      if (results[2].status === "fulfilled") setTrades(results[2].value);
+      else console.warn("Failed to load Trade Log.");
+    };
+
+    loadPerformanceData();
+  }, []);
 
   return(
     <div style={{display:"flex",flexDirection:"column",height:"100vh",overflow:"hidden"}}>
