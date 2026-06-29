@@ -2,51 +2,51 @@
   "generated": "2026-06-29",
   "period": {
     "start": "2024-06-25",
-    "end": "2026-06-25",
-    "days": 730
+    "end": "2026-06-29",
+    "days": 734
   },
   "returns": {
-    "total_pct": 76.56,
-    "annualised_pct": 32.88,
-    "sensex_total": -1.22,
-    "sensex_ann": -0.61,
-    "alpha_total": 77.78,
-    "alpha_ann": 33.49
+    "total_pct": 74.32,
+    "annualised_pct": 31.83,
+    "sensex_total": -1.25,
+    "sensex_ann": -0.63,
+    "alpha_total": 75.57,
+    "alpha_ann": 32.46
   },
   "risk": {
-    "sharpe": 1.1257,
-    "sortino": 1.4128,
-    "treynor": 25.27,
-    "jensen_alpha": 33.91,
-    "info_ratio": 1.8942,
-    "tracking_error": 17.68,
-    "beta": 1.0636,
-    "correlation": 0.6241,
-    "max_drawdown_pct": 17.33,
+    "sharpe": 1.1293,
+    "sortino": 1.3998,
+    "treynor": 24.99,
+    "jensen_alpha": 32.68,
+    "info_ratio": 1.9207,
+    "tracking_error": 16.9,
+    "beta": 1.0337,
+    "correlation": 0.6297,
+    "max_drawdown_pct": 17.44,
     "drawdown_start": "2026-01-07",
     "drawdown_end": "2026-03-23",
     "risk_free_rate": 0.06
   },
   "trades": {
-    "total_closed": 36,
-    "total_open": 8,
-    "intra_quarter": 18,
-    "rebalance_exits": 18,
-    "win_rate_pct": 80.6,
-    "avg_return_pct": 16.01,
-    "avg_winner_pct": 23.52,
-    "avg_loser_pct": -15.09,
-    "avg_alpha_pct": 14.5,
-    "avg_hold_days": 209,
+    "total_closed": 26,
+    "total_open": 10,
+    "intra_quarter": 4,
+    "rebalance_exits": 22,
+    "win_rate_pct": 69.2,
+    "avg_return_pct": 7.86,
+    "avg_winner_pct": 17.08,
+    "avg_loser_pct": -12.88,
+    "avg_alpha_pct": 5.04,
+    "avg_hold_days": 157,
     "best_trade": {
-      "ticker": "CHOLAHLDNG",
-      "return_pct": 62.38,
-      "entry_date": "2024-06-25",
-      "exit_date": "2024-09-26"
+      "ticker": "FEDERALBNK",
+      "return_pct": 54.02,
+      "entry_date": "2025-06-25",
+      "exit_date": "2026-06-25"
     },
     "worst_trade": {
       "ticker": "AAVAS",
-      "return_pct": -35.13,
+      "return_pct": -30.28,
       "entry_date": "2025-09-25",
       "exit_date": "2026-03-25"
     }
@@ -56,65 +56,65 @@
       "label": "Q1",
       "start_date": "2024-06-25",
       "end_date": "2024-09-25",
-      "portfolio_ret": 29.77,
+      "portfolio_ret": 30.04,
       "sensex_ret": 9.12,
-      "active_ret": 20.65
+      "active_ret": 20.92
     },
     {
       "label": "Q2",
       "start_date": "2024-09-25",
       "end_date": "2024-12-25",
-      "portfolio_ret": -9.71,
+      "portfolio_ret": -8.83,
       "sensex_ret": -7.86,
-      "active_ret": -1.85
+      "active_ret": -0.97
     },
     {
       "label": "Q3",
       "start_date": "2024-12-25",
       "end_date": "2025-03-25",
-      "portfolio_ret": 6.85,
+      "portfolio_ret": 3.62,
       "sensex_ret": -0.58,
-      "active_ret": 7.43
+      "active_ret": 4.2
     },
     {
       "label": "Q4",
       "start_date": "2025-03-25",
       "end_date": "2025-06-25",
-      "portfolio_ret": 24.18,
+      "portfolio_ret": 23.12,
       "sensex_ret": 6.07,
-      "active_ret": 18.11
+      "active_ret": 17.05
     },
     {
       "label": "Q5",
       "start_date": "2025-06-25",
       "end_date": "2025-09-25",
-      "portfolio_ret": 3.54,
+      "portfolio_ret": 4.24,
       "sensex_ret": -1.93,
-      "active_ret": 5.47
+      "active_ret": 6.17
     },
     {
       "label": "Q6",
       "start_date": "2025-09-25",
       "end_date": "2025-12-25",
-      "portfolio_ret": 2.15,
+      "portfolio_ret": 2.08,
       "sensex_ret": 4.78,
-      "active_ret": -2.63
+      "active_ret": -2.7
     },
     {
       "label": "Q7",
       "start_date": "2025-12-25",
       "end_date": "2026-03-25",
-      "portfolio_ret": -7.07,
+      "portfolio_ret": -8.25,
       "sensex_ret": -11.49,
-      "active_ret": 4.42
+      "active_ret": 3.24
     },
     {
       "label": "Q8",
       "start_date": "2026-03-25",
       "end_date": "2026-06-25",
-      "portfolio_ret": 15.55,
+      "portfolio_ret": 17.4,
       "sensex_ret": 2.43,
-      "active_ret": 13.12
+      "active_ret": 14.97
     }
   ]
 }
