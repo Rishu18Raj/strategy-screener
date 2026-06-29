@@ -7,8 +7,7 @@
   "fund_pass": 31,
   "sector_pass": 22,
   "beta_pass": 5,
-  "portfolio_count": 11,
-  "sensex_level": 82102.1,
+  "sensex_level": 81159.68,
   "stocks": [
     {
       "ticker": "CHOLAHLDNG",
@@ -20,9 +19,13 @@
       "pe": 16.2,
       "beta": 0.9144,
       "growth_score": 1.3198,
+      "filter_round": 1,
+      "filter_label": "pe_relaxed",
       "entry_date": "2024-06-25",
-      "entry_price": 1280.55,
-      "sensex_entry": 77209.9
+      "entry_price": 1298.2,
+      "rebal_date": "2025-09-25",
+      "rebal_price": 1869.0,
+      "sensex_rebal": 81159.68
     },
     {
       "ticker": "AADHARHFC",
@@ -34,9 +37,13 @@
       "pe": 23.4,
       "beta": 0.8769,
       "growth_score": 0.8397,
+      "filter_round": 1,
+      "filter_label": "pe_relaxed",
       "entry_date": "2025-09-25",
-      "entry_price": 535.35,
-      "sensex_entry": 82102.1
+      "entry_price": 526.8,
+      "rebal_date": "2025-09-25",
+      "rebal_price": 526.8,
+      "sensex_rebal": 81159.68
     },
     {
       "ticker": "AAVAS",
@@ -48,9 +55,13 @@
       "pe": 21.72,
       "beta": 0.5948,
       "growth_score": 0.6667,
+      "filter_round": 1,
+      "filter_label": "pe_relaxed",
       "entry_date": "2025-09-25",
-      "entry_price": 1655.4,
-      "sensex_entry": 82102.1
+      "entry_price": 1628.6,
+      "rebal_date": "2025-09-25",
+      "rebal_price": 1628.6,
+      "sensex_rebal": 81159.68
     },
     {
       "ticker": "COALINDIA",
@@ -62,9 +73,13 @@
       "pe": 7.78,
       "beta": 1.1917,
       "growth_score": 2.9203,
+      "filter_round": 1,
+      "filter_label": "pe_relaxed",
       "entry_date": "2025-06-25",
-      "entry_price": 392.5,
-      "sensex_entry": 81896.79
+      "entry_price": 391.75,
+      "rebal_date": "2025-09-25",
+      "rebal_price": 392.5,
+      "sensex_rebal": 81159.68
     },
     {
       "ticker": "SONATSOFTW",
@@ -76,9 +91,13 @@
       "pe": 24.53,
       "beta": 1.101,
       "growth_score": 0.4778,
+      "filter_round": 1,
+      "filter_label": "pe_relaxed",
       "entry_date": "2025-09-25",
-      "entry_price": 386.65,
-      "sensex_entry": 82102.1
+      "entry_price": 368.3,
+      "rebal_date": "2025-09-25",
+      "rebal_price": 368.3,
+      "sensex_rebal": 81159.68
     },
     {
       "ticker": "CYIENT",
@@ -90,9 +109,13 @@
       "pe": 23.16,
       "beta": 1.0569,
       "growth_score": 0.4706,
+      "filter_round": 1,
+      "filter_label": "pe_relaxed",
       "entry_date": "2025-09-25",
-      "entry_price": 1197.6,
-      "sensex_entry": 82102.1
+      "entry_price": 1170.1,
+      "rebal_date": "2025-09-25",
+      "rebal_price": 1170.1,
+      "sensex_rebal": 81159.68
     },
     {
       "ticker": "ESCORTS",
@@ -104,9 +127,13 @@
       "pe": 17.77,
       "beta": 1.0237,
       "growth_score": 0.6657,
+      "filter_round": 1,
+      "filter_label": "pe_relaxed",
       "entry_date": "2025-06-25",
-      "entry_price": 3323.3,
-      "sensex_entry": 81896.79
+      "entry_price": 3304.6,
+      "rebal_date": "2025-09-25",
+      "rebal_price": 3602.8,
+      "sensex_rebal": 81159.68
     },
     {
       "ticker": "FEDERALBNK",
@@ -118,9 +145,13 @@
       "pe": 12.15,
       "beta": 0.9996,
       "growth_score": 1.2519,
+      "filter_round": 1,
+      "filter_label": "pe_relaxed",
       "entry_date": "2025-06-25",
-      "entry_price": 206.95,
-      "sensex_entry": 81896.79
+      "entry_price": 210.4,
+      "rebal_date": "2025-09-25",
+      "rebal_price": 193.33,
+      "sensex_rebal": 81159.68
     },
     {
       "ticker": "ICICIBANK",
@@ -132,9 +163,13 @@
       "pe": 18.61,
       "beta": 0.7882,
       "growth_score": 1.1789,
+      "filter_round": 1,
+      "filter_label": "pe_relaxed",
       "entry_date": "2024-06-25",
-      "entry_price": 1158.65,
-      "sensex_entry": 77209.9
+      "entry_price": 1197.95,
+      "rebal_date": "2025-09-25",
+      "rebal_price": 1375.8,
+      "sensex_rebal": 81159.68
     },
     {
       "ticker": "KOTAKBANK",
@@ -146,9 +181,13 @@
       "pe": 21.92,
       "beta": 0.7446,
       "growth_score": 0.7833,
+      "filter_round": 1,
+      "filter_label": "pe_relaxed",
       "entry_date": "2025-09-25",
-      "entry_price": 409.54,
-      "sensex_entry": 82102.1
+      "entry_price": 402.7,
+      "rebal_date": "2025-09-25",
+      "rebal_price": 402.7,
+      "sensex_rebal": 81159.68
     },
     {
       "ticker": "TORNTPOWER",
@@ -160,9 +199,13 @@
       "pe": 21.56,
       "beta": 1.1419,
       "growth_score": 0.7964,
+      "filter_round": 1,
+      "filter_label": "pe_relaxed",
       "entry_date": "2025-09-25",
-      "entry_price": 1279.3,
-      "sensex_entry": 82102.1
+      "entry_price": 1254.5,
+      "rebal_date": "2025-09-25",
+      "rebal_price": 1254.5,
+      "sensex_rebal": 81159.68
     }
   ]
 }

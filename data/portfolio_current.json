@@ -11,9 +11,13 @@
       "pe": 11.83,
       "beta": 1.0182,
       "growth_score": 1.8081,
+      "filter_round": 0,
+      "filter_label": "base",
       "entry_date": "2026-06-25",
-      "entry_price": 3119.6,
-      "sensex_entry": 76200.68
+      "entry_price": 3025.6,
+      "rebal_date": "2026-06-25",
+      "rebal_price": 3025.6,
+      "sensex_rebal": 77100.47
     },
     {
       "ticker": "CANFINHOME",
@@ -25,9 +29,13 @@
       "pe": 10.88,
       "beta": 1.117,
       "growth_score": 1.67,
+      "filter_round": 0,
+      "filter_label": "base",
       "entry_date": "2026-06-25",
-      "entry_price": 887.1,
-      "sensex_entry": 76200.68
+      "entry_price": 886.2,
+      "rebal_date": "2026-06-25",
+      "rebal_price": 886.2,
+      "sensex_rebal": 77100.47
     },
     {
       "ticker": "CHOLAHLDNG",
@@ -39,9 +47,13 @@
       "pe": 12.18,
       "beta": 1.0923,
       "growth_score": 1.5599,
+      "filter_round": 0,
+      "filter_label": "base",
       "entry_date": "2024-06-25",
-      "entry_price": 1280.55,
-      "sensex_entry": 77209.9
+      "entry_price": 1298.2,
+      "rebal_date": "2026-06-25",
+      "rebal_price": 1653.4,
+      "sensex_rebal": 77100.47
     },
     {
       "ticker": "KARURVYSYA",
@@ -53,9 +65,13 @@
       "pe": 11.34,
       "beta": 1.1271,
       "growth_score": 2.6402,
+      "filter_round": 0,
+      "filter_label": "base",
       "entry_date": "2026-06-25",
-      "entry_price": 294.55,
-      "sensex_entry": 76200.68
+      "entry_price": 290.5,
+      "rebal_date": "2026-06-25",
+      "rebal_price": 290.5,
+      "sensex_rebal": 77100.47
     },
     {
       "ticker": "SBIN",
@@ -67,9 +83,13 @@
       "pe": 11.25,
       "beta": 1.1123,
       "growth_score": 1.5893,
+      "filter_round": 0,
+      "filter_label": "base",
       "entry_date": "2025-12-25",
-      "entry_price": 971.9,
-      "sensex_entry": 85524.84
+      "entry_price": 968.95,
+      "rebal_date": "2026-06-25",
+      "rebal_price": 1045.4,
+      "sensex_rebal": 77100.47
     },
     {
       "ticker": "ICICIBANK",
@@ -81,9 +101,13 @@
       "pe": 17.65,
       "beta": 0.7547,
       "growth_score": 0.9031,
+      "filter_round": 0,
+      "filter_label": "base",
       "entry_date": "2024-06-25",
-      "entry_price": 1158.65,
-      "sensex_entry": 77209.9
+      "entry_price": 1197.95,
+      "rebal_date": "2026-06-25",
+      "rebal_price": 1387.5,
+      "sensex_rebal": 77100.47
     },
     {
       "ticker": "CHENNPETRO",
@@ -95,9 +119,13 @@
       "pe": 5.35,
       "beta": 1.1902,
       "growth_score": 3.3776,
+      "filter_round": 0,
+      "filter_label": "base",
       "entry_date": "2026-06-25",
-      "entry_price": 1114.2,
-      "sensex_entry": 76200.68
+      "entry_price": 1102.2,
+      "rebal_date": "2026-06-25",
+      "rebal_price": 1102.2,
+      "sensex_rebal": 77100.47
     },
     {
       "ticker": "COALINDIA",
@@ -109,9 +137,13 @@
       "pe": 8.81,
       "beta": 1.0056,
       "growth_score": 1.4041,
+      "filter_round": 0,
+      "filter_label": "base",
       "entry_date": "2026-03-25",
-      "entry_price": 455.25,
-      "sensex_entry": 72696.39
+      "entry_price": 443.7,
+      "rebal_date": "2026-06-25",
+      "rebal_price": 435.4,
+      "sensex_rebal": 77100.47
     },
     {
       "ticker": "ESCORTS",
@@ -123,9 +155,13 @@
       "pe": 13.79,
       "beta": 1.093,
       "growth_score": 2.2357,
+      "filter_round": 0,
+      "filter_label": "base",
       "entry_date": "2025-06-25",
-      "entry_price": 3323.3,
-      "sensex_entry": 81896.79
+      "entry_price": 3304.6,
+      "rebal_date": "2026-06-25",
+      "rebal_price": 2949.7,
+      "sensex_rebal": 77100.47
     },
     {
       "ticker": "NTPC",
@@ -137,9 +173,13 @@
       "pe": 13.07,
       "beta": 1.1131,
       "growth_score": 0.7774,
+      "filter_round": 0,
+      "filter_label": "base",
       "entry_date": "2026-06-25",
-      "entry_price": 364.6,
-      "sensex_entry": 76200.68
+      "entry_price": 352.05,
+      "rebal_date": "2026-06-25",
+      "rebal_price": 352.05,
+      "sensex_rebal": 77100.47
     }
   ]
 }

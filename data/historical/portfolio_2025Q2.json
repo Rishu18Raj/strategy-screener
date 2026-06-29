@@ -7,8 +7,7 @@
   "fund_pass": 33,
   "sector_pass": 25,
   "beta_pass": 6,
-  "portfolio_count": 6,
-  "sensex_level": 81896.79,
+  "sensex_level": 82755.51,
   "stocks": [
     {
       "ticker": "CHOLAHLDNG",
@@ -20,9 +19,13 @@
       "pe": 17.0,
       "beta": 0.8364,
       "growth_score": 1.2576,
+      "filter_round": 0,
+      "filter_label": "base",
       "entry_date": "2024-06-25",
-      "entry_price": 1280.55,
-      "sensex_entry": 77209.9
+      "entry_price": 1298.2,
+      "rebal_date": "2025-06-25",
+      "rebal_price": 2028.4,
+      "sensex_rebal": 82755.51
     },
     {
       "ticker": "COALINDIA",
@@ -34,9 +37,13 @@
       "pe": 7.3,
       "beta": 1.1953,
       "growth_score": 3.1123,
+      "filter_round": 0,
+      "filter_label": "base",
       "entry_date": "2025-06-25",
-      "entry_price": 392.5,
-      "sensex_entry": 81896.79
+      "entry_price": 391.75,
+      "rebal_date": "2025-06-25",
+      "rebal_price": 391.75,
+      "sensex_rebal": 82755.51
     },
     {
       "ticker": "ESCORTS",
@@ -48,9 +55,13 @@
       "pe": 15.75,
       "beta": 0.9989,
       "growth_score": 0.7511,
+      "filter_round": 0,
+      "filter_label": "base",
       "entry_date": "2025-06-25",
-      "entry_price": 3323.3,
-      "sensex_entry": 81896.79
+      "entry_price": 3304.6,
+      "rebal_date": "2025-06-25",
+      "rebal_price": 3304.6,
+      "sensex_rebal": 82755.51
     },
     {
       "ticker": "SBIN",
@@ -62,9 +73,13 @@
       "pe": 8.88,
       "beta": 1.1998,
       "growth_score": 3.1745,
+      "filter_round": 0,
+      "filter_label": "base",
       "entry_date": "2025-06-25",
-      "entry_price": 790.2,
-      "sensex_entry": 81896.79
+      "entry_price": 800.05,
+      "rebal_date": "2025-06-25",
+      "rebal_price": 800.05,
+      "sensex_rebal": 82755.51
     },
     {
       "ticker": "FEDERALBNK",
@@ -76,9 +91,13 @@
       "pe": 12.54,
       "beta": 1.0195,
       "growth_score": 1.2129,
+      "filter_round": 0,
+      "filter_label": "base",
       "entry_date": "2025-06-25",
-      "entry_price": 206.95,
-      "sensex_entry": 81896.79
+      "entry_price": 210.4,
+      "rebal_date": "2025-06-25",
+      "rebal_price": 210.4,
+      "sensex_rebal": 82755.51
     },
     {
       "ticker": "ICICIBANK",
@@ -90,9 +109,13 @@
       "pe": 19.04,
       "beta": 0.8228,
       "growth_score": 1.1523,
+      "filter_round": 0,
+      "filter_label": "base",
       "entry_date": "2024-06-25",
-      "entry_price": 1158.65,
-      "sensex_entry": 77209.9
+      "entry_price": 1197.95,
+      "rebal_date": "2025-06-25",
+      "rebal_price": 1425.8,
+      "sensex_rebal": 82755.51
     }
   ]
 }
