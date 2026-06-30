@@ -197,10 +197,16 @@ function tradingDaysBetween(dailySeries, afterDateStr, beforeDateStr) {
 }
 
 function allTradingDaysInWindow(dailyPrices, startDate, endDate) {
-  const all = new Set();
+  // FIX: Initialize the Set with the explicit rebalance dates so market 
+  // holidays (like Dec 25) are never skipped by the chronological loop.
+  const all = new Set(CUSTOM_BACKTEST_REBALANCE_DATES);
+  
   Object.values(dailyPrices || {}).forEach(series => {
-    Object.keys(series).forEach(d => { if (d >= startDate && d <= endDate) all.add(d); });
+    Object.keys(series).forEach(d => { 
+      if (d >= startDate && d <= endDate) all.add(d); 
+    });
   });
+  
   return [...all].sort();
 }
 
