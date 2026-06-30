@@ -19,6 +19,7 @@ export const URLS = {
   tradeLog:         `${BASE}/trade_log.json`,
   portfolioCurrent: `${BASE}/portfolio_current.json`,
   universeRebalancePrices: `${BASE}/historical/universe_rebalance_prices.json`,
+  universeDailyPrices: `${BASE}/historical/universe_daily_prices.json`,
 };
 
 // Quarterly fundamentals/beta snapshot URLs by rebalance date — used by the
