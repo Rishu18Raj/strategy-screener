@@ -163,13 +163,13 @@ export function buildPortfolioCustom(universe, customFilters, selectedSectors) {
 
   for (const [eps, pe, rnd] of ROUNDS) {
     const fund = universe.filter(s =>
-      !isNaN(s.roe) && s.roe >= customFilters.roe &&
-      !isNaN(s.revCAGR) && s.revCAGR >= customFilters.revCAGR &&
+      !isNaN(s.roe) && s.roe >= 13 &&
+      !isNaN(s.revCAGR) && s.revCAGR >= 7 &&
       !isNaN(s.epsCAGR) && s.epsCAGR >= eps &&
       !isNaN(s.pe) && s.pe <= pe
     );
     const sec = fund.filter(s => selectedSectors.has(s.sector));
-    const bet = sec.filter(s => s.beta != null && s.beta <= customFilters.beta);
+    const bet = sec.filter(s => s.beta != null && s.beta <= 1.2);
     if (rnd === 0) { fp = fund.length; sp = sec.length; bp = bet.length; }
 
     const bySec = {};
