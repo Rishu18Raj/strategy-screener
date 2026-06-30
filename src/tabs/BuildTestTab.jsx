@@ -6,7 +6,7 @@ import { C, FILTERS, SELECTED_SECTORS, SECTOR_COLORS } from "../config";
 import { StatCard, FunnelBar } from "../components/primitives";
 import {
   loadBacktestData, runCustomBacktest, computeCustomMetrics,
-  CUSTOM_BACKTEST_REBALANCE_DATES,
+  CUSTOM_BACKTEST_REBALANCE_DATES, DEFAULT_EXIT_RULE,
 } from "../utils/backtest";
 
 // ── small local primitives ──────────────────────────────────────────────
@@ -61,8 +61,8 @@ function MetricCompareRow({ label, customVal, baseVal, suffix = "", higherIsBett
   const better = hasComparison ? (higherIsBetter ? cNum >= bNum : cNum <= bNum) : null;
   return (
     <tr style={{ borderTop: `0.5px solid ${C.subtle}` }}>
-      <td style={{ padding: "9px 12px", fontSize: 12, color: C.accent }}>{label}</td>
-      <td style={{ padding: "9px 12px", fontSize: 12, fontFamily: "var(--font-mono)", textAlign: "right", color: C.secondary }}>
+      <td style={{ padding: "9px 12px", fontSize: 12, color: C.secondary }}>{label}</td>
+      <td style={{ padding: "9px 12px", fontSize: 12, fontFamily: "var(--font-mono)", textAlign: "right", color: C.muted }}>
         {baseVal != null ? `${baseVal}${suffix}` : "—"}
       </td>
       <td style={{
@@ -75,6 +75,110 @@ function MetricCompareRow({ label, customVal, baseVal, suffix = "", higherIsBett
   );
 }
 
+function fmtMetric(v) { return Number.isFinite(Number(v)) ? Number(v).toFixed(1) : "-"; }
+function fmtPrice(v) { return Number.isFinite(Number(v)) ? Number(v).toLocaleString("en-IN", { maximumFractionDigits: 2 }) : "-"; }
+function fmtPct(v) { return Number.isFinite(Number(v)) ? `${v > 0 ? "+" : ""}${Number(v).toFixed(1)}%` : "-"; }
+
+// Clickable quarterly portfolio-size box → expands the snapshot table below
+function QuarterBox({ q, active, onClick }) {
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        textAlign: "center", cursor: "pointer", padding: "8px 4px", borderRadius: 6,
+        background: active ? C.accent + "18" : "transparent",
+        border: `0.5px solid ${active ? C.accent + "55" : "transparent"}`,
+        transition: "background 0.15s, border-color 0.15s",
+      }}
+    >
+      <div style={{ fontSize: 18, fontWeight: 700, color: active ? C.accent : C.primary }}>{q.portfolio.length}</div>
+      <div style={{ fontSize: 10, color: C.muted, marginTop: 2 }}>{q.date}</div>
+    </div>
+  );
+}
+
+// Per-quarter portfolio snapshot — mirrors OverviewTab's table columns,
+// plus exit type/date since this is historical (some positions exited
+// intra-quarter rather than holding to the next rebalance).
+function QuarterSnapshot({ quarter }) {
+  const [sortKey, setSortKey] = useState("return_pct");
+  const [sortDir, setSortDir] = useState(-1);
+
+  const sorted = useMemo(() => {
+    const key = sortKey === "beta" ? (s => s.beta ?? 999) : (s => s[sortKey]);
+    return [...quarter.stocks].sort((a, b) => sortDir * (key(a) > key(b) ? 1 : -1));
+  }, [quarter.stocks, sortKey, sortDir]);
+
+  const toggleSort = k => {
+    if (sortKey === k) setSortDir(d => -d);
+    else { setSortKey(k); setSortDir(-1); }
+  };
+
+  const Th = ({ label, k, right }) => (
+    <th onClick={() => toggleSort(k)} style={{ padding: "9px 12px", cursor: "pointer", fontWeight: 500, fontSize: 11, color: C.secondary, textAlign: right ? "right" : "left", whiteSpace: "nowrap", userSelect: "none", background: C.hover, letterSpacing: "0.05em", textTransform: "uppercase" }}>
+      {label}{sortKey === k ? (sortDir === -1 ? " ↓" : " ↑") : ""}
+    </th>
+  );
+
+  const intraCount = quarter.stocks.filter(s => s.exit_type === "intra_quarter").length;
+
+  return (
+    <div style={{ background: C.card, border: `0.5px solid ${C.border}`, borderRadius: 8, padding: "18px 20px", marginTop: 16 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 14, flexWrap: "wrap", gap: 8 }}>
+        <div style={{ fontSize: 11, fontWeight: 600, color: C.secondary, textTransform: "uppercase", letterSpacing: "0.07em" }}>
+          Portfolio snapshot — {quarter.date} → {quarter.nextDate} ({quarter.stocks.length} stocks)
+        </div>
+        <div style={{ fontSize: 11, color: C.muted }}>
+          {intraCount > 0 ? `${intraCount} exited intra-quarter, ${quarter.stocks.length - intraCount} held to rebalance` : "All positions held to next rebalance"}
+        </div>
+      </div>
+      <div style={{ overflowX: "auto", border: `0.5px solid ${C.border}`, borderRadius: 8 }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+          <thead><tr>
+            <Th label="Ticker" k="ticker" /><Th label="Company" k="name" /><Th label="Sector" k="sector" />
+            <Th label="RoE %" k="roe" right /><Th label="Rev CAGR" k="revCAGR" right />
+            <Th label="EPS CAGR" k="epsCAGR" right /><Th label="Beta" k="beta" right />
+            <Th label="P/E" k="pe" right /><Th label="Rebal price" k="rebal_price" right />
+            <Th label="Exit price" k="exit_price" right /><Th label="Exit type" k="exit_type" />
+            <Th label="Return" k="return_pct" right />
+          </tr></thead>
+          <tbody>
+            {sorted.map((s, i) => {
+              const positive = s.return_pct >= 0;
+              return (
+                <tr key={s.ticker} style={{ borderTop: `0.5px solid ${C.subtle}`, background: i % 2 === 0 ? "transparent" : C.card + "44" }}>
+                  <td style={{ padding: "10px 12px", fontWeight: 600, fontFamily: "var(--font-mono)", fontSize: 12, color: C.primary }}>{s.ticker}</td>
+                  <td style={{ padding: "10px 12px", fontSize: 13, color: C.secondary, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 160 }}>{s.name}</td>
+                  <td style={{ padding: "10px 12px" }}><span style={{ fontSize: 11, padding: "2px 7px", borderRadius: 4, fontWeight: 500, background: (SECTOR_COLORS[s.sector] || C.accent) + "18", color: SECTOR_COLORS[s.sector] || C.accent, whiteSpace: "nowrap" }}>{s.sector}</span></td>
+                  <td style={{ padding: "10px 12px", textAlign: "right", color: C.primary, fontFamily: "var(--font-mono)", fontSize: 12 }}>{fmtMetric(s.roe)}%</td>
+                  <td style={{ padding: "10px 12px", textAlign: "right", color: C.primary, fontFamily: "var(--font-mono)", fontSize: 12 }}>{fmtMetric(s.revCAGR)}%</td>
+                  <td style={{ padding: "10px 12px", textAlign: "right", color: C.primary, fontFamily: "var(--font-mono)", fontSize: 12 }}>{fmtMetric(s.epsCAGR)}%</td>
+                  <td style={{ padding: "10px 12px", textAlign: "right", color: C.primary, fontFamily: "var(--font-mono)", fontSize: 12 }}>{Number.isFinite(Number(s.beta)) ? Number(s.beta).toFixed(2) : "-"}</td>
+                  <td style={{ padding: "10px 12px", textAlign: "right", color: C.primary, fontFamily: "var(--font-mono)", fontSize: 12 }}>{fmtMetric(s.pe)}x</td>
+                  <td style={{ padding: "10px 12px", textAlign: "right", color: C.primary, fontFamily: "var(--font-mono)", fontSize: 12 }}>{fmtPrice(s.rebal_price)}</td>
+                  <td style={{ padding: "10px 12px", textAlign: "right", color: C.primary, fontFamily: "var(--font-mono)", fontSize: 12 }}>{fmtPrice(s.exit_price)}</td>
+                  <td style={{ padding: "10px 12px" }}>
+                    <span style={{
+                      fontSize: 10, padding: "2px 7px", borderRadius: 4, fontWeight: 500, whiteSpace: "nowrap",
+                      background: s.exit_type === "intra_quarter" ? C.amber + "18" : C.border,
+                      color: s.exit_type === "intra_quarter" ? C.amber : C.muted,
+                    }}>
+                      {s.exit_type === "intra_quarter" ? `Early exit ${s.exit_date}` : "Rebalance"}
+                    </span>
+                  </td>
+                  <td style={{ padding: "10px 12px", textAlign: "right", fontFamily: "var(--font-mono)", fontSize: 12, fontWeight: 600, color: positive ? C.green : C.red }}>
+                    {fmtPct(s.return_pct)}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
 // ── main tab ──────────────────────────────────────────────────────────
 
 export default function BuildTestTab() {
@@ -84,8 +188,10 @@ export default function BuildTestTab() {
 
   const [filters, setFilters] = useState({ ...FILTERS });
   const [sectors, setSectors] = useState(new Set(SELECTED_SECTORS));
+  const [exitRule, setExitRule] = useState({ ...DEFAULT_EXIT_RULE });
   const [running, setRunning] = useState(false);
   const [result, setResult] = useState(null);
+  const [selectedQuarterIdx, setSelectedQuarterIdx] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -132,18 +238,21 @@ export default function BuildTestTab() {
   const resetToBase = () => {
     setFilters({ ...FILTERS });
     setSectors(new Set(SELECTED_SECTORS));
+    setExitRule({ ...DEFAULT_EXIT_RULE });
     setResult(null);
+    setSelectedQuarterIdx(null);
   };
 
   const runBacktest = () => {
     if (!backtestData) return;
     setRunning(true);
+    setSelectedQuarterIdx(null);
     // yield to the browser so the button's pressed state paints before the
-    // (synchronous, fairly heavy) 9-quarter simulation runs
+    // (synchronous, fairly heavy) 9-quarter day-by-day simulation runs
     setTimeout(() => {
-      const sim = runCustomBacktest(backtestData, filters, sectors);
+      const sim = runCustomBacktest(backtestData, filters, sectors, exitRule);
       const metrics = computeCustomMetrics(sim.navSeries);
-      const baseSim = runCustomBacktest(backtestData, { ...FILTERS }, new Set(SELECTED_SECTORS));
+      const baseSim = runCustomBacktest(backtestData, { ...FILTERS }, new Set(SELECTED_SECTORS), DEFAULT_EXIT_RULE);
       const baseMetrics = computeCustomMetrics(baseSim.navSeries);
       setResult({ sim, metrics, baseSim, baseMetrics });
       setRunning(false);
@@ -166,7 +275,9 @@ export default function BuildTestTab() {
     filters.epsCAGR !== FILTERS.epsCAGR || filters.beta !== FILTERS.beta ||
     filters.pe !== FILTERS.pe ||
     sectors.size !== SELECTED_SECTORS.size ||
-    [...sectors].some(s => !SELECTED_SECTORS.has(s));
+    [...sectors].some(s => !SELECTED_SECTORS.has(s)) ||
+    exitRule.returnPct !== DEFAULT_EXIT_RULE.returnPct ||
+    exitRule.peThreshold !== DEFAULT_EXIT_RULE.peThreshold;
 
   const sectionLabel = { fontSize: 11, fontWeight: 600, marginBottom: 14, color: C.secondary, textTransform: "uppercase", letterSpacing: "0.07em" };
   const card = { background: C.card, border: `0.5px solid ${C.border}`, borderRadius: 8, padding: "18px 20px" };
@@ -174,7 +285,7 @@ export default function BuildTestTab() {
   if (loadState === "loading") {
     return (
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "50vh", color: C.secondary, fontSize: 14 }}>
-        Loading 9 quarters of historical fundamentals, betas, and prices...
+        Loading 9 quarters of historical fundamentals, betas, and daily prices...
       </div>
     );
   }
@@ -187,16 +298,18 @@ export default function BuildTestTab() {
     );
   }
 
+  const selectedQuarter = result && selectedQuarterIdx != null ? result.sim.quarterlyPortfolios[selectedQuarterIdx] : null;
+
   return (
     <div>
       {/* header / methodology disclosure */}
       <div style={{ ...card, marginBottom: 16, borderColor: C.accent + "55" }}>
         <div style={{ fontSize: 13, fontWeight: 600, color: C.accent, marginBottom: 8 }}>How this backtest works</div>
         <div style={{ fontSize: 12.5, color: C.secondary, lineHeight: 1.7 }}>
-          Adjusting a filter below doesn't just refilter today's stock list — it rebuilds the portfolio at <b style={{ color: C.primary }}>each of the 9 historical rebalance dates</b> using <b style={{ color: C.primary }}>that quarter's actual fundamentals and beta data</b>, then holds equal-weight to the next rebalance. This answers "if this strategy had been running for the last 2 years with these thresholds," not "what would today's filtered list have returned if bought 2 years ago."
+          Adjusting a filter below doesn't just refilter today's stock list — it rebuilds the portfolio at <b style={{ color: C.primary }}>each of the 9 historical rebalance dates</b> using <b style={{ color: C.primary }}>that quarter's actual fundamentals and beta data</b>, then walks each position <b style={{ color: C.primary }}>day by day</b> using historical daily prices to check the intra-quarter exit rule, exactly like the live strategy. This answers "if this strategy had been running for the last 2 years with these thresholds," not "what would today's filtered list have returned if bought 2 years ago."
         </div>
-        <div style={{ fontSize: 12.5, color: C.amber, lineHeight: 1.7, marginTop: 8 }}>
-          Limitation: this simulation assumes <b>hold-to-next-rebalance</b> for every position. It does not model the live strategy's intra-quarter early-exit rule (20% return + P/E &gt; 20x), which requires daily price data only available for stocks that have actually been in the real portfolio. Expect these numbers to run lower than the live track record — that gap is expected, not an error.
+        <div style={{ fontSize: 12.5, color: C.secondary, lineHeight: 1.7, marginTop: 8 }}>
+          P/E during the quarter is derived from each stock's fixed entry-quarter EPS (rebalance price ÷ rebalance P/E) — fundamentals don't update intra-quarter, so a rising live P/E here reflects price appreciation, not a new earnings print. The Sharpe/Sortino/Treynor/Jensen Alpha/Information Ratio in the comparison table below are computed from 8 quarterly NAV observations, not the ~500 daily observations behind the live Performance tab — treat them as directional.
         </div>
       </div>
 
@@ -219,6 +332,15 @@ export default function BuildTestTab() {
                 <SectorToggle key={sec} sector={sec} active={sectors.has(sec)} onToggle={() => toggleSector(sec)} />
               ))}
             </div>
+          </div>
+
+          <div style={{ ...card, marginBottom: 16 }}>
+            <div style={sectionLabel}>Intra-quarter exit rule</div>
+            <div style={{ fontSize: 11.5, color: C.muted, marginBottom: 14, lineHeight: 1.6 }}>
+              A position exits early — before the next rebalance — the first day its return AND live P/E both breach these thresholds. Freed capital sits idle until the next rebalance, same as the live strategy.
+            </div>
+            <Slider label="Intra-quarter return >" value={exitRule.returnPct} min={5} max={60} step={1} suffix="%" onChange={v => setExitRule(f => ({ ...f, returnPct: v }))} />
+            <Slider label="Live P/E >" value={exitRule.peThreshold} min={5} max={60} step={1} suffix="x" onChange={v => setExitRule(f => ({ ...f, peThreshold: v }))} />
           </div>
 
           <div style={{ display: "flex", gap: 8 }}>
@@ -265,8 +387,8 @@ export default function BuildTestTab() {
 
           {!result && (
             <div style={{ ...card, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: 280, gap: 10, textAlign: "center" }}>
-              <div style={{ fontSize: 13, color: C.secondary }}>Adjust filters and sectors, then run the backtest to see how this strategy would have performed over the last 2 years.</div>
-              <div style={{ fontSize: 11, color: C.muted }}>Reconstructs all 9 quarterly portfolios from point-in-time data — takes a few seconds.</div>
+              <div style={{ fontSize: 13, color: C.secondary }}>Adjust filters, sectors, and the exit rule, then run the backtest to see how this strategy would have performed over the last 2 years.</div>
+              <div style={{ fontSize: 11, color: C.muted }}>Reconstructs all 9 quarterly portfolios and walks daily prices for the exit rule — takes a few seconds.</div>
             </div>
           )}
 
@@ -275,7 +397,7 @@ export default function BuildTestTab() {
               <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 10, marginBottom: 16 }}>
                 <StatCard label="Custom total return" value={`${result.metrics.totalPct > 0 ? "+" : ""}${result.metrics.totalPct}%`} sub={`Base strategy: ${result.baseMetrics.totalPct > 0 ? "+" : ""}${result.baseMetrics.totalPct}%`} color={result.metrics.totalPct >= result.baseMetrics.totalPct ? C.green : C.red} small />
                 <StatCard label="Custom Sharpe (quarterly)" value={result.metrics.sharpe} sub={`Base: ${result.baseMetrics.sharpe}`} color={C.accent} small />
-                <StatCard label="Data gaps" value={result.sim.dataGaps.length} sub="Position-quarters skipped, no price" color={result.sim.dataGaps.length > 0 ? C.amber : C.green} small />
+                <StatCard label="Intra-quarter exits" value={result.sim.tradeLog.filter(t => t.exit_type === "intra_quarter").length} sub={`${result.sim.dataGaps.length} data gaps`} color={C.amber} small />
               </div>
 
               <div style={{ ...card, marginBottom: 16 }}>
@@ -317,22 +439,23 @@ export default function BuildTestTab() {
                     <MetricCompareRow label="Max drawdown" customVal={result.metrics.maxDrawdownPct} baseVal={result.baseMetrics.maxDrawdownPct} suffix="%" higherIsBetter={false} />
                   </tbody>
                 </table>
-                <div style={{ marginTop: 10, fontSize: 11, color: C.muted }}>
-                  Sharpe/Sortino/Treynor/Jensen Alpha/Information Ratio here are computed from 8 quarterly observations, not the ~500 daily observations behind the live Performance tab's numbers — treat these as directional, not as precise as the live track record.
-                </div>
               </div>
 
               <div style={card}>
-                <div style={sectionLabel}>Quarterly portfolio sizes</div>
+                <div style={sectionLabel}>Quarterly portfolio sizes — click a quarter to see the snapshot</div>
                 <div style={{ display: "grid", gridTemplateColumns: `repeat(${result.sim.quarterlyPortfolios.length}, 1fr)`, gap: 8 }}>
-                  {result.sim.quarterlyPortfolios.map(q => (
-                    <div key={q.date} style={{ textAlign: "center" }}>
-                      <div style={{ fontSize: 18, fontWeight: 700, color: C.primary }}>{q.portfolio.length}</div>
-                      <div style={{ fontSize: 10, color: C.muted, marginTop: 2 }}>{q.date}</div>
-                    </div>
+                  {result.sim.quarterlyPortfolios.map((q, idx) => (
+                    <QuarterBox
+                      key={q.date}
+                      q={q}
+                      active={selectedQuarterIdx === idx}
+                      onClick={() => setSelectedQuarterIdx(prev => prev === idx ? null : idx)}
+                    />
                   ))}
                 </div>
               </div>
+
+              {selectedQuarter && <QuarterSnapshot quarter={selectedQuarter} />}
             </>
           )}
         </div>
