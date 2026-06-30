@@ -97,6 +97,108 @@ function QuarterBox({ q, active, onClick }) {
   );
 }
 
+// Trade log table — displays all trades from the backtest with full metrics
+function TradeLogTable({ tradeLog }) {
+  const [sortKey, setSortKey] = useState("entry_date");
+  const [sortDir, setSortDir] = useState(-1);
+  const [filterType, setFilterType] = useState("all"); // all, closed, open
+
+  const filtered = useMemo(() => {
+    if (filterType === "closed") return tradeLog.filter(t => t.status === "closed");
+    if (filterType === "open") return tradeLog.filter(t => t.status === "open");
+    return tradeLog;
+  }, [tradeLog, filterType]);
+
+  const sorted = useMemo(() => {
+    const key = sortKey === "beta" ? (s => s.beta ?? 999) : (s => s[sortKey]);
+    return [...filtered].sort((a, b) => sortDir * (key(a) > key(b) ? 1 : -1));
+  }, [filtered, sortKey, sortDir]);
+
+  const toggleSort = k => {
+    if (sortKey === k) setSortDir(d => -d);
+    else { setSortKey(k); setSortDir(-1); }
+  };
+
+  const Th = ({ label, k, right }) => (
+    <th onClick={() => toggleSort(k)} style={{ padding: "9px 12px", cursor: "pointer", fontWeight: 500, fontSize: 11, color: C.secondary, textAlign: right ? "right" : "left", whiteSpace: "nowrap", userSelect: "none", background: C.hover, letterSpacing: "0.05em", textTransform: "uppercase" }}>
+      {label}{sortKey === k ? (sortDir === -1 ? " ↓" : " ↑") : ""}
+    </th>
+  );
+
+  const closedCount = tradeLog.filter(t => t.status === "closed").length;
+  const openCount = tradeLog.filter(t => t.status === "open").length;
+  const intraCount = tradeLog.filter(t => t.exit_type === "intra_quarter").length;
+
+  return (
+    <div style={{ background: C.card, border: `0.5px solid ${C.border}`, borderRadius: 8, padding: "18px 20px", marginTop: 16 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 14, flexWrap: "wrap", gap: 8 }}>
+        <div style={{ fontSize: 11, fontWeight: 600, color: C.secondary, textTransform: "uppercase", letterSpacing: "0.07em" }}>
+          Trade log — {filtered.length} trades
+        </div>
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <div style={{ fontSize: 11, color: C.muted }}>
+            {closedCount} closed ({intraCount} intra-quarter), {openCount} open
+          </div>
+          <select
+            value={filterType}
+            onChange={e => setFilterType(e.target.value)}
+            style={{ padding: "4px 8px", fontSize: 11, borderRadius: 4, border: `0.5px solid ${C.border}`, background: C.bg, color: C.primary, cursor: "pointer" }}
+          >
+            <option value="all">All</option>
+            <option value="closed">Closed only</option>
+            <option value="open">Open only</option>
+          </select>
+        </div>
+      </div>
+      <div style={{ overflowX: "auto", border: `0.5px solid ${C.border}`, borderRadius: 8, maxHeight: 500, overflowY: "auto" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+          <thead><tr>
+            <Th label="Ticker" k="ticker" /><Th label="Entry" k="entry_date" /><Th label="Exit" k="exit_date" />
+            <Th label="Days" k="holding_days" right /><Th label="Return" k="abs_return_pct" right />
+            <Th label="Ann Return" k="ann_return_pct" right /><Th label="SENSEX" k="sensex_abs_pct" right />
+            <Th label="Alpha" k="alpha_abs" right /><Th label="Type" k="exit_type" />
+          </tr></thead>
+          <tbody>
+            {sorted.map((t, i) => {
+              const positive = t.abs_return_pct >= 0;
+              const alphaPositive = t.alpha_abs >= 0;
+              return (
+                <tr key={`${t.ticker}-${t.entry_date}-${i}`} style={{ borderTop: `0.5px solid ${C.subtle}`, background: i % 2 === 0 ? "transparent" : C.card + "44" }}>
+                  <td style={{ padding: "8px 12px", fontWeight: 600, fontFamily: "var(--font-mono)", fontSize: 11, color: C.primary }}>{t.ticker}</td>
+                  <td style={{ padding: "8px 12px", fontSize: 11, color: C.secondary }}>{t.entry_date}</td>
+                  <td style={{ padding: "8px 12px", fontSize: 11, color: C.secondary }}>{t.exit_date || "—"}</td>
+                  <td style={{ padding: "8px 12px", textAlign: "right", color: C.primary, fontFamily: "var(--font-mono)", fontSize: 11 }}>{t.holding_days || "—"}</td>
+                  <td style={{ padding: "8px 12px", textAlign: "right", fontFamily: "var(--font-mono)", fontSize: 11, fontWeight: 600, color: positive ? C.green : C.red }}>
+                    {t.abs_return_pct != null ? fmtPct(t.abs_return_pct) : "—"}
+                  </td>
+                  <td style={{ padding: "8px 12px", textAlign: "right", color: C.primary, fontFamily: "var(--font-mono)", fontSize: 11 }}>
+                    {t.ann_return_pct != null ? fmtPct(t.ann_return_pct) : "—"}
+                  </td>
+                  <td style={{ padding: "8px 12px", textAlign: "right", color: C.primary, fontFamily: "var(--font-mono)", fontSize: 11 }}>
+                    {t.sensex_abs_pct != null ? fmtPct(t.sensex_abs_pct) : "—"}
+                  </td>
+                  <td style={{ padding: "8px 12px", textAlign: "right", fontFamily: "var(--font-mono)", fontSize: 11, fontWeight: 600, color: alphaPositive ? C.green : C.red }}>
+                    {t.alpha_abs != null ? fmtPct(t.alpha_abs) : "—"}
+                  </td>
+                  <td style={{ padding: "8px 12px" }}>
+                    <span style={{
+                      fontSize: 10, padding: "2px 6px", borderRadius: 4, fontWeight: 500, whiteSpace: "nowrap",
+                      background: t.exit_type === "intra_quarter" ? C.amber + "18" : (t.status === "open" ? C.green + "18" : C.border),
+                      color: t.exit_type === "intra_quarter" ? C.amber : (t.status === "open" ? C.green : C.muted),
+                    }}>
+                      {t.status === "open" ? "Open" : (t.exit_type === "intra_quarter" ? "Early exit" : "Rebalance")}
+                    </span>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
 // Per-quarter portfolio snapshot — mirrors OverviewTab's table columns,
 // plus exit type/date since this is historical (some positions exited
 // intra-quarter rather than holding to the next rebalance).
@@ -309,7 +411,7 @@ export default function BuildTestTab() {
           Adjusting a filter below doesn't just refilter today's stock list — it rebuilds the portfolio at <b style={{ color: C.primary }}>each of the 9 historical rebalance dates</b> using <b style={{ color: C.primary }}>that quarter's actual fundamentals and beta data</b>, then walks each position <b style={{ color: C.primary }}>day by day</b> using historical daily prices to check the intra-quarter exit rule, exactly like the live strategy. This answers "if this strategy had been running for the last 2 years with these thresholds," not "what would today's filtered list have returned if bought 2 years ago."
         </div>
         <div style={{ fontSize: 12.5, color: C.secondary, lineHeight: 1.7, marginTop: 8 }}>
-          P/E during the quarter is derived from each stock's fixed entry-quarter EPS (rebalance price ÷ rebalance P/E) — fundamentals don't update intra-quarter, so a rising live P/E here reflects price appreciation, not a new earnings print. The Sharpe/Sortino/Treynor/Jensen Alpha/Information Ratio in the comparison table below are computed from 8 quarterly NAV observations, not the ~500 daily observations behind the live Performance tab — treat them as directional.
+          P/E during the quarter is derived from each stock's fixed entry-quarter EPS (rebalance price ÷ rebalance P/E) — fundamentals don't update intra-quarter, so a rising live P/E here reflects price appreciation, not a new earnings print. All risk metrics (Sharpe, Sortino, Treynor, Jensen Alpha, Information Ratio) are computed from daily returns to match the live Performance tab methodology.
         </div>
       </div>
 
@@ -396,7 +498,7 @@ export default function BuildTestTab() {
             <>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 10, marginBottom: 16 }}>
                 <StatCard label="Custom total return" value={`${result.metrics.totalPct > 0 ? "+" : ""}${result.metrics.totalPct}%`} sub={`Base strategy: ${result.baseMetrics.totalPct > 0 ? "+" : ""}${result.baseMetrics.totalPct}%`} color={result.metrics.totalPct >= result.baseMetrics.totalPct ? C.green : C.red} small />
-                <StatCard label="Custom Sharpe (quarterly)" value={result.metrics.sharpe} sub={`Base: ${result.baseMetrics.sharpe}`} color={C.accent} small />
+                <StatCard label="Custom Sharpe" value={result.metrics.sharpe} sub={`Base: ${result.baseMetrics.sharpe}`} color={C.accent} small />
                 <StatCard label="Intra-quarter exits" value={result.sim.tradeLog.filter(t => t.exit_type === "intra_quarter").length} sub={`${result.sim.dataGaps.length} data gaps`} color={C.amber} small />
               </div>
 
@@ -429,8 +531,8 @@ export default function BuildTestTab() {
                     <MetricCompareRow label="Total return" customVal={result.metrics.totalPct} baseVal={result.baseMetrics.totalPct} suffix="%" />
                     <MetricCompareRow label="Annualised return" customVal={result.metrics.annPct} baseVal={result.baseMetrics.annPct} suffix="%" />
                     <MetricCompareRow label="Alpha (ann, vs SENSEX)" customVal={result.metrics.alphaAnnPct} baseVal={result.baseMetrics.alphaAnnPct} suffix="%" />
-                    <MetricCompareRow label="Sharpe (quarterly basis)" customVal={result.metrics.sharpe} baseVal={result.baseMetrics.sharpe} />
-                    <MetricCompareRow label="Sortino (quarterly basis)" customVal={result.metrics.sortino} baseVal={result.baseMetrics.sortino} />
+                    <MetricCompareRow label="Sharpe" customVal={result.metrics.sharpe} baseVal={result.baseMetrics.sharpe} />
+                    <MetricCompareRow label="Sortino" customVal={result.metrics.sortino} baseVal={result.baseMetrics.sortino} />
                     <MetricCompareRow label="Beta vs SENSEX" customVal={result.metrics.beta} baseVal={result.baseMetrics.beta} higherIsBetter={false} />
                     <MetricCompareRow label="Treynor" customVal={result.metrics.treynor} baseVal={result.baseMetrics.treynor} />
                     <MetricCompareRow label="Jensen Alpha" customVal={result.metrics.jensenAlpha} baseVal={result.baseMetrics.jensenAlpha} suffix="%" />
@@ -456,6 +558,11 @@ export default function BuildTestTab() {
               </div>
 
               {selectedQuarter && <QuarterSnapshot quarter={selectedQuarter} />}
+
+              <div style={card}>
+                <div style={sectionLabel}>Full trade log</div>
+                <TradeLogTable tradeLog={result.sim.tradeLog} />
+              </div>
             </>
           )}
         </div>
