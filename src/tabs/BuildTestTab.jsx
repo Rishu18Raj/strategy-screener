@@ -61,7 +61,7 @@ function MetricCompareRow({ label, customVal, baseVal, suffix = "", higherIsBett
   const better = hasComparison ? (higherIsBetter ? cNum >= bNum : cNum <= bNum) : null;
   return (
     <tr style={{ borderTop: `0.5px solid ${C.subtle}` }}>
-      <td style={{ padding: "9px 12px", fontSize: 12, color: C.secondary }}>{label}</td>
+      <td style={{ padding: "9px 12px", fontSize: 12, color: C.primary }}>{label}</td>
       <td style={{ padding: "9px 12px", fontSize: 12, fontFamily: "var(--font-mono)", textAlign: "right", color: C.muted }}>
         {baseVal != null ? `${baseVal}${suffix}` : "—"}
       </td>
