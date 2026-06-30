@@ -18,7 +18,18 @@ export const URLS = {
   nav:              `${BASE}/nav.json`,
   tradeLog:         `${BASE}/trade_log.json`,
   portfolioCurrent: `${BASE}/portfolio_current.json`,
+  universeRebalancePrices: `${BASE}/historical/universe_rebalance_prices.json`,
 };
+
+// Quarterly fundamentals/beta snapshot URLs by rebalance date — used by the
+// Build & Test backtest engine to reconstruct portfolios at each historical
+// quarter under a custom filter, exactly as OverviewTab's snapshot lookup does.
+export function historicalFundamentalsUrl(label) { return `${BASE}/historical/fundamentals_${label}.csv`; }
+export function historicalBetasUrl(label)        { return `${BASE}/historical/betas_${label}.json`; }
+
+export const REBALANCE_LABELS = [
+  "2024Q2","2024Q3","2024Q4","2025Q1","2025Q2","2025Q3","2025Q4","2026Q1","2026Q2",
+];
 
 // historical portfolio URLs by label
 export const PORTFOLIO_SNAPSHOTS = [
