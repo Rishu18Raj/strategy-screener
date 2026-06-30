@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { BASE, C, NEXT_REBALANCE, PORTFOLIO_SNAPSHOTS, SECTOR_COLORS, SELECTED_SECTORS } from "../config";
+import { BASE, C, NEXT_REBALANCE, PORTFOLIO_SNAPSHOTS, SECTOR_COLORS, SELECTED_SECTORS, URLS } from "../config";
 import { buildPortfolio, daysUntil, fmtDate, growthScore, parseCSV } from "../utils/strategy";
 import { DonutChart, FunnelBar, StatCard } from "../components/primitives";
 
 const MONTH_TO_QUARTER = { Mar: "Q1", Jun: "Q2", Sep: "Q3", Dec: "Q4" };
+const RISK_FREE_RATE = 0.06; // 6% p.a. — must match compute_performance_metrics.py
+const TRADING_DAYS = 252;
 
 function snapshotFrom(year, month) {
   return PORTFOLIO_SNAPSHOTS.find(s => s.year === year && s.month === month) || null;
@@ -33,6 +35,51 @@ async function fetchOptional(url) {
   return res.json();
 }
 
+// Slice nav.json up to (and including) asOfDate, then compute the same
+// metrics compute_performance_metrics.py computes over the full series —
+// total return, annualised return, alpha vs SENSEX, Sharpe — but bounded
+// to inception -> asOfDate instead of inception -> present.
+function computeAsOfMetrics(navSeries, asOfDate) {
+  if (!navSeries || navSeries.length < 2 || !asOfDate) return null;
+
+  const cutoff = navSeries.filter(d => d.date <= asOfDate);
+  if (cutoff.length < 2) return null;
+
+  const portNavs = cutoff.map(d => d.portfolio_nav);
+  const sensexNavs = cutoff.map(d => d.sensex_nav);
+  const dates = cutoff.map(d => d.date);
+
+  const portRet = portNavs.slice(1).map((v, i) => (v - portNavs[i]) / portNavs[i]);
+
+  const nDays = (parseDate(dates[dates.length - 1]) - parseDate(dates[0])) / 86400000;
+  if (!nDays) return null;
+
+  const totalPct = (portNavs[portNavs.length - 1] / portNavs[0] - 1) * 100;
+  const annPct = (Math.pow(portNavs[portNavs.length - 1] / portNavs[0], 365 / nDays) - 1) * 100;
+
+  const sensexTotalPct = (sensexNavs[sensexNavs.length - 1] / sensexNavs[0] - 1) * 100;
+  const sensexAnnPct = (Math.pow(sensexNavs[sensexNavs.length - 1] / sensexNavs[0], 365 / nDays) - 1) * 100;
+
+  const alphaAnnPct = annPct - sensexAnnPct;
+
+  const rfDaily = Math.pow(1 + RISK_FREE_RATE, 1 / TRADING_DAYS) - 1;
+  const excess = portRet.map(r => r - rfDaily);
+  const meanExc = excess.reduce((a, b) => a + b, 0) / excess.length;
+  const variance = excess.reduce((a, x) => a + (x - meanExc) ** 2, 0) / excess.length;
+  const std = Math.sqrt(variance);
+  const sharpe = std ? (meanExc / std) * Math.sqrt(TRADING_DAYS) : 0;
+
+  return {
+    asOfDate: dates[dates.length - 1],
+    totalPct: Number(totalPct.toFixed(2)),
+    annPct: Number(annPct.toFixed(2)),
+    sensexTotalPct: Number(sensexTotalPct.toFixed(2)),
+    sensexAnnPct: Number(sensexAnnPct.toFixed(2)),
+    alphaAnnPct: Number(alphaAnnPct.toFixed(2)),
+    sharpe: Number(sharpe.toFixed(4)),
+  };
+}
+
 export default function OverviewTab({ stocks, betaStatus, perf }) {
   const latest = PORTFOLIO_SNAPSHOTS[PORTFOLIO_SNAPSHOTS.length - 1];
   const [sortKey, setSortKey] = useState("roe");
@@ -47,6 +94,15 @@ export default function OverviewTab({ stocks, betaStatus, perf }) {
     prices: null,
     error: "",
   });
+  const [navSeries, setNavSeries] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchRequired(URLS.nav)
+      .then(d => { if (!cancelled) setNavSeries(d); })
+      .catch(() => { if (!cancelled) setNavSeries(null); });
+    return () => { cancelled = true; };
+  }, []);
 
   const availableYears = useMemo(
     () => [...new Set(PORTFOLIO_SNAPSHOTS.map(s => s.year))],
@@ -164,6 +220,12 @@ export default function OverviewTab({ stocks, betaStatus, perf }) {
   const snapshotIsLoading = snapshotState.status === "loading";
   const snapshotIsError = snapshotState.status === "error";
 
+  const asOfMetrics = useMemo(() => {
+    const cutoffDate = snapshotState.portfolioData?.rebalance_date || applied.year + "-" +
+      ({ Mar: "03", Jun: "06", Sep: "09", Dec: "12" }[applied.month]) + "-25";
+    return computeAsOfMetrics(navSeries, cutoffDate);
+  }, [navSeries, snapshotState.portfolioData, applied]);
+
   const sectorAlloc = useMemo(() => {
     const map = {};
     portfolio.forEach(s => {
@@ -182,7 +244,11 @@ export default function OverviewTab({ stocks, betaStatus, perf }) {
         ? (s => growthScore(s))
         : sortKey === "rebal_price"
           ? (s => s.rebal_price ?? s.entry_price ?? 0)
-          : (s => s[sortKey]);
+          : sortKey === "entry_price"
+            ? (s => s.entry_price ?? 0)
+            : sortKey === "live_return"
+              ? (s => liveReturnPct(s))
+              : (s => s[sortKey]);
     return [...portfolio].sort((a, b) => sortDir * (key(a) > key(b) ? 1 : -1));
   }, [portfolio, sortKey, sortDir]);
 
@@ -197,13 +263,32 @@ export default function OverviewTab({ stocks, betaStatus, perf }) {
     </th>
   );
 
-  const sharpe = perf?.risk?.sharpe ?? "1.53";
-  const totalRet = perf?.returns?.total_pct != null ? `${perf.returns.total_pct > 0 ? "+" : ""}${perf.returns.total_pct}%` : "+76.0%";
-  const alpha = perf?.returns?.alpha_ann != null ? `${perf.returns.alpha_ann > 0 ? "+" : ""}${perf.returns.alpha_ann}%` : "+33.3%";
+  // Live return = unrealized P&L from ORIGINAL entry_price (first time the
+  // stock entered the portfolio) to latest_price (most recent available
+  // close in the snapshot's price file). Per Rishu: always from entry_price,
+  // never from rebal_price, so this reflects true since-purchase P&L.
+  function liveReturnPct(s) {
+    const entry = Number(s.entry_price);
+    const latestP = Number(s.latest_price ?? s.rebal_price ?? s.entry_price);
+    if (!Number.isFinite(entry) || !entry || !Number.isFinite(latestP)) return null;
+    return ((latestP - entry) / entry) * 100;
+  }
+
+  const fallbackUsingFullPeriod = !asOfMetrics && perf;
+  const sharpe = asOfMetrics ? asOfMetrics.sharpe : (perf?.risk?.sharpe ?? "1.53");
+  const totalRet = asOfMetrics
+    ? `${asOfMetrics.totalPct > 0 ? "+" : ""}${asOfMetrics.totalPct}%`
+    : perf?.returns?.total_pct != null ? `${perf.returns.total_pct > 0 ? "+" : ""}${perf.returns.total_pct}%` : "+76.0%";
+  const alpha = asOfMetrics
+    ? `${asOfMetrics.alphaAnnPct > 0 ? "+" : ""}${asOfMetrics.alphaAnnPct}%`
+    : perf?.returns?.alpha_ann != null ? `${perf.returns.alpha_ann > 0 ? "+" : ""}${perf.returns.alpha_ann}%` : "+33.3%";
+  const sensexTotalForSub = asOfMetrics ? asOfMetrics.sensexTotalPct : perf?.returns?.sensex_total;
+  const returnSinceLabel = asOfMetrics ? `Since 25 Jun 2024 - to ${asOfMetrics.asOfDate}` : "Since 25 Jun 2024";
 
   const fmtMetric = v => Number.isFinite(Number(v)) ? Number(v).toFixed(1) : "-";
   const fmtPrice = v => Number.isFinite(Number(v)) ? Number(v).toLocaleString("en-IN", { maximumFractionDigits: 2 }) : "-";
-  const tableColSpan = 10;
+  const fmtPct = v => Number.isFinite(Number(v)) ? `${v > 0 ? "+" : ""}${Number(v).toFixed(1)}%` : "-";
+  const tableColSpan = 12;
 
   return (
     <div>
@@ -259,11 +344,11 @@ export default function OverviewTab({ stocks, betaStatus, perf }) {
         />
       </div>
 
-      {perf && (
+      {(asOfMetrics || perf) && (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 10, marginBottom: 14 }}>
-          <StatCard label="Live total return" value={totalRet} sub={`Since 25 Jun 2024 - SENSEX ${perf.returns.sensex_total > 0 ? "+" : ""}${perf.returns.sensex_total}%`} color={C.green} small />
-          <StatCard label="Alpha (ann)" value={alpha} sub="vs SENSEX annualised" color={C.green} small />
-          <StatCard label="Sharpe ratio" value={sharpe} sub="Risk-adjusted return" color={C.accent} small />
+          <StatCard label="Live total return" value={totalRet} sub={`${returnSinceLabel} - SENSEX ${sensexTotalForSub > 0 ? "+" : ""}${sensexTotalForSub}%`} color={C.green} small />
+          <StatCard label="Alpha (ann)" value={alpha} sub={asOfMetrics ? `vs SENSEX, as of ${asOfMetrics.asOfDate}` : "vs SENSEX annualised"} color={C.green} small />
+          <StatCard label="Sharpe ratio" value={sharpe} sub={asOfMetrics ? "Risk-adjusted, as of filter date" : "Risk-adjusted return"} color={C.accent} small />
         </div>
       )}
 
@@ -313,34 +398,43 @@ export default function OverviewTab({ stocks, betaStatus, perf }) {
             <Th label="RoE %" k="roe" right /><Th label="Rev CAGR" k="revCAGR" right />
             <Th label="EPS CAGR" k="epsCAGR" right /><Th label="Beta" k="beta" right />
             <Th label="P/E" k="pe" right /><Th label="G/P Score" k="gp" right /><Th label="Rebal price" k="rebal_price" right />
+            <Th label="Entry price" k="entry_price" right /><Th label="Live return" k="live_return" right />
           </tr></thead>
           <tbody>
             {displayed.length === 0 ? (
               <tr><td colSpan={tableColSpan} style={{ padding: "40px", textAlign: "center", color: C.muted, fontSize: 13 }}>
                 {snapshotIsLoading ? "Loading portfolio snapshot..." : "No stocks pass all filters."}
               </td></tr>
-            ) : displayed.map((s, i) => (
-              <tr key={s.ticker} style={{ borderTop: `0.5px solid ${C.subtle}`, background: i % 2 === 0 ? "transparent" : C.card + "44" }}>
-                <td style={{ padding: "10px 12px", fontWeight: 600, fontFamily: "var(--font-mono)", fontSize: 12, color: C.primary }}>{s.ticker}</td>
-                <td style={{ padding: "10px 12px", fontSize: 13, color: C.secondary, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 160 }}>{s.name}</td>
-                <td style={{ padding: "10px 12px" }}><span style={{ fontSize: 11, padding: "2px 7px", borderRadius: 4, fontWeight: 500, background: (SECTOR_COLORS[s.sector] || C.accent) + "18", color: SECTOR_COLORS[s.sector] || C.accent, whiteSpace: "nowrap" }}>{s.sector}</span></td>
-                {[
-                  { v: `${fmtMetric(s.roe)}%` },
-                  { v: `${fmtMetric(s.revCAGR)}%` },
-                  { v: `${fmtMetric(s.epsCAGR)}%` },
-                  { v: Number.isFinite(Number(s.beta)) ? Number(s.beta).toFixed(2) : "-" },
-                  { v: `${fmtMetric(s.pe)}x` },
-                  { v: growthScore(s).toFixed(2) },
-                  { v: fmtPrice(s.rebal_price ?? s.entry_price) },
-                ].map((cell, ci) => (
-                  <td key={ci} style={{ padding: "10px 12px", textAlign: "right", color: C.primary, fontFamily: "var(--font-mono)", fontSize: 12 }}>{cell.v}</td>
-                ))}
-              </tr>
-            ))}
+            ) : displayed.map((s, i) => {
+              const liveRet = liveReturnPct(s);
+              const livePositive = liveRet == null ? null : liveRet >= 0;
+              return (
+                <tr key={s.ticker} style={{ borderTop: `0.5px solid ${C.subtle}`, background: i % 2 === 0 ? "transparent" : C.card + "44" }}>
+                  <td style={{ padding: "10px 12px", fontWeight: 600, fontFamily: "var(--font-mono)", fontSize: 12, color: C.primary }}>{s.ticker}</td>
+                  <td style={{ padding: "10px 12px", fontSize: 13, color: C.secondary, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 160 }}>{s.name}</td>
+                  <td style={{ padding: "10px 12px" }}><span style={{ fontSize: 11, padding: "2px 7px", borderRadius: 4, fontWeight: 500, background: (SECTOR_COLORS[s.sector] || C.accent) + "18", color: SECTOR_COLORS[s.sector] || C.accent, whiteSpace: "nowrap" }}>{s.sector}</span></td>
+                  {[
+                    { v: `${fmtMetric(s.roe)}%` },
+                    { v: `${fmtMetric(s.revCAGR)}%` },
+                    { v: `${fmtMetric(s.epsCAGR)}%` },
+                    { v: Number.isFinite(Number(s.beta)) ? Number(s.beta).toFixed(2) : "-" },
+                    { v: `${fmtMetric(s.pe)}x` },
+                    { v: growthScore(s).toFixed(2) },
+                    { v: fmtPrice(s.rebal_price ?? s.entry_price) },
+                    { v: fmtPrice(s.entry_price) },
+                  ].map((cell, ci) => (
+                    <td key={ci} style={{ padding: "10px 12px", textAlign: "right", color: C.primary, fontFamily: "var(--font-mono)", fontSize: 12 }}>{cell.v}</td>
+                  ))}
+                  <td style={{ padding: "10px 12px", textAlign: "right", fontFamily: "var(--font-mono)", fontSize: 12, fontWeight: 600, color: livePositive == null ? C.muted : livePositive ? C.green : C.red }}>
+                    {fmtPct(liveRet)}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
-      <div style={{ marginTop: 10, fontSize: 12, color: C.muted }}>{"All stocks pass RoE >= 13% - Rev CAGR >= 7% - EPS CAGR >= 10% - P/E <= 20x - Beta <= 1.2 - in target sectors"}</div>
+      <div style={{ marginTop: 10, fontSize: 12, color: C.muted }}>{"All stocks pass RoE >= 13% - Rev CAGR >= 7% - EPS CAGR >= 10% - P/E <= 20x - Beta <= 1.2 - in target sectors - Live return = unrealized return from original entry price to latest available close"}</div>
     </div>
   );
 }
