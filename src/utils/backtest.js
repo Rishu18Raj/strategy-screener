@@ -148,28 +148,27 @@ function growthScoreCustom(s) { return s.pe > 0 ? (s.epsCAGR || 0) / s.pe : 0; }
  */
 export function buildPortfolioCustom(universe, customFilters, selectedSectors) {
   const caps = getSectorCapsCustom(universe);
-  // Use the SAME hardcoded relaxation rounds as build_portfolios_and_exits.py
-  // to ensure identical portfolio composition when using the same filters.
-  // The relaxation rounds are fixed regardless of user's custom EPS/PE thresholds.
-  const ROUNDS = [
-    [10, 20, 0],
-    [10, 25, 1],
-    [9,  25, 2],
-    [8,  25, 3],
-    [7,  25, 4],
-  ];
 
-  let fp = 0, sp = 0, bp = 0, portfolio = [], roundUsed = 0;
+  // Cascade rounds: offsets from the user's chosen epsCAGR and pe thresholds.
+  // When customFilters === FILTERS (defaults), this produces the SAME rounds
+  // as build_portfolios_and_exits.py — preserving Python parity for the base case.
+  const ROUNDS = [
+    [customFilters.epsCAGR,     customFilters.pe,     0],
+    [customFilters.epsCAGR,     customFilters.pe + 5, 1],
+    [customFilters.epsCAGR - 1, customFilters.pe + 5, 2],
+    [customFilters.epsCAGR - 2, customFilters.pe + 5, 3],
+    [customFilters.epsCAGR - 3, customFilters.pe + 5, 4],
+  ];
 
   for (const [eps, pe, rnd] of ROUNDS) {
     const fund = universe.filter(s =>
-      !isNaN(s.roe) && s.roe >= 13 &&
-      !isNaN(s.revCAGR) && s.revCAGR >= 7 &&
+      !isNaN(s.roe) && s.roe >= customFilters.roe &&
+      !isNaN(s.revCAGR) && s.revCAGR >= customFilters.revCAGR &&
       !isNaN(s.epsCAGR) && s.epsCAGR >= eps &&
       !isNaN(s.pe) && s.pe <= pe
     );
     const sec = fund.filter(s => selectedSectors.has(s.sector));
-    const bet = sec.filter(s => s.beta != null && s.beta <= 1.2);
+    const bet = sec.filter(s => s.beta != null && s.beta <= customFilters.beta);
     if (rnd === 0) { fp = fund.length; sp = sec.length; bp = bet.length; }
 
     const bySec = {};
@@ -341,9 +340,15 @@ export function runCustomBacktest({ universeByDate, priceTable, dailyPrices }, c
               pe: s.pe,
             };
           } else if (ticker in holdings) {
-            // Carried over from previous quarter — preserve original entry
+            // Carried over from previous quarter — preserve original entry.
+            // Share count is computed using the ORIGINAL entry_price, mirroring
+            // compute_nav.py which does: shares = alloc / s.get("entry_price").
+            // This means a carried position gets alloc/entry_price shares, not
+            // alloc/rebalPrice shares — the same "ghost share" accounting that
+            // Python uses, so NAV series are directly comparable.
             const h = holdings[ticker];
-            const shares = rebalPrice > 0 ? alloc / rebalPrice : 0;
+            const priceForShares = h.entryPrice > 0 ? h.entryPrice : rebalPrice;
+            const shares = priceForShares > 0 ? alloc / priceForShares : 0;
             newHoldings[ticker] = {
               shares,
               entryDate: h.entryDate, // Original entry date
