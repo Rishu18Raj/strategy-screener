@@ -2,7 +2,7 @@
 // ─────────────────────────────────────────────────────────────────────────
 // Historical re-simulation engine for the Build & Test tab.
 //
-// WHAT THIS DOES (and what it deliberately does NOT do)
+// WHAT THIS DOES
 //   When a user adjusts a filter threshold (e.g. P/E 20 -> 25), this module
 //   does NOT just refilter today's stock table. It rebuilds the portfolio
 //   AT EACH of the 9 historical rebalance dates using that quarter's ACTUAL
@@ -13,41 +13,42 @@
 //   happened" — not "what would today's filtered list have returned if
 //   bought 2 years ago."
 //
-//   Each quarter's resulting portfolio is held to the NEXT rebalance date,
-//   using the full-universe rebalance-date closing prices fetched by
-//   fetch_universe_rebalance_prices.py (data/historical/universe_rebalance_prices.json).
+//   Each quarter's resulting portfolio is then walked DAY BY DAY using
+//   data/historical/universe_daily_prices.json, checking the intra-quarter
+//   early-exit rule on every trading day — exactly the mechanics in
+//   monitor_exits.py:
+//     1. TTM EPS is derived ONCE at rebalance entry: rebal_price / rebal_PE,
+//        and held fixed for the whole quarter (fundamentals don't update
+//        intra-quarter in this strategy, live or custom).
+//     2. On each trading day: live_PE = daily_close / that fixed TTM EPS.
+//     3. If (return_since_rebal_entry > returnPct threshold) AND
+//        (live_PE > peThreshold) on the SAME day, the position exits that
+//        day. First day both conditions are true, in date order — matches
+//        monitor_exits.py's `break` on first trigger.
+//     4. Freed capital is NOT reinvested — it sits idle (0% return) until
+//        the next rebalance, same as the live strategy (monitor_exits.py
+//        has no redeploy-proceeds logic).
+//   Both threshold values are user-adjustable sliders, defaulting to the
+//   live strategy's 20% / 20x (DEFAULT_EXIT_RULE below).
 //
-// KNOWN LIMITATION — read before changing this file
-//   The real strategy (OverviewTab / performance_summary.json) also models
-//   an INTRA-quarter early-exit rule: if a stock's return from its rebalance
-//   entry price exceeds 20% AND its live P/E exceeds 20x at any point before
-//   the next rebalance, it's exited early and the freed cash earns the idle
-//   cash rate until the next rebalance. That rule requires full daily price
-//   series, which only exist for the ~32 tickers that have ever actually
-//   been in the real portfolio (data/prices_history.json). A custom filter
-//   can select tickers outside that set, for which we only have one price
-//   per quarter (the rebalance-date close), not a daily series.
+//   If a position never triggers the exit rule, it's simply held to the
+//   next rebalance using the rebalance-date close from
+//   universe_rebalance_prices.json (cheaper than scanning the daily series
+//   again for the terminal price — the rebalance price file is the
+//   authoritative quarter-end mark).
 //
-//   Consequence: this custom backtest assumes HOLD-TO-NEXT-REBALANCE for
-//   every position, with no intra-quarter exit rule applied. This is a
-//   real methodological difference from the live strategy's real trade
-//   log, not a bug — and the UI must disclose it clearly (see
-//   BuildTestTab.jsx), not present custom-backtest numbers as directly
-//   comparable to the live performance_summary.json numbers without that
-//   caveat.
+// DATA GAPS
+//   A position whose ticker has no daily price series in
+//   universe_daily_prices.json (e.g. fetch came back empty — pre-IPO,
+//   delisted, etc.) falls back to hold-to-rebalance using
+//   universe_rebalance_prices.json only, with no intra-quarter exit check
+//   possible for that one position that quarter. Logged in `dataGaps`.
 //
 // CASH HANDLING
 //   Equal-weight at each rebalance, exactly like buildPortfolio() in
-//   strategy.js. If a stock selected at rebalance N has no resolvable
-//   price in universe_rebalance_prices.json at rebalance N or N+1 (e.g.
-//   trading halt, data gap), that position's return for the quarter is
-//   excluded from the NAV calc for that quarter — not zeroed, not
-//   dropped from the whole backtest, just skipped for that one quarter's
-//   contribution (logged in `dataGaps` for transparency in the UI).
-//
-// RISK-FREE / IDLE CASH
-//   No intra-quarter cash drag here since there's no early-exit modeled —
-//   the equal-weight portfolio is always 100% invested between rebalances.
+//   strategy.js. Idle cash from an early exit earns 0% (not the risk-free
+//   rate) until the next rebalance — matches the live strategy, which does
+//   not model an idle-cash yield either.
 // ─────────────────────────────────────────────────────────────────────────
 
 import Papa from "papaparse";
@@ -60,6 +61,11 @@ export const CUSTOM_BACKTEST_REBALANCE_DATES = [
 
 const RISK_FREE_RATE = 0.06; // must match compute_performance_metrics.py
 const SENSEX_KEY = "^BSESN";
+
+// Default intra-quarter early-exit thresholds — mirrors monitor_exits.py
+// EXIT_RETURN_THRESHOLD / EXIT_PE_THRESHOLD exactly. Exposed as adjustable
+// sliders in the Build & Test tab; these are just the defaults.
+export const DEFAULT_EXIT_RULE = { returnPct: 20, peThreshold: 20 };
 
 // ── data loading ──────────────────────────────────────────────────────
 
@@ -94,13 +100,15 @@ async function fetchText(url) {
 
 /**
  * Loads everything the backtest needs: per-quarter universes (fundamentals
- * + beta merged), and the full universe rebalance-date price table.
+ * + beta merged), the full universe rebalance-date price table, and the
+ * full universe daily price series (for intra-quarter exit checks).
  * Call this once and reuse the result across however many times the user
- * drags a slider — only the filter changes, not the underlying data.
+ * drags a slider — only the filters/exit-rule change, not the underlying data.
  */
 export async function loadBacktestData() {
-  const [priceTable, ...quarters] = await Promise.all([
+  const [priceTable, dailyPrices, ...quarters] = await Promise.all([
     fetchJSON(URLS.universeRebalancePrices),
+    fetchJSON(URLS.universeDailyPrices),
     ...REBALANCE_LABELS.map(async label => {
       const [fundText, betas] = await Promise.all([
         fetchText(historicalFundamentalsUrl(label)),
@@ -116,7 +124,7 @@ export async function loadBacktestData() {
     universeByDate[date] = quarters[i].universe;
   });
 
-  return { priceTable, universeByDate };
+  return { priceTable, dailyPrices, universeByDate };
 }
 
 // ── portfolio construction at a single quarter, under custom filters ────
@@ -184,17 +192,28 @@ export function buildPortfolioCustom(universe, customFilters, selectedSectors) {
 
 // ── full historical re-simulation ────────────────────────────────────
 
+function tradingDaysBetween(dailySeries, afterDateStr, beforeDateStr) {
+  return Object.keys(dailySeries || {})
+    .filter(d => d > afterDateStr && d < beforeDateStr)
+    .sort();
+}
+
 /**
  * Runs the complete backtest: builds a portfolio at each historical
  * rebalance date under the custom filter (using ONLY that quarter's actual
- * fundamentals/beta snapshot — no lookahead), holds equal-weight to the
- * next rebalance using universe_rebalance_prices.json, and produces a
- * NAV series + trade log analogous to nav.json / trade_log.json.
+ * fundamentals/beta snapshot — no lookahead), then walks each position
+ * day-by-day to apply the intra-quarter early-exit rule, exactly mirroring
+ * monitor_exits.py's mechanics. Produces a NAV series, a trade log, and
+ * a per-quarter portfolio detail list (with entry/exit price + return per
+ * stock) for the Build & Test tab's clickable snapshot widget.
+ *
+ * exitRule: { returnPct, peThreshold } — both user-adjustable, default
+ * DEFAULT_EXIT_RULE (20% / 20x), matching the live strategy.
  *
  * Returns:
  *   { navSeries, tradeLog, quarterlyPortfolios, dataGaps }
  */
-export function runCustomBacktest({ universeByDate, priceTable }, customFilters, selectedSectors) {
+export function runCustomBacktest({ universeByDate, priceTable, dailyPrices }, customFilters, selectedSectors, exitRule = DEFAULT_EXIT_RULE) {
   const dates = CUSTOM_BACKTEST_REBALANCE_DATES;
   const navSeries = [{ date: dates[0], portfolio_nav: 100, sensex_nav: 100 }];
   const tradeLog = [];
@@ -212,10 +231,6 @@ export function runCustomBacktest({ universeByDate, priceTable }, customFilters,
     const { portfolio, fp, sp, bp, roundUsed, universeCount } =
       buildPortfolioCustom(universe, customFilters, selectedSectors);
 
-    quarterlyPortfolios.push({
-      date: entryDate, portfolio, fp, sp, bp, roundUsed, universeCount,
-    });
-
     const entryPrices = priceTable[entryDate] || {};
     const exitPrices = priceTable[exitDate] || {};
     const sensexEntry = entryPrices[SENSEX_KEY];
@@ -223,27 +238,95 @@ export function runCustomBacktest({ universeByDate, priceTable }, customFilters,
 
     // per-position returns for this quarter, skipping any with unresolvable prices
     const positionReturns = [];
+    const quarterStocks = []; // enriched detail for the snapshot widget
+
     portfolio.forEach(s => {
       const pIn = entryPrices[s.ticker];
-      const pOut = exitPrices[s.ticker];
-      if (pIn == null || pOut == null || pIn <= 0) {
-        dataGaps.push({ date: entryDate, ticker: s.ticker, reason: pIn == null ? "no entry price" : "no exit price" });
+      if (pIn == null || pIn <= 0) {
+        dataGaps.push({ date: entryDate, ticker: s.ticker, reason: "no entry price" });
         return;
       }
+
+      // TTM EPS fixed at rebalance entry — held for the whole quarter,
+      // exactly like monitor_exits.py. pe here is the stock's P/E AT
+      // REBALANCE (from the fundamentals snapshot), not a live figure.
+      const ttmEps = s.pe && s.pe > 0 ? pIn / s.pe : null;
+
+      const series = dailyPrices?.[s.ticker];
+      let exitRecord = null;
+
+      if (series && ttmEps) {
+        const days = tradingDaysBetween(series, entryDate, exitDate);
+        for (const day of days) {
+          const close = series[day];
+          if (close == null) continue;
+          const retPct = ((close - pIn) / pIn) * 100;
+          const livePe = close / ttmEps;
+          if (retPct > exitRule.returnPct && livePe > exitRule.peThreshold) {
+            exitRecord = { exitDay: day, exitPrice: close, retPct, livePe };
+            break; // first trigger, in date order — matches monitor_exits.py
+          }
+        }
+      }
+
+      let pOut, exitType, exitDay;
+      if (exitRecord) {
+        pOut = exitRecord.exitPrice;
+        exitType = "intra_quarter";
+        exitDay = exitRecord.exitDay;
+      } else {
+        pOut = exitPrices[s.ticker];
+        exitType = "rebalance";
+        exitDay = exitDate;
+        if (pOut == null) {
+          dataGaps.push({ date: entryDate, ticker: s.ticker, reason: "no exit price" });
+        }
+      }
+
+      if (pOut == null) return; // can't compute a return without an exit price
+
       const retPct = (pOut - pIn) / pIn;
+      // If exited early, the position's contribution to the QUARTER's
+      // return is the realised gain on exit day, then 0% (idle cash) for
+      // the remainder of the quarter — net effect on quarter return is
+      // just the realised return up to exit, same as holding flat after.
       positionReturns.push(retPct);
+
       tradeLog.push({
         ticker: s.ticker,
         name: s.name,
         sector: s.sector,
         entry_date: entryDate,
-        exit_date: exitDate,
+        exit_date: exitDay,
         entry_price: pIn,
         exit_price: pOut,
         abs_return_pct: Number((retPct * 100).toFixed(2)),
-        exit_type: "rebalance", // custom backtest never models intra-quarter exits — see file header
+        exit_type: exitType,
         status: "closed",
+        pe_at_entry: s.pe,
+        live_pe_at_exit: exitRecord ? Number(exitRecord.livePe.toFixed(2)) : null,
       });
+
+      quarterStocks.push({
+        ticker: s.ticker,
+        name: s.name,
+        sector: s.sector,
+        roe: s.roe,
+        revCAGR: s.revCAGR,
+        epsCAGR: s.epsCAGR,
+        beta: s.beta,
+        pe: s.pe,
+        rebal_price: pIn,
+        exit_price: pOut,
+        exit_date: exitDay,
+        exit_type: exitType,
+        return_pct: Number((retPct * 100).toFixed(2)),
+      });
+    });
+
+    quarterlyPortfolios.push({
+      date: entryDate, nextDate: exitDate, portfolio, fp, sp, bp, roundUsed, universeCount,
+      stocks: quarterStocks,
     });
 
     // quarter portfolio return — equal weight across resolvable positions only
