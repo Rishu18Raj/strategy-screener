@@ -210,27 +210,17 @@ const CASH_RATE_ANNUAL = 0.06; // must match compute_nav.py CASH_RATE_ANNUAL
 const CASH_RATE_DAILY = Math.pow(1 + CASH_RATE_ANNUAL, 1 / 365) - 1;
 
 /**
- * Runs the complete backtest, mirroring compute_nav.py's actual NAV
- * mechanics exactly (this is the piece that was previously wrong and
- * caused custom-backtest totals to undershoot the live track record):
+ * Runs the complete backtest, mirroring build_portfolios_and_exits.py methodology:
  *
- *   - Holdings are tracked as SHARES, not a flat per-quarter return.
- *   - At each rebalance, the CURRENT TOTAL PORTFOLIO VALUE (existing
- *     holdings marked to that day's price, plus any idle cash) is
- *     computed FIRST, then redistributed EQUALLY across the new stock
- *     list, buying shares at that day's price. This is how compounding
- *     actually happens — a stock held across multiple quarters doesn't
- *     "reset," the whole portfolio's value carries forward and grows
- *     into the next allocation. Resetting to a flat 100 every quarter
- *     (the previous, buggy approach) silently caps compounding and was
- *     the main reason custom-backtest totals ran far below the live
- *     ~74% figure even with identical filters.
- *   - On intra-quarter exit, proceeds become idle CASH that grows at
- *     6% p.a. (CASH_RATE_ANNUAL, matching compute_nav.py) until the
- *     next rebalance, not 0% as in the earlier version of this file.
- *   - NAV is walked day-by-day across the full window, not just sampled
- *     at the 9 rebalance points, for an accurate daily series (also
- *     enables more precise future metrics if needed).
+ *   - Holdings are tracked as SHARES with ORIGINAL entry prices carried forward
+ *   - At each rebalance, matches current portfolio against previous portfolio:
+ *     - Stocks held from previous quarter: carry forward entry_date/entry_price
+ *     - New stocks: entry_date = current rebalance, entry_price = current rebalance price
+ *   - Trade log is only generated when stocks EXIT (rebalance or intra-quarter)
+ *   - Returns calculated from ORIGINAL entry_price, not quarterly rebalance price
+ *   - Includes SENSEX benchmark comparison and alpha for each trade
+ *   - Logs open positions at the end (last quarter's holdings)
+ *   - NAV is walked day-by-day for accurate daily series
  *
  * customFilters, selectedSectors: as before.
  * exitRule: { returnPct, peThreshold } — both user-adjustable, default
@@ -238,9 +228,6 @@ const CASH_RATE_DAILY = Math.pow(1 + CASH_RATE_ANNUAL, 1 / 365) - 1;
  *
  * Returns:
  *   { navSeries, quarterlyNavSeries, tradeLog, quarterlyPortfolios, dataGaps }
- *   navSeries is the full daily series; quarterlyNavSeries is sampled at
- *   the 9 rebalance dates only (kept for computeCustomMetrics, which is
- *   quarterly-observation-based).
  */
 export function runCustomBacktest({ universeByDate, priceTable, dailyPrices }, customFilters, selectedSectors, exitRule = DEFAULT_EXIT_RULE) {
   const dates = CUSTOM_BACKTEST_REBALANCE_DATES;
@@ -250,8 +237,18 @@ export function runCustomBacktest({ universeByDate, priceTable, dailyPrices }, c
   const quarterlyPortfolios = [];
   const dataGaps = [];
 
-  // pre-resolve each quarter's screened portfolio once, plus an
-  // intra-quarter exit lookup: ticker -> exit day, for the day-by-day walk
+  // Helper: annualised return calculation (matching Python)
+  function annualised(absPct, days) {
+    if (absPct == null || !days || days <= 0) return null;
+    return Number((((1 + absPct / 100) ** (365.25 / days) - 1) * 100).toFixed(2));
+  }
+
+  // Helper: get SENSEX price on or before date
+  function sensexPriceOn(day) {
+    return priceOn(SENSEX_KEY, day);
+  }
+
+  // pre-resolve each quarter's screened portfolio once
   const quarterData = dates.slice(0, -1).map((entryDate, i) => {
     const exitDate = dates[i + 1];
     const universe = universeByDate[entryDate] || [];
@@ -290,11 +287,13 @@ export function runCustomBacktest({ universeByDate, priceTable, dailyPrices }, c
   const allDays = allTradingDaysInWindow(dailyPrices, startDate, endDate);
   const rebalSet = new Set(dates);
 
-  // holdings: ticker -> { shares, entryDate (this quarter's rebal date, for exit lookup) }
+  // holdings: ticker -> { shares, entryDate (original), entryPrice (original), 
+  //                      rebalPrice (current quarter's rebal price), ttmEps, exitRecord }
   let holdings = {};
   let cash = 0;
   let navSeries = [];
   let quarterIdx = -1;
+  let intraExited = new Set(); // track stocks exited intra-quarter this quarter
 
   function priceOn(ticker, day) {
     return dailyPrices?.[ticker]?.[day] ?? priceTable[day]?.[ticker] ?? null;
@@ -318,42 +317,139 @@ export function runCustomBacktest({ universeByDate, priceTable, dailyPrices }, c
         const q = quarterData[qIdx];
         const n = q.stocks.length;
         const alloc = n > 0 ? totalValue / n : totalValue;
+        const sensexRebal = sensexPriceOn(day);
 
-        holdings = {};
-        cash = 0;
-        const quarterStocks = [];
+        // Build new portfolio for this quarter
+        const newHoldings = {};
+        const currentTickers = new Set(q.stocks.map(s => s.ticker));
 
+        // Process stocks that are in the new portfolio
         q.stocks.forEach(s => {
-          const shares = s.rebal_price > 0 ? alloc / s.rebal_price : 0;
-          holdings[s.ticker] = { shares, entryDate: day, ttmEps: s.pe && s.pe > 0 ? s.rebal_price / s.pe : null, exitRecord: s.exitRecord };
+          const ticker = s.ticker;
+          const rebalPrice = s.rebal_price;
 
-          const exitPrice = s.exitRecord ? s.exitRecord.exitPrice : (priceTable[q.exitDate]?.[s.ticker] ?? null);
-          const exitDay = s.exitRecord ? s.exitRecord.exitDay : q.exitDate;
-          const exitType = s.exitRecord ? "intra_quarter" : "rebalance";
-          const retPct = exitPrice != null ? ((exitPrice - s.rebal_price) / s.rebal_price) * 100 : null;
+          if (ticker in intraExited) {
+            // Was sold intra-quarter last time — treat as new entry
+            intraExited.delete(ticker);
+            const shares = rebalPrice > 0 ? alloc / rebalPrice : 0;
+            newHoldings[ticker] = {
+              shares,
+              entryDate: day,
+              entryPrice: rebalPrice,
+              rebalPrice: rebalPrice,
+              ttmEps: s.pe && s.pe > 0 ? rebalPrice / s.pe : null,
+              exitRecord: s.exitRecord,
+              name: s.name,
+              sector: s.sector,
+              pe: s.pe,
+            };
+          } else if (ticker in holdings) {
+            // Carried over from previous quarter — preserve original entry
+            const h = holdings[ticker];
+            const shares = rebalPrice > 0 ? alloc / rebalPrice : 0;
+            newHoldings[ticker] = {
+              shares,
+              entryDate: h.entryDate, // Original entry date
+              entryPrice: h.entryPrice, // Original entry price
+              rebalPrice: rebalPrice, // Current quarter's rebalance price (resets)
+              ttmEps: s.pe && s.pe > 0 ? rebalPrice / s.pe : null,
+              exitRecord: s.exitRecord,
+              name: h.name,
+              sector: h.sector,
+              pe: s.pe,
+            };
+          } else {
+            // New entry this quarter
+            const shares = rebalPrice > 0 ? alloc / rebalPrice : 0;
+            newHoldings[ticker] = {
+              shares,
+              entryDate: day,
+              entryPrice: rebalPrice,
+              rebalPrice: rebalPrice,
+              ttmEps: s.pe && s.pe > 0 ? rebalPrice / s.pe : null,
+              exitRecord: s.exitRecord,
+              name: s.name,
+              sector: s.sector,
+              pe: s.pe,
+            };
+          }
+        });
 
-          if (exitPrice == null) dataGaps.push({ date: q.entryDate, ticker: s.ticker, reason: "no exit price" });
+        // Log rebalance exits (stocks in holdings but not in new portfolio)
+        for (const ticker in holdings) {
+          if (!currentTickers.has(ticker) && !intraExited.has(ticker)) {
+            const h = holdings[ticker];
+            const exitPrice = priceOn(ticker, day);
+            const entryPrice = h.entryPrice;
+            const entryDate = h.entryDate;
+            const sEntry = sensexPriceOn(entryDate);
+            const sExit = sensexRebal;
 
-          tradeLog.push({
-            ticker: s.ticker, name: s.name, sector: s.sector,
-            entry_date: q.entryDate, exit_date: exitDay,
-            entry_price: s.rebal_price, exit_price: exitPrice,
-            abs_return_pct: retPct != null ? Number(retPct.toFixed(2)) : null,
-            exit_type: exitType, status: "closed",
-            pe_at_entry: s.pe,
-          });
+            if (exitPrice != null && entryPrice != null) {
+              const days = (new Date(day) - new Date(entryDate)) / 86400000;
+              const absRet = Number(((exitPrice - entryPrice) / entryPrice * 100).toFixed(2));
+              const annRet = annualised(absRet, days);
+              const sensexAbs = sEntry != null && sExit != null ? Number(((sExit - sEntry) / sEntry * 100).toFixed(2)) : null;
+              const sensexAnn = sensexAbs != null ? annualised(sensexAbs, days) : null;
+              const alphaAbs = absRet != null && sensexAbs != null ? Number((absRet - sensexAbs).toFixed(2)) : null;
+              const alphaAnn = annRet != null && sensexAnn != null ? Number((annRet - sensexAnn).toFixed(2)) : null;
 
-          quarterStocks.push({
-            ticker: s.ticker, name: s.name, sector: s.sector,
-            roe: s.roe, revCAGR: s.revCAGR, epsCAGR: s.epsCAGR, beta: s.beta, pe: s.pe,
-            rebal_price: s.rebal_price, exit_price: exitPrice, exit_date: exitDay,
-            exit_type: exitType, return_pct: retPct != null ? Number(retPct.toFixed(2)) : null,
-          });
+              tradeLog.push({
+                ticker,
+                name: h.name,
+                sector: h.sector,
+                entry_date: entryDate,
+                exit_date: day,
+                entry_price: entryPrice,
+                exit_price: exitPrice,
+                holding_days: Math.round(days),
+                abs_return_pct: absRet,
+                ann_return_pct: annRet,
+                sensex_abs_pct: sensexAbs,
+                sensex_ann_pct: sensexAnn,
+                alpha_abs: alphaAbs,
+                alpha_ann: alphaAnn,
+                exit_type: "rebalance",
+                status: "closed",
+              });
+            } else {
+              dataGaps.push({ date: day, ticker, reason: "missing price for exit calculation" });
+            }
+          }
+        }
+
+        holdings = newHoldings;
+        cash = 0;
+        intraExited = new Set(); // Reset for this quarter
+
+        // Save quarterly portfolio snapshot
+        const quarterStocks = q.stocks.map(s => {
+          const h = holdings[s.ticker];
+          return {
+            ticker: s.ticker,
+            name: s.name,
+            sector: s.sector,
+            roe: s.roe,
+            revCAGR: s.revCAGR,
+            epsCAGR: s.epsCAGR,
+            beta: s.beta,
+            pe: s.pe,
+            entry_date: h?.entryDate || day,
+            entry_price: h?.entryPrice || s.rebal_price,
+            rebal_price: s.rebal_price,
+            exit_type: h?.exitRecord ? "intra_quarter" : null,
+          };
         });
 
         quarterlyPortfolios.push({
-          date: q.entryDate, nextDate: q.exitDate, portfolio: q.stocks,
-          fp: q.fp, sp: q.sp, bp: q.bp, roundUsed: q.roundUsed, universeCount: q.universeCount,
+          date: q.entryDate,
+          nextDate: q.exitDate,
+          portfolio: q.stocks,
+          fp: q.fp,
+          sp: q.sp,
+          bp: q.bp,
+          roundUsed: q.roundUsed,
+          universeCount: q.universeCount,
           stocks: quarterStocks,
         });
         quarterIdx = qIdx;
@@ -366,8 +462,48 @@ export function runCustomBacktest({ universeByDate, priceTable, dailyPrices }, c
       if (h.exitRecord && h.exitRecord.exitDay === day) {
         const p = priceOn(ticker, day);
         if (p != null) {
+          const entryPrice = h.entryPrice;
+          const entryDate = h.entryDate;
+          const rebalPrice = h.rebalPrice;
+          const sEntry = sensexPriceOn(entryDate);
+          const sExit = sensexPriceOn(day);
+
+          const days = (new Date(day) - new Date(entryDate)) / 86400000;
+          const absRet = Number(((p - entryPrice) / entryPrice * 100).toFixed(2));
+          const annRet = annualised(absRet, days);
+          const retFromRebal = Number(((p - rebalPrice) / rebalPrice * 100).toFixed(2));
+          const livePe = h.ttmEps ? Number((p / h.ttmEps).toFixed(2)) : null;
+          const sensexAbs = sEntry != null && sExit != null ? Number(((sExit - sEntry) / sEntry * 100).toFixed(2)) : null;
+          const sensexAnn = sensexAbs != null ? annualised(sensexAbs, days) : null;
+          const alphaAbs = absRet != null && sensexAbs != null ? Number((absRet - sensexAbs).toFixed(2)) : null;
+          const alphaAnn = annRet != null && sensexAnn != null ? Number((annRet - sensexAnn).toFixed(2)) : null;
+
+          tradeLog.push({
+            ticker,
+            name: h.name,
+            sector: h.sector,
+            entry_date: entryDate,
+            exit_date: day,
+            entry_price: entryPrice,
+            rebal_price: rebalPrice,
+            exit_price: p,
+            holding_days: Math.round(days),
+            abs_return_pct: absRet,
+            ann_return_pct: annRet,
+            ret_from_rebal: retFromRebal,
+            pe_at_exit: livePe,
+            sensex_abs_pct: sensexAbs,
+            sensex_ann_pct: sensexAnn,
+            alpha_abs: alphaAbs,
+            alpha_ann: alphaAnn,
+            exit_type: "intra_quarter",
+            status: "closed",
+            trigger: `ret=${retFromRebal.toFixed(1)}% from ${h.entryDate}, P/E=${livePe?.toFixed(1)}x`,
+          });
+
           cash += h.shares * p;
           delete holdings[ticker];
+          intraExited.add(ticker);
         }
       }
     }
@@ -380,6 +516,47 @@ export function runCustomBacktest({ universeByDate, priceTable, dailyPrices }, c
     navSeries.push({ date: day, portfolio_nav: portfolioValue, sensex_price: sensexPrice, quarterIdx });
   }
 
+  // ── log open positions (latest portfolio) ──
+  const today = dates[dates.length - 1];
+  const sensexToday = sensexPriceOn(today);
+
+  for (const ticker in holdings) {
+    const h = holdings[ticker];
+    const priceToday = priceOn(ticker, today);
+    const entryPrice = h.entryPrice;
+    const entryDate = h.entryDate;
+    const sEntry = sensexPriceOn(entryDate);
+
+    if (priceToday != null && entryPrice != null) {
+      const days = (new Date(today) - new Date(entryDate)) / 86400000;
+      const absRet = Number(((priceToday - entryPrice) / entryPrice * 100).toFixed(2));
+      const annRet = annualised(absRet, days);
+      const sensexAbs = sEntry != null && sensexToday != null ? Number(((sensexToday - sEntry) / sEntry * 100).toFixed(2)) : null;
+      const sensexAnn = sensexAbs != null ? annualised(sensexAbs, days) : null;
+      const alphaAbs = absRet != null && sensexAbs != null ? Number((absRet - sensexAbs).toFixed(2)) : null;
+      const alphaAnn = annRet != null && sensexAnn != null ? Number((annRet - sensexAnn).toFixed(2)) : null;
+
+      tradeLog.push({
+        ticker,
+        name: h.name,
+        sector: h.sector,
+        entry_date: entryDate,
+        exit_date: null,
+        entry_price: entryPrice,
+        exit_price: priceToday,
+        holding_days: Math.round(days),
+        abs_return_pct: absRet,
+        ann_return_pct: annRet,
+        sensex_abs_pct: sensexAbs,
+        sensex_ann_pct: sensexAnn,
+        alpha_abs: alphaAbs,
+        alpha_ann: alphaAnn,
+        exit_type: null,
+        status: "open",
+      });
+    }
+  }
+
   // normalise: NAV starts at 100 on day one, SENSEX NAV rebased the same way
   const navStart = navSeries[0]?.portfolio_nav || 100;
   const sensexStart = navSeries.find(d => d.sensex_price != null)?.sensex_price;
@@ -389,8 +566,7 @@ export function runCustomBacktest({ universeByDate, priceTable, dailyPrices }, c
     sensex_nav: d.sensex_price != null && sensexStart ? Number(((d.sensex_price / sensexStart) * 100).toFixed(4)) : null,
   }));
 
-  // fill any null sensex_nav by carrying the last known value forward, so
-  // the quarterly sample below never hits a gap on a rebalance date
+  // fill any null sensex_nav by carrying the last known value forward
   let lastSensex = 100;
   navSeries = navSeries.map(d => {
     if (d.sensex_nav != null) lastSensex = d.sensex_nav;
