@@ -160,6 +160,8 @@ export function buildPortfolioCustom(universe, customFilters, selectedSectors) {
     [customFilters.epsCAGR - 3, customFilters.pe + 5, 4],
   ];
 
+  let fp = 0, sp = 0, bp = 0, portfolio = [], roundUsed = 0;
+
   for (const [eps, pe, rnd] of ROUNDS) {
     const fund = universe.filter(s =>
       !isNaN(s.roe) && s.roe >= customFilters.roe &&
