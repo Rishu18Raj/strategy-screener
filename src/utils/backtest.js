@@ -198,63 +198,76 @@ function tradingDaysBetween(dailySeries, afterDateStr, beforeDateStr) {
     .sort();
 }
 
+function allTradingDaysInWindow(dailyPrices, startDate, endDate) {
+  const all = new Set();
+  Object.values(dailyPrices || {}).forEach(series => {
+    Object.keys(series).forEach(d => { if (d >= startDate && d <= endDate) all.add(d); });
+  });
+  return [...all].sort();
+}
+
+const CASH_RATE_ANNUAL = 0.06; // must match compute_nav.py CASH_RATE_ANNUAL
+const CASH_RATE_DAILY = Math.pow(1 + CASH_RATE_ANNUAL, 1 / 365) - 1;
+
 /**
- * Runs the complete backtest: builds a portfolio at each historical
- * rebalance date under the custom filter (using ONLY that quarter's actual
- * fundamentals/beta snapshot — no lookahead), then walks each position
- * day-by-day to apply the intra-quarter early-exit rule, exactly mirroring
- * monitor_exits.py's mechanics. Produces a NAV series, a trade log, and
- * a per-quarter portfolio detail list (with entry/exit price + return per
- * stock) for the Build & Test tab's clickable snapshot widget.
+ * Runs the complete backtest, mirroring compute_nav.py's actual NAV
+ * mechanics exactly (this is the piece that was previously wrong and
+ * caused custom-backtest totals to undershoot the live track record):
  *
+ *   - Holdings are tracked as SHARES, not a flat per-quarter return.
+ *   - At each rebalance, the CURRENT TOTAL PORTFOLIO VALUE (existing
+ *     holdings marked to that day's price, plus any idle cash) is
+ *     computed FIRST, then redistributed EQUALLY across the new stock
+ *     list, buying shares at that day's price. This is how compounding
+ *     actually happens — a stock held across multiple quarters doesn't
+ *     "reset," the whole portfolio's value carries forward and grows
+ *     into the next allocation. Resetting to a flat 100 every quarter
+ *     (the previous, buggy approach) silently caps compounding and was
+ *     the main reason custom-backtest totals ran far below the live
+ *     ~74% figure even with identical filters.
+ *   - On intra-quarter exit, proceeds become idle CASH that grows at
+ *     6% p.a. (CASH_RATE_ANNUAL, matching compute_nav.py) until the
+ *     next rebalance, not 0% as in the earlier version of this file.
+ *   - NAV is walked day-by-day across the full window, not just sampled
+ *     at the 9 rebalance points, for an accurate daily series (also
+ *     enables more precise future metrics if needed).
+ *
+ * customFilters, selectedSectors: as before.
  * exitRule: { returnPct, peThreshold } — both user-adjustable, default
  * DEFAULT_EXIT_RULE (20% / 20x), matching the live strategy.
  *
  * Returns:
- *   { navSeries, tradeLog, quarterlyPortfolios, dataGaps }
+ *   { navSeries, quarterlyNavSeries, tradeLog, quarterlyPortfolios, dataGaps }
+ *   navSeries is the full daily series; quarterlyNavSeries is sampled at
+ *   the 9 rebalance dates only (kept for computeCustomMetrics, which is
+ *   quarterly-observation-based).
  */
 export function runCustomBacktest({ universeByDate, priceTable, dailyPrices }, customFilters, selectedSectors, exitRule = DEFAULT_EXIT_RULE) {
   const dates = CUSTOM_BACKTEST_REBALANCE_DATES;
-  const navSeries = [{ date: dates[0], portfolio_nav: 100, sensex_nav: 100 }];
+  const startDate = dates[0];
+  const endDate = dates[dates.length - 1];
   const tradeLog = [];
   const quarterlyPortfolios = [];
   const dataGaps = [];
 
-  let portNav = 100;
-  let sensexNav = 100;
-
-  for (let i = 0; i < dates.length - 1; i++) {
-    const entryDate = dates[i];
+  // pre-resolve each quarter's screened portfolio once, plus an
+  // intra-quarter exit lookup: ticker -> exit day, for the day-by-day walk
+  const quarterData = dates.slice(0, -1).map((entryDate, i) => {
     const exitDate = dates[i + 1];
     const universe = universeByDate[entryDate] || [];
-
     const { portfolio, fp, sp, bp, roundUsed, universeCount } =
       buildPortfolioCustom(universe, customFilters, selectedSectors);
-
     const entryPrices = priceTable[entryDate] || {};
-    const exitPrices = priceTable[exitDate] || {};
-    const sensexEntry = entryPrices[SENSEX_KEY];
-    const sensexExit = exitPrices[SENSEX_KEY];
 
-    // per-position returns for this quarter, skipping any with unresolvable prices
-    const positionReturns = [];
-    const quarterStocks = []; // enriched detail for the snapshot widget
-
-    portfolio.forEach(s => {
+    const stocks = portfolio.map(s => {
       const pIn = entryPrices[s.ticker];
       if (pIn == null || pIn <= 0) {
         dataGaps.push({ date: entryDate, ticker: s.ticker, reason: "no entry price" });
-        return;
+        return null;
       }
-
-      // TTM EPS fixed at rebalance entry — held for the whole quarter,
-      // exactly like monitor_exits.py. pe here is the stock's P/E AT
-      // REBALANCE (from the fundamentals snapshot), not a live figure.
       const ttmEps = s.pe && s.pe > 0 ? pIn / s.pe : null;
-
       const series = dailyPrices?.[s.ticker];
       let exitRecord = null;
-
       if (series && ttmEps) {
         const days = tradingDaysBetween(series, entryDate, exitDate);
         for (const day of days) {
@@ -263,96 +276,141 @@ export function runCustomBacktest({ universeByDate, priceTable, dailyPrices }, c
           const retPct = ((close - pIn) / pIn) * 100;
           const livePe = close / ttmEps;
           if (retPct > exitRule.returnPct && livePe > exitRule.peThreshold) {
-            exitRecord = { exitDay: day, exitPrice: close, retPct, livePe };
+            exitRecord = { exitDay: day, exitPrice: close };
             break; // first trigger, in date order — matches monitor_exits.py
           }
         }
       }
+      return { ...s, rebal_price: pIn, exitRecord };
+    }).filter(Boolean);
 
-      let pOut, exitType, exitDay;
-      if (exitRecord) {
-        pOut = exitRecord.exitPrice;
-        exitType = "intra_quarter";
-        exitDay = exitRecord.exitDay;
-      } else {
-        pOut = exitPrices[s.ticker];
-        exitType = "rebalance";
-        exitDay = exitDate;
-        if (pOut == null) {
-          dataGaps.push({ date: entryDate, ticker: s.ticker, reason: "no exit price" });
-        }
-      }
+    return { entryDate, exitDate, stocks, fp, sp, bp, roundUsed, universeCount };
+  });
 
-      if (pOut == null) return; // can't compute a return without an exit price
+  const allDays = allTradingDaysInWindow(dailyPrices, startDate, endDate);
+  const rebalSet = new Set(dates);
 
-      const retPct = (pOut - pIn) / pIn;
-      // If exited early, the position's contribution to the QUARTER's
-      // return is the realised gain on exit day, then 0% (idle cash) for
-      // the remainder of the quarter — net effect on quarter return is
-      // just the realised return up to exit, same as holding flat after.
-      positionReturns.push(retPct);
+  // holdings: ticker -> { shares, entryDate (this quarter's rebal date, for exit lookup) }
+  let holdings = {};
+  let cash = 0;
+  let navSeries = [];
+  let quarterIdx = -1;
 
-      tradeLog.push({
-        ticker: s.ticker,
-        name: s.name,
-        sector: s.sector,
-        entry_date: entryDate,
-        exit_date: exitDay,
-        entry_price: pIn,
-        exit_price: pOut,
-        abs_return_pct: Number((retPct * 100).toFixed(2)),
-        exit_type: exitType,
-        status: "closed",
-        pe_at_entry: s.pe,
-        live_pe_at_exit: exitRecord ? Number(exitRecord.livePe.toFixed(2)) : null,
-      });
-
-      quarterStocks.push({
-        ticker: s.ticker,
-        name: s.name,
-        sector: s.sector,
-        roe: s.roe,
-        revCAGR: s.revCAGR,
-        epsCAGR: s.epsCAGR,
-        beta: s.beta,
-        pe: s.pe,
-        rebal_price: pIn,
-        exit_price: pOut,
-        exit_date: exitDay,
-        exit_type: exitType,
-        return_pct: Number((retPct * 100).toFixed(2)),
-      });
-    });
-
-    quarterlyPortfolios.push({
-      date: entryDate, nextDate: exitDate, portfolio, fp, sp, bp, roundUsed, universeCount,
-      stocks: quarterStocks,
-    });
-
-    // quarter portfolio return — equal weight across resolvable positions only
-    const quarterRet = positionReturns.length
-      ? positionReturns.reduce((a, b) => a + b, 0) / positionReturns.length
-      : 0;
-    portNav = portNav * (1 + quarterRet);
-
-    const sensexRet = sensexEntry != null && sensexExit != null && sensexEntry > 0
-      ? (sensexExit - sensexEntry) / sensexEntry
-      : 0;
-    sensexNav = sensexNav * (1 + sensexRet);
-
-    navSeries.push({ date: exitDate, portfolio_nav: Number(portNav.toFixed(4)), sensex_nav: Number(sensexNav.toFixed(4)) });
+  function priceOn(ticker, day) {
+    return dailyPrices?.[ticker]?.[day] ?? priceTable[day]?.[ticker] ?? null;
   }
 
-  return { navSeries, tradeLog, quarterlyPortfolios, dataGaps };
+  function markToMarket(day) {
+    let total = cash;
+    for (const ticker in holdings) {
+      const p = priceOn(ticker, day);
+      if (p != null) total += holdings[ticker].shares * p;
+    }
+    return total;
+  }
+
+  for (const day of allDays) {
+    // ── rebalance ──
+    if (rebalSet.has(day)) {
+      const qIdx = dates.indexOf(day);
+      if (qIdx >= 0 && qIdx < quarterData.length) {
+        const totalValue = markToMarket(day) || 100; // first rebalance: nothing held yet, seed at 100
+        const q = quarterData[qIdx];
+        const n = q.stocks.length;
+        const alloc = n > 0 ? totalValue / n : totalValue;
+
+        holdings = {};
+        cash = 0;
+        const quarterStocks = [];
+
+        q.stocks.forEach(s => {
+          const shares = s.rebal_price > 0 ? alloc / s.rebal_price : 0;
+          holdings[s.ticker] = { shares, entryDate: day, ttmEps: s.pe && s.pe > 0 ? s.rebal_price / s.pe : null, exitRecord: s.exitRecord };
+
+          const exitPrice = s.exitRecord ? s.exitRecord.exitPrice : (priceTable[q.exitDate]?.[s.ticker] ?? null);
+          const exitDay = s.exitRecord ? s.exitRecord.exitDay : q.exitDate;
+          const exitType = s.exitRecord ? "intra_quarter" : "rebalance";
+          const retPct = exitPrice != null ? ((exitPrice - s.rebal_price) / s.rebal_price) * 100 : null;
+
+          if (exitPrice == null) dataGaps.push({ date: q.entryDate, ticker: s.ticker, reason: "no exit price" });
+
+          tradeLog.push({
+            ticker: s.ticker, name: s.name, sector: s.sector,
+            entry_date: q.entryDate, exit_date: exitDay,
+            entry_price: s.rebal_price, exit_price: exitPrice,
+            abs_return_pct: retPct != null ? Number(retPct.toFixed(2)) : null,
+            exit_type: exitType, status: "closed",
+            pe_at_entry: s.pe,
+          });
+
+          quarterStocks.push({
+            ticker: s.ticker, name: s.name, sector: s.sector,
+            roe: s.roe, revCAGR: s.revCAGR, epsCAGR: s.epsCAGR, beta: s.beta, pe: s.pe,
+            rebal_price: s.rebal_price, exit_price: exitPrice, exit_date: exitDay,
+            exit_type: exitType, return_pct: retPct != null ? Number(retPct.toFixed(2)) : null,
+          });
+        });
+
+        quarterlyPortfolios.push({
+          date: q.entryDate, nextDate: q.exitDate, portfolio: q.stocks,
+          fp: q.fp, sp: q.sp, bp: q.bp, roundUsed: q.roundUsed, universeCount: q.universeCount,
+          stocks: quarterStocks,
+        });
+        quarterIdx = qIdx;
+      }
+    }
+
+    // ── process intra-quarter exits scheduled for today ──
+    for (const ticker in holdings) {
+      const h = holdings[ticker];
+      if (h.exitRecord && h.exitRecord.exitDay === day) {
+        const p = priceOn(ticker, day);
+        if (p != null) {
+          cash += h.shares * p;
+          delete holdings[ticker];
+        }
+      }
+    }
+
+    // ── grow idle cash at the overnight rate ──
+    if (cash > 0) cash *= (1 + CASH_RATE_DAILY);
+
+    const portfolioValue = markToMarket(day);
+    const sensexPrice = priceOn(SENSEX_KEY, day);
+    navSeries.push({ date: day, portfolio_nav: portfolioValue, sensex_price: sensexPrice, quarterIdx });
+  }
+
+  // normalise: NAV starts at 100 on day one, SENSEX NAV rebased the same way
+  const navStart = navSeries[0]?.portfolio_nav || 100;
+  const sensexStart = navSeries.find(d => d.sensex_price != null)?.sensex_price;
+  navSeries = navSeries.map(d => ({
+    date: d.date,
+    portfolio_nav: Number(((d.portfolio_nav / navStart) * 100).toFixed(4)),
+    sensex_nav: d.sensex_price != null && sensexStart ? Number(((d.sensex_price / sensexStart) * 100).toFixed(4)) : null,
+  }));
+
+  // fill any null sensex_nav by carrying the last known value forward, so
+  // the quarterly sample below never hits a gap on a rebalance date
+  let lastSensex = 100;
+  navSeries = navSeries.map(d => {
+    if (d.sensex_nav != null) lastSensex = d.sensex_nav;
+    return { ...d, sensex_nav: lastSensex };
+  });
+
+  const navByDate = Object.fromEntries(navSeries.map(d => [d.date, d]));
+  const quarterlyNavSeries = dates.map(d => navByDate[d]).filter(Boolean);
+
+  return { navSeries, quarterlyNavSeries, tradeLog, quarterlyPortfolios, dataGaps };
 }
 
 // ── performance metrics from the custom NAV/trade series ───────────────
-// IMPORTANT: this is QUARTERLY-return-based (9 NAV points), not daily-return
-// based like compute_performance_metrics.py (which has ~500 daily points).
-// Sharpe/Sortino/etc. computed from 8 quarterly observations are statistically
-// thin — report them, but the UI must label them as quarterly-return-based
-// and lower-confidence than the live strategy's daily-return metrics, not
-// silently present them as equivalent.
+// totalPct/annPct use the FULL DAILY navSeries (accurate start/end values).
+// Sharpe/Sortino/Treynor/Jensen Alpha/Information Ratio are computed from
+// the QUARTERLY-sampled series (quarterlyNavSeries, 9 points) since that's
+// the natural observation frequency of this rebalance-driven strategy —
+// not the ~500 daily observations behind compute_performance_metrics.py.
+// Report them, but the UI must label them as quarterly-return-based and
+// lower-confidence than the live strategy's daily-return metrics.
 
 function quarterlyReturns(navSeries) {
   const navs = navSeries.map(d => d.portfolio_nav);
@@ -362,8 +420,9 @@ function quarterlyReturns(navSeries) {
 function mean(arr) { return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0; }
 function std(arr, m) { return arr.length ? Math.sqrt(arr.reduce((a, x) => a + (x - m) ** 2, 0) / arr.length) : 0; }
 
-export function computeCustomMetrics(navSeries) {
+export function computeCustomMetrics(navSeries, quarterlyNavSeries) {
   if (!navSeries || navSeries.length < 2) return null;
+  const qSeries = quarterlyNavSeries && quarterlyNavSeries.length >= 2 ? quarterlyNavSeries : navSeries;
 
   const dates = navSeries.map(d => d.date);
   const portNavs = navSeries.map(d => d.portfolio_nav);
@@ -378,8 +437,8 @@ export function computeCustomMetrics(navSeries) {
 
   // quarterly excess returns vs a quarterly-equivalent risk-free rate
   const rfQuarterly = Math.pow(1 + RISK_FREE_RATE, 0.25) - 1;
-  const portQRet = quarterlyReturns(navSeries);
-  const sensexQRet = quarterlyReturns(navSeries.map(d => ({ portfolio_nav: d.sensex_nav })));
+  const portQRet = quarterlyReturns(qSeries);
+  const sensexQRet = quarterlyReturns(qSeries.map(d => ({ portfolio_nav: d.sensex_nav })));
 
   const excess = portQRet.map(r => r - rfQuarterly);
   const meanExc = mean(excess);
