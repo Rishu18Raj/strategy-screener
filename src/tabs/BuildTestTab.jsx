@@ -353,9 +353,9 @@ export default function BuildTestTab() {
     // (synchronous, fairly heavy) 9-quarter day-by-day simulation runs
     setTimeout(() => {
       const sim = runCustomBacktest(backtestData, filters, sectors, exitRule);
-      const metrics = computeCustomMetrics(sim.navSeries);
+      const metrics = computeCustomMetrics(sim.navSeries, sim.quarterlyNavSeries);
       const baseSim = runCustomBacktest(backtestData, { ...FILTERS }, new Set(SELECTED_SECTORS), DEFAULT_EXIT_RULE);
-      const baseMetrics = computeCustomMetrics(baseSim.navSeries);
+      const baseMetrics = computeCustomMetrics(baseSim.navSeries, baseSim.quarterlyNavSeries);
       setResult({ sim, metrics, baseSim, baseMetrics });
       setRunning(false);
     }, 30);

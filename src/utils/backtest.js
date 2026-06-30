@@ -148,18 +148,15 @@ function growthScoreCustom(s) { return s.pe > 0 ? (s.epsCAGR || 0) / s.pe : 0; }
  */
 export function buildPortfolioCustom(universe, customFilters, selectedSectors) {
   const caps = getSectorCapsCustom(universe);
-  // Same 5-round relaxation pattern as the live strategy, but the starting
-  // point and ceiling for each round scale off the user's custom EPS/PE
-  // rather than the hardcoded 10/20 base — relaxation still exists so a
-  // very tight custom filter doesn't return an empty portfolio every quarter.
-  const baseEps = customFilters.epsCAGR;
-  const basePe = customFilters.pe;
+  // Use the SAME hardcoded relaxation rounds as build_portfolios_and_exits.py
+  // to ensure identical portfolio composition when using the same filters.
+  // The relaxation rounds are fixed regardless of user's custom EPS/PE thresholds.
   const ROUNDS = [
-    [baseEps, basePe, 0],
-    [baseEps, basePe + 5, 1],
-    [Math.max(0, baseEps - 1), basePe + 5, 2],
-    [Math.max(0, baseEps - 2), basePe + 5, 3],
-    [Math.max(0, baseEps - 3), basePe + 5, 4],
+    [10, 20, 0],
+    [10, 25, 1],
+    [9,  25, 2],
+    [8,  25, 3],
+    [7,  25, 4],
   ];
 
   let fp = 0, sp = 0, bp = 0, portfolio = [], roundUsed = 0;
@@ -425,6 +422,12 @@ export function runCustomBacktest({ universeByDate, priceTable, dailyPrices }, c
         // Save quarterly portfolio snapshot
         const quarterStocks = q.stocks.map(s => {
           const h = holdings[s.ticker];
+          const exitPrice = s.exitRecord ? s.exitRecord.exitPrice : (priceTable[q.exitDate]?.[s.ticker] ?? null);
+          const exitDay = s.exitRecord ? s.exitRecord.exitDay : q.exitDate;
+          const entryPrice = h?.entryPrice || s.rebal_price;
+          const entryDate = h?.entryDate || day;
+          const returnPct = exitPrice != null && entryPrice != null ? Number(((exitPrice - entryPrice) / entryPrice * 100).toFixed(2)) : null;
+
           return {
             ticker: s.ticker,
             name: s.name,
@@ -434,10 +437,13 @@ export function runCustomBacktest({ universeByDate, priceTable, dailyPrices }, c
             epsCAGR: s.epsCAGR,
             beta: s.beta,
             pe: s.pe,
-            entry_date: h?.entryDate || day,
-            entry_price: h?.entryPrice || s.rebal_price,
+            entry_date: entryDate,
+            entry_price: entryPrice,
             rebal_price: s.rebal_price,
-            exit_type: h?.exitRecord ? "intra_quarter" : null,
+            exit_price: exitPrice,
+            exit_date: exitDay,
+            exit_type: s.exitRecord ? "intra_quarter" : "rebalance",
+            return_pct: returnPct,
           };
         });
 
