@@ -1,0 +1,144 @@
+# Metric Calculation Mismatches
+
+## Critical Mismatches Between Python Pipeline and JavaScript Backtest
+
+### 1. **Risk Metrics Data Frequency (MAJOR)**
+
+**Python (compute_performance_metrics.py):**
+- Uses **daily returns** (~500 observations) for all risk metrics
+- Lines 46-47: Computes daily returns from full nav_series
+- Lines 60-71: Uses daily excess returns for Sharpe/Sortino
+- Lines 73-81: Uses daily returns for Beta/Correlation
+- Line 95: Uses daily active returns for tracking error
+
+**JavaScript (src/utils/backtest.js):**
+- Uses **quarterly returns** (8-9 observations) for the same metrics
+- Lines 407-413: Explicitly states metrics are "computed from the QUARTERLY-sampled series"
+- Lines 439-451: Uses quarterly excess returns for Sharpe/Sortino
+- Lines 453-460: Uses quarterly returns for Beta/Correlation
+- Lines 465-469: Uses quarterly active returns for tracking error
+
+**Impact:** This is the root cause of all other mismatches. The Python script uses ~500 daily observations while JS uses only 8-9 quarterly observations. This will produce significantly different and less reliable risk metrics in the Build & Test tab.
+
+---
+
+### 2. **Risk-Free Rate Conversion**
+
+**Python:**
+- Converts annual 6% to **daily** rate
+- Line 60: `rf_daily = (1 + RISK_FREE_RATE) ** (1/TRADING_DAYS) - 1`
+- Uses TRADING_DAYS = 252
+
+**JavaScript:**
+- Converts annual 6% to **quarterly** rate
+- Line 439: `const rfQuarterly = Math.pow(1 + RISK_FREE_RATE, 0.25) - 1`
+- Uses 0.25 (1/4 of a year)
+
+**Impact:** Different risk-free rate baselines affect excess return calculations for Sharpe/Sortino.
+
+---
+
+### 3. **Sharpe/Sortino Annualization**
+
+**Python:**
+- Annualizes daily Sharpe/Sortino using sqrt(252)
+- Line 66: `sharpe = round((mean_exc / std_all) * math.sqrt(TRADING_DAYS), 4)`
+- Line 71: `sortino = round((mean_exc / std_down) * math.sqrt(TRADING_DAYS), 4)`
+
+**JavaScript:**
+- Annualizes quarterly Sharpe/Sortino using sqrt(4)
+- Line 447: `const sharpe = stdAll ? (meanExc / stdAll) * Math.sqrt(4) : 0;`
+- Line 451: `const sortino = stdDown ? (meanExc / stdDown) * Math.sqrt(4) : 0;`
+
+**Impact:** Different annualization factors (sqrt(252) vs sqrt(4)) produce different annualized risk-adjusted metrics.
+
+---
+
+### 4. **Tracking Error Calculation**
+
+**Python:**
+- Uses daily active returns, annualizes with sqrt(252)
+- Line 93: `active_daily = [port_ret[i] - sensex_ret[i] for i in range(min(len(port_ret), len(sensex_ret)))]`
+- Line 95: `tracking_error = math.sqrt(sum((a - active_mean)**2 for a in active_daily) / len(active_daily)) * math.sqrt(TRADING_DAYS)`
+
+**JavaScript:**
+- Uses quarterly active returns, annualizes with sqrt(4)
+- Lines 465-467: 
+  ```javascript
+  const activeQ = pr.map((r, i) => r - sr[i]);
+  const activeMean = mean(activeQ);
+  const trackingError = std(activeQ, activeMean) * Math.sqrt(4);
+  ```
+
+**Impact:** Different return frequencies and annualization factors produce different tracking error values.
+
+---
+
+### 5. **Max Drawdown**
+
+**Python:**
+- Uses full daily nav_series (all ~500 points)
+- Lines 100-114: Iterates through entire nav_series to find peak-to-trough
+- Captures intra-quarter drawdowns
+
+**JavaScript:**
+- Uses only the 9 quarterly NAV points
+- Lines 471-477: 
+  ```javascript
+  let peak = portNavs[0], maxDd = 0;
+  portNavs.forEach(nav => {
+    if (nav > peak) peak = nav;
+    const dd = (peak - nav) / peak;
+    if (dd > maxDd) maxDd = dd;
+  });
+  ```
+- Comment explicitly states: "max drawdown across the 9 NAV points"
+
+**Impact:** The JS version misses intra-quarter drawdowns, potentially understating maximum drawdown significantly.
+
+---
+
+### 6. **Return Calculations (CONSISTENT)**
+
+**Python:**
+- Uses full daily nav_series for total/annualized returns
+- Lines 50-57: Uses port_navs from full series
+
+**JavaScript:**
+- Uses full daily navSeries for total/annualized returns
+- Lines 427-436: Uses portNavs from full navSeries
+
+**Status:** This is actually consistent between both implementations.
+
+---
+
+### 7. **Cash Rate (CONSISTENT)**
+
+**Python (compute_nav.py):**
+- Uses 6% p.a. for idle cash (CASH_RATE_ANNUAL = 0.06)
+
+**JavaScript (backtest.js):**
+- Uses 6% p.a. for idle cash (line 209-210)
+- Line 210: `const CASH_RATE_DAILY = Math.pow(1 + CASH_RATE_ANNUAL, 1 / 365) - 1;`
+
+**Status:** This is consistent between both implementations.
+
+---
+
+## Root Cause
+
+The fundamental issue is that `computeCustomMetrics()` in backtest.js uses the **quarterly-sampled NAV series** (quarterlyNavSeries, 8-9 points) for risk metrics, while `compute_performance_metrics.py` uses the **full daily NAV series** (nav.json, ~500 points).
+
+This was an intentional design choice documented in backtest.js (lines 407-413), but it creates a significant mismatch with the live Performance tab metrics.
+
+## Recommended Fix
+
+To align the Build & Test tab with the Performance tab, `computeCustomMetrics()` should:
+
+1. Use the full daily `navSeries` (already generated by `runCustomBacktest()`) instead of `quarterlyNavSeries` for risk metrics
+2. Convert risk-free rate to daily (1/252) instead of quarterly (0.25)
+3. Annualize using sqrt(252) instead of sqrt(4)
+4. Use daily returns for Beta, Correlation, and Tracking Error
+5. Use the full daily series for Max Drawdown
+
+This would make the custom backtest metrics directly comparable到 the live strategy metrics.

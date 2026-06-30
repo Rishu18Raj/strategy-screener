@@ -404,15 +404,10 @@ export function runCustomBacktest({ universeByDate, priceTable, dailyPrices }, c
 }
 
 // ── performance metrics from the custom NAV/trade series ───────────────
-// totalPct/annPct use the FULL DAILY navSeries (accurate start/end values).
-// Sharpe/Sortino/Treynor/Jensen Alpha/Information Ratio are computed from
-// the QUARTERLY-sampled series (quarterlyNavSeries, 9 points) since that's
-// the natural observation frequency of this rebalance-driven strategy —
-// not the ~500 daily observations behind compute_performance_metrics.py.
-// Report them, but the UI must label them as quarterly-return-based and
-// lower-confidence than the live strategy's daily-return metrics.
+// All metrics now use the FULL DAILY navSeries to match compute_performance_metrics.py
+// This ensures custom backtest metrics are directly comparable to live strategy metrics.
 
-function quarterlyReturns(navSeries) {
+function dailyReturns(navSeries) {
   const navs = navSeries.map(d => d.portfolio_nav);
   return navs.slice(1).map((v, i) => (v - navs[i]) / navs[i]);
 }
@@ -422,7 +417,6 @@ function std(arr, m) { return arr.length ? Math.sqrt(arr.reduce((a, x) => a + (x
 
 export function computeCustomMetrics(navSeries, quarterlyNavSeries) {
   if (!navSeries || navSeries.length < 2) return null;
-  const qSeries = quarterlyNavSeries && quarterlyNavSeries.length >= 2 ? quarterlyNavSeries : navSeries;
 
   const dates = navSeries.map(d => d.date);
   const portNavs = navSeries.map(d => d.portfolio_nav);
@@ -435,23 +429,24 @@ export function computeCustomMetrics(navSeries, quarterlyNavSeries) {
   const sensexAnnPct = nDays > 0 ? (Math.pow(sensexNavs[sensexNavs.length - 1] / sensexNavs[0], 365 / nDays) - 1) * 100 : 0;
   const alphaAnnPct = annPct - sensexAnnPct;
 
-  // quarterly excess returns vs a quarterly-equivalent risk-free rate
-  const rfQuarterly = Math.pow(1 + RISK_FREE_RATE, 0.25) - 1;
-  const portQRet = quarterlyReturns(qSeries);
-  const sensexQRet = quarterlyReturns(qSeries.map(d => ({ portfolio_nav: d.sensex_nav })));
+  // daily excess returns vs daily risk-free rate (matching compute_performance_metrics.py)
+  const TRADING_DAYS = 252;
+  const rfDaily = Math.pow(1 + RISK_FREE_RATE, 1 / TRADING_DAYS) - 1;
+  const portRet = dailyReturns(navSeries);
+  const sensexRet = dailyReturns(navSeries.map(d => ({ portfolio_nav: d.sensex_nav })));
 
-  const excess = portQRet.map(r => r - rfQuarterly);
+  const excess = portRet.map(r => r - rfDaily);
   const meanExc = mean(excess);
   const stdAll = std(excess, meanExc);
-  // annualize a quarterly Sharpe by sqrt(4)
-  const sharpe = stdAll ? (meanExc / stdAll) * Math.sqrt(4) : 0;
+  // annualize daily Sharpe by sqrt(252)
+  const sharpe = stdAll ? (meanExc / stdAll) * Math.sqrt(TRADING_DAYS) : 0;
 
-  const downside = excess.filter(x => x < 0);
+  const downside = excess.filter(x => x < rfDaily);
   const stdDown = std(downside, 0);
-  const sortino = stdDown ? (meanExc / stdDown) * Math.sqrt(4) : 0;
+  const sortino = stdDown ? (meanExc / stdDown) * Math.sqrt(TRADING_DAYS) : 0;
 
-  const n = Math.min(portQRet.length, sensexQRet.length);
-  const pr = portQRet.slice(-n), sr = sensexQRet.slice(-n);
+  const n = Math.min(portRet.length, sensexRet.length);
+  const pr = portRet.slice(-n), sr = sensexRet.slice(-n);
   const pm = mean(pr), sm = mean(sr);
   const cov = pr.reduce((a, _, i) => a + (pr[i] - pm) * (sr[i] - sm), 0);
   const varS = sr.reduce((a, x) => a + (x - sm) ** 2, 0);
@@ -462,13 +457,13 @@ export function computeCustomMetrics(navSeries, quarterlyNavSeries) {
   const treynor = beta ? (annPct - RISK_FREE_RATE * 100) / beta : 0;
   const jensenAlpha = annPct - (RISK_FREE_RATE * 100 + beta * (sensexAnnPct - RISK_FREE_RATE * 100));
 
-  const activeQ = pr.map((r, i) => r - sr[i]);
-  const activeMean = mean(activeQ);
-  const trackingError = std(activeQ, activeMean) * Math.sqrt(4);
+  const activeDaily = pr.map((r, i) => r - sr[i]);
+  const activeMean = mean(activeDaily);
+  const trackingError = std(activeDaily, activeMean) * Math.sqrt(TRADING_DAYS);
   const activeAnnDecimal = (annPct - sensexAnnPct) / 100;
   const infoRatio = trackingError ? activeAnnDecimal / trackingError : 0;
 
-  // max drawdown across the 9 NAV points
+  // max drawdown across the full daily series (matching compute_performance_metrics.py)
   let peak = portNavs[0], maxDd = 0;
   portNavs.forEach(nav => {
     if (nav > peak) peak = nav;
@@ -482,15 +477,14 @@ export function computeCustomMetrics(navSeries, quarterlyNavSeries) {
     sensexTotalPct: Number(sensexTotalPct.toFixed(2)),
     sensexAnnPct: Number(sensexAnnPct.toFixed(2)),
     alphaAnnPct: Number(alphaAnnPct.toFixed(2)),
-    sharpe: Number(sharpe.toFixed(2)),
-    sortino: Number(sortino.toFixed(2)),
-    beta: Number(beta.toFixed(2)),
-    correlation: Number(correlation.toFixed(2)),
+    sharpe: Number(sharpe.toFixed(4)),
+    sortino: Number(sortino.toFixed(4)),
+    beta: Number(beta.toFixed(4)),
+    correlation: Number(correlation.toFixed(4)),
     treynor: Number(treynor.toFixed(2)),
     jensenAlpha: Number(jensenAlpha.toFixed(2)),
-    infoRatio: Number(infoRatio.toFixed(2)),
+    infoRatio: Number(infoRatio.toFixed(4)),
     trackingError: Number((trackingError * 100).toFixed(2)),
     maxDrawdownPct: Number((maxDd * 100).toFixed(2)),
-    basis: "quarterly", // flag for UI: 8 observations, not ~500 daily
   };
 }
