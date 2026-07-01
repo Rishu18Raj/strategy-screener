@@ -265,8 +265,7 @@ export function runCustomBacktest({ universeByDate, priceTable, dailyPrices }, c
       }
       const ttmEps = s.pe && s.pe > 0 ? pIn / s.pe : null;
       
-      // FIX 1: Append .NS so JS can actually find the daily price series 
-      const dailyKey = s.ticker === SENSEX_KEY ? s.ticker : `${s.ticker}.NS`;
+      const dailyKey = s.ticker === SENSEX_KEY ? s.ticker : `${s.ticker}`;
       const series = dailyPrices?.[dailyKey];
       
       let exitRecord = null;
