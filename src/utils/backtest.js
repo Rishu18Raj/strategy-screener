@@ -241,15 +241,18 @@ export function runCustomBacktest({ universeByDate, priceTable, dailyPrices }, c
   const quarterlyPortfolios = [];
   const dataGaps = [];
 
+  // Helper: annualised return calculation (matching Python)
   function annualised(absPct, days) {
     if (absPct == null || !days || days <= 0) return null;
     return Number((((1 + absPct / 100) ** (365.25 / days) - 1) * 100).toFixed(2));
   }
 
+  // Helper: get SENSEX price on or before date
   function sensexPriceOn(day) {
     return priceOn(SENSEX_KEY, day);
   }
 
+  // pre-resolve each quarter's screened portfolio once
   const quarterData = dates.slice(0, -1).map((entryDate, i) => {
     const exitDate = dates[i + 1];
     const universe = universeByDate[entryDate] || [];
@@ -264,10 +267,7 @@ export function runCustomBacktest({ universeByDate, priceTable, dailyPrices }, c
         return null;
       }
       const ttmEps = s.pe && s.pe > 0 ? pIn / s.pe : null;
-      
-      const dailyKey = s.ticker === SENSEX_KEY ? s.ticker : `${s.ticker}`;
-      const series = dailyPrices?.[dailyKey];
-      
+      const series = dailyPrices?.[s.ticker];
       let exitRecord = null;
       if (series && ttmEps) {
         const days = tradingDaysBetween(series, entryDate, exitDate);
@@ -278,7 +278,7 @@ export function runCustomBacktest({ universeByDate, priceTable, dailyPrices }, c
           const livePe = close / ttmEps;
           if (retPct > exitRule.returnPct && livePe > exitRule.peThreshold) {
             exitRecord = { exitDay: day, exitPrice: close };
-            break; 
+            break; // first trigger, in date order — matches monitor_exits.py
           }
         }
       }
@@ -291,15 +291,16 @@ export function runCustomBacktest({ universeByDate, priceTable, dailyPrices }, c
   const allDays = allTradingDaysInWindow(dailyPrices, startDate, endDate);
   const rebalSet = new Set(dates);
 
+  // holdings: ticker -> { shares, entryDate (original), entryPrice (original), 
+  //                      rebalPrice (current quarter's rebal price), ttmEps, exitRecord }
   let holdings = {};
   let cash = 0;
   let navSeries = [];
   let quarterIdx = -1;
-  let intraExited = new Set(); 
+  let intraExited = new Set(); // track stocks exited intra-quarter this quarter
 
-  // FIX 2: Implement Python's 5-day walk-back so missing days don't crash NAV to 0
   function priceOn(ticker, day) {
-    const key = ticker === SENSEX_KEY ? ticker : `${ticker}.NS`;
+    const key = ticker === SENSEX_KEY ? ticker : `{ticker}.NS`;
     const series = dailyPrices?.[key];
     
     // Exact match
