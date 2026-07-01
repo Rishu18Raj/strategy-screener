@@ -11,19 +11,30 @@ import {
 
 // ── small local primitives ──────────────────────────────────────────────
 
-function Slider({ label, value, min, max, step, onChange, suffix = "" }) {
+function Slider({ label, value, min, max, step, onChange, suffix = "", enabled = true, onToggle }) {
   return (
-    <div style={{ marginBottom: 18 }}>
+    <div style={{ marginBottom: 18, opacity: enabled ? 1 : 0.4, transition: "opacity 0.2s" }}>
       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
-        <span style={{ fontSize: 12, color: C.secondary }}>{label}</span>
-        <span style={{ fontSize: 12, fontFamily: "var(--font-mono)", fontWeight: 600, color: C.accent }}>
-          {value}{suffix}
+        <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", userSelect: "none" }}>
+          {onToggle && (
+            <input 
+              type="checkbox" 
+              checked={enabled} 
+              onChange={onToggle} 
+              style={{ margin: 0, cursor: "pointer", accentColor: "var(--accent)" }} 
+            />
+          )}
+          <span style={{ fontSize: 12, color: C.secondary }}>{label}</span>
+        </label>
+        <span style={{ fontSize: 12, fontFamily: "var(--font-mono)", fontWeight: 600, color: enabled ? C.accent : C.muted }}>
+          {enabled ? `${value}${suffix}` : "Ignored"}
         </span>
       </div>
       <input
         type="range" min={min} max={max} step={step} value={value}
         onChange={e => onChange(Number(e.target.value))}
-        style={{ width: "100%", accentColor: "var(--accent)", cursor: "pointer" }}
+        disabled={!enabled}
+        style={{ width: "100%", accentColor: "var(--accent)", cursor: enabled ? "pointer" : "not-allowed" }}
       />
       <div style={{ display: "flex", justifyContent: "space-between", marginTop: 2 }}>
         <span style={{ fontSize: 10, color: C.muted }}>{min}{suffix}</span>
@@ -284,13 +295,19 @@ function QuarterSnapshot({ quarter }) {
 // ── main tab ──────────────────────────────────────────────────────────
 
 export default function BuildTestTab() {
-  const [loadState, setLoadState] = useState("loading"); // loading | ok | error
+  const [loadState, setLoadState] = useState("loading");
   const [errorMsg, setErrorMsg] = useState("");
   const [backtestData, setBacktestData] = useState(null);
 
+  // 1. Raw values (keeps the slider in place)
   const [filters, setFilters] = useState({ ...FILTERS });
   const [sectors, setSectors] = useState(new Set(SELECTED_SECTORS));
   const [exitRule, setExitRule] = useState({ ...DEFAULT_EXIT_RULE });
+  
+  // 2. Checkbox enabled/disabled states
+  const [enabledFilters, setEnabledFilters] = useState({ roe: true, revCAGR: true, epsCAGR: true, pe: true, beta: true });
+  const [enabledExitRule, setEnabledExitRule] = useState({ returnPct: true, peThreshold: true });
+
   const [running, setRunning] = useState(false);
   const [result, setResult] = useState(null);
   const [selectedQuarterIdx, setSelectedQuarterIdx] = useState(null);
@@ -303,44 +320,52 @@ export default function BuildTestTab() {
     return () => { cancelled = true; };
   }, []);
 
-  // current-quarter (most recent) universe — used for the live funnel preview,
-  // same data OverviewTab uses for the production filters
   const latestUniverse = useMemo(() => {
     if (!backtestData) return [];
     const dates = CUSTOM_BACKTEST_REBALANCE_DATES;
     return backtestData.universeByDate[dates[dates.length - 1]] || [];
   }, [backtestData]);
 
-  const allSectors = useMemo(
-    () => [...new Set(latestUniverse.map(s => s.sector).filter(Boolean))].sort(),
-    [latestUniverse]
-  );
+  const allSectors = useMemo(() => [...new Set(latestUniverse.map(s => s.sector).filter(Boolean))].sort(), [latestUniverse]);
 
+  // 3. Bypass thresholds if unchecked (-999 for mins, 9999 for maxs)
+  const effectiveFilters = useMemo(() => ({
+    roe:     enabledFilters.roe     ? filters.roe     : -999,
+    revCAGR: enabledFilters.revCAGR ? filters.revCAGR : -999,
+    epsCAGR: enabledFilters.epsCAGR ? filters.epsCAGR : -999,
+    pe:      enabledFilters.pe      ? filters.pe      : 9999,
+    beta:    enabledFilters.beta    ? filters.beta    : 9999,
+  }), [filters, enabledFilters]);
+
+  const effectiveExitRule = useMemo(() => ({
+    returnPct:   enabledExitRule.returnPct   ? exitRule.returnPct   : 9999,
+    peThreshold: enabledExitRule.peThreshold ? exitRule.peThreshold : 9999,
+  }), [exitRule, enabledExitRule]);
+
+  // 4. Use effectiveFilters for the live funnel preview
   const liveFunnel = useMemo(() => {
     if (!latestUniverse.length) return { fp: 0, sp: 0, bp: 0, total: 0 };
     const fund = latestUniverse.filter(s =>
-      !isNaN(s.roe) && s.roe >= filters.roe &&
-      !isNaN(s.revCAGR) && s.revCAGR >= filters.revCAGR &&
-      !isNaN(s.epsCAGR) && s.epsCAGR >= filters.epsCAGR &&
-      !isNaN(s.pe) && s.pe <= filters.pe
+      !isNaN(s.roe) && s.roe >= effectiveFilters.roe &&
+      !isNaN(s.revCAGR) && s.revCAGR >= effectiveFilters.revCAGR &&
+      !isNaN(s.epsCAGR) && s.epsCAGR >= effectiveFilters.epsCAGR &&
+      !isNaN(s.pe) && s.pe <= effectiveFilters.pe
     );
     const sec = fund.filter(s => sectors.has(s.sector));
-    const bet = sec.filter(s => s.beta != null && s.beta <= filters.beta);
+    const bet = sec.filter(s => s.beta != null && s.beta <= effectiveFilters.beta);
     return { fp: fund.length, sp: sec.length, bp: bet.length, total: latestUniverse.length };
-  }, [latestUniverse, filters, sectors]);
+  }, [latestUniverse, effectiveFilters, sectors]);
 
-  const toggleSector = sec => {
-    setSectors(prev => {
-      const next = new Set(prev);
-      next.has(sec) ? next.delete(sec) : next.add(sec);
-      return next;
-    });
-  };
+  const toggleSector = sec => setSectors(prev => {
+    const next = new Set(prev); next.has(sec) ? next.delete(sec) : next.add(sec); return next;
+  });
 
   const resetToBase = () => {
     setFilters({ ...FILTERS });
+    setEnabledFilters({ roe: true, revCAGR: true, epsCAGR: true, pe: true, beta: true });
     setSectors(new Set(SELECTED_SECTORS));
     setExitRule({ ...DEFAULT_EXIT_RULE });
+    setEnabledExitRule({ returnPct: true, peThreshold: true });
     setResult(null);
     setSelectedQuarterIdx(null);
   };
@@ -349,10 +374,9 @@ export default function BuildTestTab() {
     if (!backtestData) return;
     setRunning(true);
     setSelectedQuarterIdx(null);
-    // yield to the browser so the button's pressed state paints before the
-    // (synchronous, fairly heavy) 9-quarter day-by-day simulation runs
     setTimeout(() => {
-      const sim = runCustomBacktest(backtestData, filters, sectors, exitRule);
+      // 5. Pass the effective bypassed thresholds to the backend simulator
+      const sim = runCustomBacktest(backtestData, effectiveFilters, sectors, effectiveExitRule);
       const metrics = computeCustomMetrics(sim.navSeries, sim.quarterlyNavSeries);
       const baseSim = runCustomBacktest(backtestData, { ...FILTERS }, new Set(SELECTED_SECTORS), DEFAULT_EXIT_RULE);
       const baseMetrics = computeCustomMetrics(baseSim.navSeries, baseSim.quarterlyNavSeries);
@@ -376,10 +400,12 @@ export default function BuildTestTab() {
     filters.roe !== FILTERS.roe || filters.revCAGR !== FILTERS.revCAGR ||
     filters.epsCAGR !== FILTERS.epsCAGR || filters.beta !== FILTERS.beta ||
     filters.pe !== FILTERS.pe ||
+    Object.values(enabledFilters).some(v => !v) ||
     sectors.size !== SELECTED_SECTORS.size ||
     [...sectors].some(s => !SELECTED_SECTORS.has(s)) ||
     exitRule.returnPct !== DEFAULT_EXIT_RULE.returnPct ||
-    exitRule.peThreshold !== DEFAULT_EXIT_RULE.peThreshold;
+    exitRule.peThreshold !== DEFAULT_EXIT_RULE.peThreshold ||
+    Object.values(enabledExitRule).some(v => !v);
 
   const sectionLabel = { fontSize: 11, fontWeight: 600, marginBottom: 14, color: C.secondary, textTransform: "uppercase", letterSpacing: "0.07em" };
   const card = { background: C.card, border: `0.5px solid ${C.border}`, borderRadius: 8, padding: "18px 20px" };
@@ -421,11 +447,21 @@ export default function BuildTestTab() {
         <div>
           <div style={{ ...card, marginBottom: 16 }}>
             <div style={sectionLabel}>Screening filters</div>
-            <Slider label="Return on Equity ≥" value={filters.roe} min={0} max={35} step={1} suffix="%" onChange={v => setFilters(f => ({ ...f, roe: v }))} />
-            <Slider label="Revenue CAGR ≥" value={filters.revCAGR} min={0} max={25} step={1} suffix="%" onChange={v => setFilters(f => ({ ...f, revCAGR: v }))} />
-            <Slider label="EPS CAGR ≥" value={filters.epsCAGR} min={0} max={30} step={1} suffix="%" onChange={v => setFilters(f => ({ ...f, epsCAGR: v }))} />
-            <Slider label="P/E ≤" value={filters.pe} min={5} max={50} step={1} suffix="x" onChange={v => setFilters(f => ({ ...f, pe: v }))} />
-            <Slider label="Beta ≤" value={filters.beta} min={0.3} max={2} step={0.05} onChange={v => setFilters(f => ({ ...f, beta: v }))} />
+            <Slider label="Return on Equity ≥" value={filters.roe} min={0} max={35} step={1} suffix="%" 
+              enabled={enabledFilters.roe} onToggle={() => setEnabledFilters(f => ({ ...f, roe: !f.roe }))} 
+              onChange={v => setFilters(f => ({ ...f, roe: v }))} />
+            <Slider label="Revenue CAGR ≥" value={filters.revCAGR} min={0} max={25} step={1} suffix="%" 
+              enabled={enabledFilters.revCAGR} onToggle={() => setEnabledFilters(f => ({ ...f, revCAGR: !f.revCAGR }))} 
+              onChange={v => setFilters(f => ({ ...f, revCAGR: v }))} />
+            <Slider label="EPS CAGR ≥" value={filters.epsCAGR} min={0} max={30} step={1} suffix="%" 
+              enabled={enabledFilters.epsCAGR} onToggle={() => setEnabledFilters(f => ({ ...f, epsCAGR: !f.epsCAGR }))} 
+              onChange={v => setFilters(f => ({ ...f, epsCAGR: v }))} />
+            <Slider label="P/E ≤" value={filters.pe} min={5} max={50} step={1} suffix="x" 
+              enabled={enabledFilters.pe} onToggle={() => setEnabledFilters(f => ({ ...f, pe: !f.pe }))} 
+              onChange={v => setFilters(f => ({ ...f, pe: v }))} />
+            <Slider label="Beta ≤" value={filters.beta} min={0.3} max={2} step={0.05} 
+              enabled={enabledFilters.beta} onToggle={() => setEnabledFilters(f => ({ ...f, beta: !f.beta }))} 
+              onChange={v => setFilters(f => ({ ...f, beta: v }))} />
           </div>
 
           <div style={{ ...card, marginBottom: 16 }}>
@@ -438,13 +474,17 @@ export default function BuildTestTab() {
           </div>
 
           <div style={{ ...card, marginBottom: 16 }}>
-            <div style={sectionLabel}>Intra-quarter exit rule</div>
-            <div style={{ fontSize: 11.5, color: C.muted, marginBottom: 14, lineHeight: 1.6 }}>
-              A position exits early — before the next rebalance — the first day its return AND live P/E both breach these thresholds. Freed capital sits idle until the next rebalance, same as the live strategy.
-            </div>
-            <Slider label="Intra-quarter return >" value={exitRule.returnPct} min={5} max={60} step={1} suffix="%" onChange={v => setExitRule(f => ({ ...f, returnPct: v }))} />
-            <Slider label="Live P/E >" value={exitRule.peThreshold} min={5} max={60} step={1} suffix="x" onChange={v => setExitRule(f => ({ ...f, peThreshold: v }))} />
-          </div>
+            		<div style={sectionLabel}>Intra-quarter exit rule</div>
+            	  <div style={{ fontSize: 11.5, color: C.muted, marginBottom: 14, lineHeight: 1.6 }}>
+              		A position exits early — before the next rebalance — the first day its return AND live P/E both breach these thresholds.
+            	     </div>
+            	  <Slider label="Intra-quarter return >" value={exitRule.returnPct} min={5} max={60} step={1} suffix="%" 
+	              enabled={enabledExitRule.returnPct} onToggle={() => setEnabledExitRule(f => ({ ...f, returnPct: !f.returnPct }))} 
+              		onChange={v => setExitRule(f => ({ ...f, returnPct: v }))} />
+            		<Slider label="Live P/E >" value={exitRule.peThreshold} min={5} max={60} step={1} suffix="x" 
+              		enabled={enabledExitRule.peThreshold} onToggle={() => setEnabledExitRule(f => ({ ...f, peThreshold: !f.peThreshold }))} 
+             		onChange={v => setExitRule(f => ({ ...f, peThreshold: v }))} />
+          	     </div>
 
           <div style={{ display: "flex", gap: 8 }}>
             <button
