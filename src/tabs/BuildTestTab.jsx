@@ -61,8 +61,8 @@ function MetricCompareRow({ label, customVal, baseVal, suffix = "", higherIsBett
   const better = hasComparison ? (higherIsBetter ? cNum >= bNum : cNum <= bNum) : null;
   return (
     <tr style={{ borderTop: `0.5px solid ${C.subtle}` }}>
-      <td style={{ padding: "9px 12px", fontSize: 12, color: C.secondary }}>{label}</td>
-      <td style={{ padding: "9px 12px", fontSize: 12, fontFamily: "var(--font-mono)", textAlign: "right", color: C.muted }}>
+      <td style={{ padding: "9px 12px", fontSize: 12, color: C.primary }}>{label}</td>
+      <td style={{ padding: "9px 12px", fontSize: 12, fontFamily: "var(--font-mono)", textAlign: "right", color: C.secondary }}>
         {baseVal != null ? `${baseVal}${suffix}` : "—"}
       </td>
       <td style={{
@@ -523,9 +523,9 @@ export default function BuildTestTab() {
                 <table style={{ width: "100%", borderCollapse: "collapse" }}>
                   <thead>
                     <tr>
-                      <th style={{ padding: "8px 12px", textAlign: "left", fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: "0.05em" }}>Metric</th>
-                      <th style={{ padding: "8px 12px", textAlign: "right", fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: "0.05em" }}>Base</th>
-                      <th style={{ padding: "8px 12px", textAlign: "right", fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: "0.05em" }}>Your screen</th>
+                      <th style={{ padding: "8px 12px", textAlign: "left", fontSize: 11, color: C.primary, textTransform: "uppercase", letterSpacing: "0.05em" }}>Metric</th>
+                      <th style={{ padding: "8px 12px", textAlign: "right", fontSize: 11, color: C.primary, textTransform: "uppercase", letterSpacing: "0.05em" }}>Base</th>
+                      <th style={{ padding: "8px 12px", textAlign: "right", fontSize: 11, color: C.primary, textTransform: "uppercase", letterSpacing: "0.05em" }}>Your screen</th>
                     </tr>
                   </thead>
                   <tbody>
