@@ -636,7 +636,7 @@ export function computeCustomMetrics(navSeries, quarterlyNavSeries) {
   // annualize daily Sharpe by sqrt(252)
   const sharpe = stdAll ? (meanExc / stdAll) * Math.sqrt(TRADING_DAYS) : 0;
 
-  const downside = excess.filter(x => x < rfDaily);
+  const downside = excess.filter(x => x < 0); // mirror Python: filter raw excess < 0 (i.e. r < rf_daily), not double-subtract rf
   const stdDown = std(downside, 0);
   const sortino = stdDown ? (meanExc / stdDown) * Math.sqrt(TRADING_DAYS) : 0;
 

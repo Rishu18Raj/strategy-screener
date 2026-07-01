@@ -157,7 +157,13 @@ for date_str in all_dates:
                 ticker = s["ticker"]
                 price  = s.get("entry_price") or get_price(f"{ticker}.NS", date_str)
                 if price and price > 0:
-                    holdings[ticker] = {"shares": alloc / price, "entry_date": date_str}
+                    # Preserve the stock's ORIGINAL entry_date (from the portfolio JSON)
+                    # so carried stocks keep their original date for intra-exit key
+                    # lookup. Previously this always used date_str (current rebal date),
+                    # which caused intra_exits key misses for carried stocks that
+                    # triggered an intra-exit in a later quarter (e.g. UTIAMC).
+                    original_entry_date = s.get("entry_date") or date_str
+                    holdings[ticker] = {"shares": alloc / price, "entry_date": original_entry_date}
 
             print(f"  {date_str}: Rebalanced → {n_new} stocks, NAV = ₹{total_value:.2f}")
 
