@@ -300,7 +300,7 @@ export function runCustomBacktest({ universeByDate, priceTable, dailyPrices }, c
   let intraExited = new Set(); // track stocks exited intra-quarter this quarter
 
   function priceOn(ticker, day) {
-    const key = ticker === SENSEX_KEY ? ticker : `{ticker}.NS`;
+    const key = ticker === SENSEX_KEY ? ticker : {ticker};
     const series = dailyPrices?.[key];
     
     // Exact match
