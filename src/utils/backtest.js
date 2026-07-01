@@ -300,22 +300,7 @@ export function runCustomBacktest({ universeByDate, priceTable, dailyPrices }, c
   let intraExited = new Set(); // track stocks exited intra-quarter this quarter
 
   function priceOn(ticker, day) {
-    const key = ticker === SENSEX_KEY ? ticker : {ticker};
-    const series = dailyPrices?.[key];
-    
-    // Exact match
-    if (series?.[day] != null) return series[day];
-    
-    // Walk back up to 5 days for weekends/holidays (Identical to compute_nav.py)
-    const d = new Date(day);
-    for (let i = 0; i < 5; i++) {
-      d.setUTCDate(d.getUTCDate() - 1);
-      const ds = d.toISOString().split('T')[0];
-      if (series?.[ds] != null) return series[ds];
-    }
-    
-    // Final fallback to the authoritative rebalance price table
-    return priceTable[day]?.[ticker] ?? null;
+    return dailyPrices?.[ticker]?.[day] ?? priceTable[day]?.[ticker] ?? null;
   }
 
   function markToMarket(day) {
