@@ -383,6 +383,7 @@ export default function BuildTestTab() {
 
   const sectionLabel = { fontSize: 11, fontWeight: 600, marginBottom: 14, color: C.secondary, textTransform: "uppercase", letterSpacing: "0.07em" };
   const card = { background: C.card, border: `0.5px solid ${C.border}`, borderRadius: 8, padding: "18px 20px" };
+  const customLineColor = result && result.metrics.totalPct >= result.baseMetrics.totalPct ? C.green : C.red;
 
   if (loadState === "loading") {
     return (
@@ -510,9 +511,9 @@ export default function BuildTestTab() {
                     <XAxis dataKey="date" tick={{ fontSize: 10, fill: C.muted }} />
                     <YAxis tick={{ fontSize: 10, fill: C.muted }} />
                     <Tooltip contentStyle={{ background: C.card, border: `0.5px solid ${C.border}`, borderRadius: 6, fontSize: 12 }} />
-                    <Line type="monotone" dataKey="custom_nav" stroke={C.accent} strokeWidth={2} dot={{ r: 3 }} name="Your custom screen" />
-                    <Line type="monotone" dataKey="base_nav" stroke={C.green} strokeWidth={1.5} strokeDasharray="4 3" dot={false} name="Base strategy" />
-                    <Line type="monotone" dataKey="sensex_nav" stroke={C.muted} strokeWidth={1.5} dot={false} name="SENSEX" />
+                    <Line type="monotone" dataKey="custom_nav" stroke={customLineColor} strokeWidth={2} dot={false} name="Your custom screen" />
+                    <Line type="monotone" dataKey="base_nav" stroke={C.accent} strokeWidth={1.5} dot={false} name="Base strategy" />
+                    <Line type="monotone" dataKey="sensex_nav" stroke={C.secondary} strokeWidth={1.5} dot={false} name="SENSEX" />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
