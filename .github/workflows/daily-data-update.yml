@@ -1,0 +1,73 @@
+name: Daily data update
+
+# Refreshes the data that powers the Overview and Portfolio Performance tabs:
+#   fetch_historical_prices.py  -> data/prices_history.json
+#   monitor_exits.py            -> data/trade_log.json
+#   compute_nav.py               -> data/nav.json
+#   compute_performance_metrics.py -> data/performance_summary.json
+#
+# These are the exact files App.jsx fetches at runtime from
+# raw.githubusercontent.com, so pushing updated versions to `main` is enough
+# for the live site to show fresh data on next load — no rebuild/redeploy
+# needed.
+#
+# Runs 7:00 AM IST daily. GitHub Actions cron is UTC-only, so that's
+# `30 1 * * *` (7:00 IST = 1:30 UTC, same calendar day). Cron start times on
+# GitHub Actions are best-effort and can slip by several minutes during
+# platform load, so treat 7 AM as approximate, not exact.
+
+on:
+  schedule:
+    - cron: "30 1 * * *"
+  workflow_dispatch: {} # allows manually triggering a run from the Actions tab
+
+# Prevent two runs from overlapping and racing on the same data files.
+concurrency:
+  group: daily-data-update
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Fetch latest EOD prices
+        run: python fetch_historical_prices.py
+
+      - name: Check intra-quarter exit rule
+        run: python monitor_exits.py
+
+      - name: Recompute NAV series
+        run: python compute_nav.py
+
+      - name: Recompute performance metrics
+        run: python compute_performance_metrics.py
+
+      - name: Commit and push updated data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/prices_history.json data/trade_log.json data/nav.json data/performance_summary.json
+          if git diff --cached --quiet; then
+            echo "No data changes today (market closed or prices unchanged) — nothing to commit."
+          else
+            git commit -m "Daily data update: $(date -u +'%Y-%m-%d %H:%M UTC')"
+            git push
+          fi
