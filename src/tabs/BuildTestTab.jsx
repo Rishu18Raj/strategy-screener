@@ -59,7 +59,9 @@ function Slider({ label, value, min, max, step, onChange, suffix = "", enabled =
   );
 }
 
-function RangeSlider({ label, minValue, maxValue, min, max, step, onChangeMin, onChangeMax, suffix = "", enabled = true, onToggle }) {
+function RangeSlider({ label, minValue, maxValue, min, max, step, onChangeMin, onChangeMax, suffix = "", enabled = true, onToggle, showMaxPlus = false }) {
+  const displayMax = showMaxPlus ? `${max}${suffix}+` : `${maxValue}${suffix}`;
+  
   return (
     <div style={{ marginBottom: 18, opacity: enabled ? 1 : 0.4, transition: "opacity 0.2s" }}>
       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
@@ -75,7 +77,7 @@ function RangeSlider({ label, minValue, maxValue, min, max, step, onChangeMin, o
           <span style={{ fontSize: 12, color: C.secondary }}>{label}</span>
         </label>
         <span style={{ fontSize: 12, fontFamily: "var(--font-mono)", fontWeight: 600, color: enabled ? C.accent : C.muted }}>
-          {enabled ? `${minValue}${suffix} - ${maxValue}${suffix}` : "Ignored"}
+          {enabled ? `${minValue}${suffix} - ${displayMax}` : "Ignored"}
         </span>
       </div>
       <div style={{ position: "relative", height: 24 }}>
@@ -86,7 +88,7 @@ function RangeSlider({ label, minValue, maxValue, min, max, step, onChangeMin, o
           style={{ 
             position: "absolute", width: "100%", pointerEvents: enabled ? "auto" : "none",
             accentColor: "var(--accent)", cursor: enabled ? "pointer" : "not-allowed",
-            zIndex: minValue > max - step ? 1 : 2
+            zIndex: 2, background: "transparent",
           }}
         />
         <input
@@ -96,13 +98,55 @@ function RangeSlider({ label, minValue, maxValue, min, max, step, onChangeMin, o
           style={{ 
             position: "absolute", width: "100%", pointerEvents: enabled ? "auto" : "none",
             accentColor: "var(--accent)", cursor: enabled ? "pointer" : "not-allowed",
-            zIndex: 1
+            zIndex: 2, background: "transparent",
           }}
         />
       </div>
-      <div style={{ display: "flex", justifyContent: "space-between", marginTop: 2 }}>
-        <span style={{ fontSize: 10, color: C.muted }}>{min}{suffix}</span>
-        <span style={{ fontSize: 10, color: C.muted }}>{max}{suffix}</span>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8, gap: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+          <input
+            type="number"
+            min={min}
+            max={max}
+            step={step}
+            value={minValue}
+            onChange={e => {
+              const val = Number(e.target.value);
+              if (!isNaN(val) && val >= min && val <= max) {
+                onChangeMin(Math.min(val, maxValue - step));
+              }
+            }}
+            disabled={!enabled}
+            style={{
+              width: 60, padding: "4px 6px", fontSize: 11, borderRadius: 4,
+              border: `0.5px solid ${C.border}`, background: C.bg, color: C.primary,
+              fontFamily: "var(--font-mono)", cursor: enabled ? "pointer" : "not-allowed"
+            }}
+          />
+          <span style={{ fontSize: 10, color: C.muted }}>{suffix}</span>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+          <input
+            type="number"
+            min={min}
+            max={max}
+            step={step}
+            value={maxValue}
+            onChange={e => {
+              const val = Number(e.target.value);
+              if (!isNaN(val) && val >= min && val <= max) {
+                onChangeMax(Math.max(val, minValue + step));
+              }
+            }}
+            disabled={!enabled}
+            style={{
+              width: 60, padding: "4px 6px", fontSize: 11, borderRadius: 4,
+              border: `0.5px solid ${C.border}`, background: C.bg, color: C.primary,
+              fontFamily: "var(--font-mono)", cursor: enabled ? "pointer" : "not-allowed"
+            }}
+          />
+          <span style={{ fontSize: 10, color: C.muted }}>{suffix}</span>
+        </div>
       </div>
     </div>
   );
@@ -552,27 +596,53 @@ const runBacktest = () => {
             <RangeSlider label="Return on Equity" minValue={filters.roe.min} maxValue={filters.roe.max} min={0} max={35} step={1} suffix="%" 
               enabled={enabledFilters.roe} onToggle={() => setEnabledFilters(f => ({ ...f, roe: !f.roe }))} 
               onChangeMin={v => setFilters(f => ({ ...f, roe: { ...f.roe, min: v } }))} 
-              onChangeMax={v => setFilters(f => ({ ...f, roe: { ...f.roe, max: v } }))} />
+              onChangeMax={v => setFilters(f => ({ ...f, roe: { ...f.roe, max: v } }))} 
+              showMaxPlus={true} />
             <RangeSlider label="Revenue CAGR" minValue={filters.revCAGR.min} maxValue={filters.revCAGR.max} min={0} max={25} step={1} suffix="%" 
               enabled={enabledFilters.revCAGR} onToggle={() => setEnabledFilters(f => ({ ...f, revCAGR: !f.revCAGR }))} 
               onChangeMin={v => setFilters(f => ({ ...f, revCAGR: { ...f.revCAGR, min: v } }))} 
-              onChangeMax={v => setFilters(f => ({ ...f, revCAGR: { ...f.revCAGR, max: v } }))} />
+              onChangeMax={v => setFilters(f => ({ ...f, revCAGR: { ...f.revCAGR, max: v } }))} 
+              showMaxPlus={true} />
             <RangeSlider label="EPS CAGR" minValue={filters.epsCAGR.min} maxValue={filters.epsCAGR.max} min={0} max={30} step={1} suffix="%" 
               enabled={enabledFilters.epsCAGR} onToggle={() => setEnabledFilters(f => ({ ...f, epsCAGR: !f.epsCAGR }))} 
               onChangeMin={v => setFilters(f => ({ ...f, epsCAGR: { ...f.epsCAGR, min: v } }))} 
-              onChangeMax={v => setFilters(f => ({ ...f, epsCAGR: { ...f.epsCAGR, max: v } }))} />
+              onChangeMax={v => setFilters(f => ({ ...f, epsCAGR: { ...f.epsCAGR, max: v } }))} 
+              showMaxPlus={true} />
             <RangeSlider label="P/E" minValue={filters.pe.min} maxValue={filters.pe.max} min={5} max={50} step={1} suffix="x" 
               enabled={enabledFilters.pe} onToggle={() => setEnabledFilters(f => ({ ...f, pe: !f.pe }))} 
               onChangeMin={v => setFilters(f => ({ ...f, pe: { ...f.pe, min: v } }))} 
-              onChangeMax={v => setFilters(f => ({ ...f, pe: { ...f.pe, max: v } }))} />
+              onChangeMax={v => setFilters(f => ({ ...f, pe: { ...f.pe, max: v } }))} 
+              showMaxPlus={true} />
             <RangeSlider label="Beta" minValue={filters.beta.min} maxValue={filters.beta.max} min={0.3} max={2} step={0.05} 
               enabled={enabledFilters.beta} onToggle={() => setEnabledFilters(f => ({ ...f, beta: !f.beta }))} 
               onChangeMin={v => setFilters(f => ({ ...f, beta: { ...f.beta, min: v } }))} 
-              onChangeMax={v => setFilters(f => ({ ...f, beta: { ...f.beta, max: v } }))} />
+              onChangeMax={v => setFilters(f => ({ ...f, beta: { ...f.beta, max: v } }))} 
+              showMaxPlus={true} />
           </div>
 
           <div style={{ ...card, marginBottom: 16 }}>
             <div style={sectionLabel}>Sectors ({sectors.size} of {allSectors.length} selected)</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12, paddingBottom: 12, borderBottom: `0.5px solid ${C.border}` }}>
+              <input 
+                type="checkbox" 
+                checked={sectors.size === allSectors.length}
+                onChange={e => {
+                  if (e.target.checked) {
+                    setSectors(new Set(allSectors));
+                  } else {
+                    setSectors(new Set());
+                  }
+                }}
+                style={{ margin: 0, cursor: "pointer", accentColor: "var(--accent)" }}
+              />
+              <span style={{ fontSize: 12, color: C.secondary, cursor: "pointer", userSelect: "none" }} onClick={() => {
+                if (sectors.size === allSectors.length) {
+                  setSectors(new Set());
+                } else {
+                  setSectors(new Set(allSectors));
+                }
+              }}>Sector agnostic</span>
+            </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 6, maxHeight: 280, overflowY: "auto" }}>
               {allSectors.map(sec => (
                 <SectorToggle key={sec} sector={sec} active={sectors.has(sec)} onToggle={() => toggleSector(sec)} />
