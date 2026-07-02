@@ -64,10 +64,10 @@ export const REBALANCE_DATES = new Set([
 ]);
 
 export const TABS = [
-  {id:"overview",    label:"Overview"},
-  {id:"performance", label:"Portfolio Performance"},
-  {id:"explore",     label:"Build & Test"},
-  {id:"resources",   label:"Resources"},
+  {id:"overview",    label:"Overview",              path:"/"},
+  {id:"performance", label:"Portfolio Performance", path:"/performance"},
+  {id:"explore",     label:"Build & Test",          path:"/build-test"},
+  {id:"resources",   label:"Resources",             path:"/resources"},
 ];
 
 export const SECTOR_COLORS = {
