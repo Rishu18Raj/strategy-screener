@@ -1,10 +1,24 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip, Legend, ResponsiveContainer, ReferenceLine, Cell,
 } from "recharts";
 import { C, REBALANCE_DATES, SECTOR_COLORS } from "../config";
 import { StatCard, pill } from "../components/primitives";
+
+function useMediaQuery(query) {
+  const [matches, setMatches] = useState(false);
+  useEffect(() => {
+    const media = window.matchMedia(query);
+    if (media.matches !== matches) {
+      setMatches(media.matches);
+    }
+    const listener = () => setMatches(media.matches);
+    media.addEventListener('change', listener);
+    return () => media.removeEventListener('change', listener);
+  }, [matches, query]);
+  return matches;
+}
 
 function NavTooltip({active,payload,label}){
   if(!active||!payload||!payload.length)return null;
@@ -24,6 +38,7 @@ export default function PerformanceTab({perf,nav,trades}){
   const [tradeFilter,setTradeFilter]=useState("all");
   const [tradeSortKey,setTradeSortKey]=useState("entry_date");
   const [tradeSortDir,setTradeSortDir]=useState(-1);
+  const isMobile = useMediaQuery('(max-width: 768px)');
 
   if(!perf||!nav||!trades){
     return(
@@ -87,7 +102,7 @@ export default function PerformanceTab({perf,nav,trades}){
       </div>
 
       {/* ── hero metrics ── */}
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(145px,1fr))",gap:10,marginBottom:24}}>
+      <div style={{display:"grid",gridTemplateColumns:isMobile?"repeat(2,1fr)":"repeat(auto-fit,minmax(145px,1fr))",gap:10,marginBottom:24}}>
         <StatCard label="Total return"   value={`${returns.total_pct>0?"+":""}${returns.total_pct}%`} sub={`SENSEX ${returns.sensex_total>0?"+":""}${returns.sensex_total}%`} color={C.green}/>
         <StatCard label="Ann. return"    value={`${returns.annualised_pct>0?"+":""}${returns.annualised_pct}%`} sub={`SENSEX ${returns.sensex_ann>0?"+":""}${returns.sensex_ann}%`} color={C.green}/>
         <StatCard label="Alpha (ann)"    value={`${returns.alpha_ann>0?"+":""}${returns.alpha_ann}%`} sub="vs SENSEX" color={returns.alpha_ann>0?C.green:C.red}/>
@@ -155,7 +170,7 @@ export default function PerformanceTab({perf,nav,trades}){
       </div>
 
       {/* ── risk metrics + trade stats ── */}
-      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:14}}>
+      <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr",gap:14,marginBottom:14}}>
 
         {/* risk metrics */}
         <div style={{background:C.card,border:`0.5px solid ${C.border}`,borderRadius:8,padding:"18px 20px"}}>

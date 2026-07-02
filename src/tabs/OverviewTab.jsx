@@ -3,6 +3,20 @@ import { BASE, C, NEXT_REBALANCE, PORTFOLIO_SNAPSHOTS, SECTOR_COLORS, SELECTED_S
 import { buildPortfolio, daysUntil, fmtDate, growthScore, parseCSV } from "../utils/strategy";
 import { DonutChart, FunnelBar, StatCard } from "../components/primitives";
 
+function useMediaQuery(query) {
+  const [matches, setMatches] = useState(false);
+  useEffect(() => {
+    const media = window.matchMedia(query);
+    if (media.matches !== matches) {
+      setMatches(media.matches);
+    }
+    const listener = () => setMatches(media.matches);
+    media.addEventListener('change', listener);
+    return () => media.removeEventListener('change', listener);
+  }, [matches, query]);
+  return matches;
+}
+
 const MONTH_TO_QUARTER = { Mar: "Q1", Jun: "Q2", Sep: "Q3", Dec: "Q4" };
 const RISK_FREE_RATE = 0.06; // 6% p.a. — must match compute_performance_metrics.py
 const TRADING_DAYS = 252;
@@ -95,6 +109,7 @@ export default function OverviewTab({ stocks, betaStatus, perf }) {
     error: "",
   });
   const [navSeries, setNavSeries] = useState(null);
+  const isMobile = useMediaQuery('(max-width: 768px)');
 
   useEffect(() => {
     let cancelled = false;
@@ -329,7 +344,7 @@ export default function OverviewTab({ stocks, betaStatus, perf }) {
         </div>
       )}
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(155px,1fr))", gap: 10, marginBottom: 24 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2,1fr)" : "repeat(auto-fit,minmax(155px,1fr))", gap: 10, marginBottom: 24 }}>
         <StatCard label="Universe" value={universe.length.toLocaleString()} sub="Nifty 500 stocks" />
         <StatCard label="Pass fundamental" value={fp} sub="RoE, CAGR, P/E filters" color={C.accent} />
         <StatCard label="Sectors selected" value={`${SELECTED_SECTORS.size} of ${allSectors.length}`} sub="Active sector conviction" />
@@ -345,14 +360,14 @@ export default function OverviewTab({ stocks, betaStatus, perf }) {
       </div>
 
       {(asOfMetrics || perf) && (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 10, marginBottom: 14 }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3,1fr)", gap: 10, marginBottom: 14 }}>
           <StatCard label="Live total return" value={totalRet} sub={`${returnSinceLabel} - SENSEX ${sensexTotalForSub > 0 ? "+" : ""}${sensexTotalForSub}%`} color={C.green} small />
           <StatCard label="Alpha (ann)" value={alpha} sub={asOfMetrics ? `vs SENSEX, as of ${asOfMetrics.asOfDate}` : "vs SENSEX annualised"} color={C.green} small />
           <StatCard label="Sharpe ratio" value={sharpe} sub={asOfMetrics ? "Risk-adjusted, as of filter date" : "Risk-adjusted return"} color={C.accent} small />
         </div>
       )}
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 14 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 14, marginBottom: 14 }}>
         <div style={{ background: C.card, border: `0.5px solid ${C.border}`, borderRadius: 8, padding: "18px 20px" }}>
           <div style={{ fontSize: 11, fontWeight: 600, marginBottom: 16, color: C.secondary, textTransform: "uppercase", letterSpacing: "0.07em" }}>Selection funnel</div>
           <FunnelBar label="Nifty 500 universe" count={universe.length} total={universe.length} color={C.accent} />

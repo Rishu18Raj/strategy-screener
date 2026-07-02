@@ -1,5 +1,19 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { C } from "../config";
+
+function useMediaQuery(query) {
+  const [matches, setMatches] = useState(false);
+  useEffect(() => {
+    const media = window.matchMedia(query);
+    if (media.matches !== matches) {
+      setMatches(media.matches);
+    }
+    const listener = () => setMatches(media.matches);
+    media.addEventListener('change', listener);
+    return () => media.removeEventListener('change', listener);
+  }, [matches, query]);
+  return matches;
+}
 
 const METRICS=[
   {name:"Return on Equity",threshold:"RoE ≥ 13%",tagline:"What is the business actually earning for its equity investors?",why:"RoE is the most honest measure of business quality. A company's share price is ultimately a derived outcome of what the underlying business earns on the capital entrusted to it by equity investors. High RoE signals that management is deploying capital effectively and generating real value — not just growing revenue on paper.",detail:"The 13% threshold approximates the cost of equity in India — the minimum return an investor should expect for the risk of holding a stock. A company earning below this hurdle rate is destroying shareholder value even if it appears profitable. We only want companies genuinely earning above this bar."},
@@ -70,10 +84,12 @@ function RSection({title,children}){
   );
 }
 export default function ResourcesTab(){
+  const isMobile = useMediaQuery('(max-width: 768px)');
+  
   return(
     <div>
       <RSection title="How this works">
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(260px,1fr))",gap:14}}>
+        <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"repeat(auto-fit,minmax(260px,1fr))",gap:14}}>
           {[{label:"The problem",text:"Most retail investors are caught between two extremes — chasing momentum stocks that carry high risk, or parking money in fixed deposits that barely beat inflation. There is a disciplined middle path."},{label:"The approach",text:"Apply five quantitative filters to the entire Nifty 500 universe to find companies that are genuinely profitable, growing faster than the economy, and available at a reasonable price. No gut feel. No tips."},{label:"The result",text:"A compact, equal-weight portfolio concentrated in sectors with structural tailwinds. Backtested over 5 years: 393% total return vs 93% for the SENSEX, Sharpe Ratio of 1.53. Not multibaggers — steady, disciplined compounding."}].map(({label,text})=>(
             <div key={label} style={{background:C.card,border:`0.5px solid ${C.border}`,borderRadius:8,padding:"18px 20px"}}>
               <div style={{fontSize:11,fontWeight:600,color:C.accent,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:8}}>{label}</div>
@@ -83,7 +99,7 @@ export default function ResourcesTab(){
         </div>
       </RSection>
       <RSection title="The 5 metrics — tap a card to explore">
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:14}}>
+        <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"repeat(auto-fit,minmax(220px,1fr))",gap:14}}>
           {METRICS.map(m=>(
             <FlipCard key={m.name} height={200}
               front={<div><div style={{display:"inline-block",background:C.accentDim,borderRadius:5,padding:"3px 10px",fontFamily:"var(--font-mono)",fontSize:11,fontWeight:600,color:C.accent,marginBottom:12}}>{m.threshold}</div><div style={{fontSize:15,fontWeight:600,color:C.primary,marginBottom:6}}>{m.name}</div><div style={{fontSize:13,color:C.secondary,lineHeight:1.7}}>{m.tagline}</div></div>}
@@ -93,7 +109,7 @@ export default function ResourcesTab(){
         </div>
       </RSection>
       <RSection title="Portfolio construction">
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(260px,1fr))",gap:14}}>
+        <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"repeat(auto-fit,minmax(260px,1fr))",gap:14}}>
           {[{q:"Why equal weight?",a:"Equal weighting removes the temptation to overweight high-conviction picks. Every stock gets the same allocation, automatically forcing you to buy more of fallen stocks and trim those that have run up. Disciplined, emotion-free rebalancing built in."},{q:"Why quarterly rebalancing?",a:"Fundamentals change at the speed of business, not markets. Quarterly aligns with India's earnings calendar, ensuring the screen always runs on fresh data. More frequent rebalancing adds noise and costs."},{q:"Why a sector cap?",a:"Without a cap, value screens naturally overweight cheap sectors like Banks and Financial Services. The cap — min(3, max(1, floor(20% of sector size in universe))) — ensures genuine diversification across conviction sectors."},{q:"How are stocks ranked within a sector?",a:"By the Growth/P/E Score: EPS CAGR divided by P/E. This directly captures the mispricing thesis — the most earnings growth per rupee of valuation paid."}].map(({q,a})=>(
             <div key={q} style={{background:C.card,border:`0.5px solid ${C.border}`,borderRadius:8,padding:"18px 20px"}}>
               <div style={{fontSize:13,fontWeight:600,color:C.primary,marginBottom:8}}>{q}</div>
@@ -104,7 +120,7 @@ export default function ResourcesTab(){
       </RSection>
       <RSection title="Sector selection — India macro thesis — tap a card to explore">
         <div style={{fontSize:13,color:C.secondary,lineHeight:1.8,marginBottom:20}}>The 12 included sectors are chosen based on structural macroeconomic tailwinds, Government policy direction, and valuation discipline. Reviewed at each quarterly rebalance.</div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(210px,1fr))",gap:14,marginBottom:28}}>
+        <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"repeat(auto-fit,minmax(210px,1fr))",gap:14,marginBottom:28}}>
           {SECTOR_CARDS.map(s=>(
             <FlipCard key={s.name} height={180}
               front={<div><div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}><div style={{width:8,height:8,borderRadius:2,background:s.color,flexShrink:0}}/><div style={{fontSize:14,fontWeight:600,color:C.primary}}>{s.name}</div></div><div style={{fontSize:12,color:C.secondary,lineHeight:1.7}}>{s.tagline}</div></div>}
@@ -113,7 +129,7 @@ export default function ResourcesTab(){
           ))}
         </div>
         <div style={{fontSize:11,fontWeight:600,color:C.muted,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:12}}>Excluded sectors</div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:8}}>
+        <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"repeat(auto-fit,minmax(220px,1fr))",gap:8}}>
           {EXCLUDED.map(e=>(<div key={e.name} style={{background:C.card,border:`0.5px solid ${C.border}`,borderRadius:6,padding:"10px 14px",opacity:0.6}}><div style={{fontSize:12,fontWeight:600,color:C.secondary,marginBottom:4}}>{e.name}</div><div style={{fontSize:11,color:C.muted,lineHeight:1.6}}>{e.reason}</div></div>))}
         </div>
       </RSection>

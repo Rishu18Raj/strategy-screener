@@ -10,6 +10,20 @@ import {
 } from "../utils/backtest";
 import { track } from "../lib/analytics";
 
+function useMediaQuery(query) {
+  const [matches, setMatches] = useState(false);
+  useEffect(() => {
+    const media = window.matchMedia(query);
+    if (media.matches !== matches) {
+      setMatches(media.matches);
+    }
+    const listener = () => setMatches(media.matches);
+    media.addEventListener('change', listener);
+    return () => media.removeEventListener('change', listener);
+  }, [matches, query]);
+  return matches;
+}
+
 // ── small local primitives ──────────────────────────────────────────────
 
 function Slider({ label, value, min, max, step, onChange, suffix = "", enabled = true, onToggle }) {
@@ -299,6 +313,7 @@ export default function BuildTestTab() {
   const [loadState, setLoadState] = useState("loading");
   const [errorMsg, setErrorMsg] = useState("");
   const [backtestData, setBacktestData] = useState(null);
+  const isMobile = useMediaQuery('(max-width: 768px)');
 
   // 1. Raw values (keeps the slider in place)
   const [filters, setFilters] = useState({ ...FILTERS });
@@ -452,7 +467,7 @@ const runBacktest = () => {
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "320px 1fr", gap: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "320px 1fr", gap: 16 }}>
         {/* ── left: controls ── */}
         <div>
           <div style={{ ...card, marginBottom: 16 }}>
@@ -525,7 +540,7 @@ const runBacktest = () => {
         <div>
           <div style={{ ...card, marginBottom: 16 }}>
             <div style={sectionLabel}>Selection funnel — current quarter, live preview</div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 20 }}>
               <div>
                 <FunnelBar label="Nifty 500 universe" count={liveFunnel.total} total={liveFunnel.total} color={C.accent} />
                 <FunnelBar label="Pass fundamental criteria" count={liveFunnel.fp} total={liveFunnel.total} color="#8b5cf6" />
@@ -547,7 +562,7 @@ const runBacktest = () => {
 
           {result && (
             <>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 10, marginBottom: 16 }}>
+              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3,1fr)", gap: 10, marginBottom: 16 }}>
                 <StatCard label="Custom total return" value={`${result.metrics.totalPct > 0 ? "+" : ""}${result.metrics.totalPct}%`} sub={`Base strategy: ${result.baseMetrics.totalPct > 0 ? "+" : ""}${result.baseMetrics.totalPct}%`} color={result.metrics.totalPct >= result.baseMetrics.totalPct ? C.green : C.red} small />
                 <StatCard label="Custom Sharpe" value={result.metrics.sharpe} sub={`Base: ${result.baseMetrics.sharpe}`} color={C.accent} small />
                 <StatCard label="Intra-quarter exits" value={result.sim.tradeLog.filter(t => t.exit_type === "intra_quarter").length} sub={`${result.sim.dataGaps.length} data gaps`} color={C.amber} small />

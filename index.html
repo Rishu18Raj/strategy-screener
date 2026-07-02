@@ -72,6 +72,27 @@
         font-size: 0.88em;
       }
       * { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+
+      /* Mobile responsive styles */
+      @media (max-width: 768px) {
+        :root {
+          font-size: 14px;
+        }
+
+        html, body {
+          overflow: auto;
+        }
+
+        #root {
+          overflow: auto;
+        }
+      }
+
+      @media (max-width: 640px) {
+        :root {
+          font-size: 13px;
+        }
+      }
     </style>
   </head>
   <body>
