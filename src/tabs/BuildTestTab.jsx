@@ -8,6 +8,7 @@ import {
   loadBacktestData, runCustomBacktest, computeCustomMetrics,
   CUSTOM_BACKTEST_REBALANCE_DATES, DEFAULT_EXIT_RULE,
 } from "../utils/backtest";
+import { track } from "../lib/analytics";
 
 // ── small local primitives ──────────────────────────────────────────────
 
@@ -370,20 +371,29 @@ export default function BuildTestTab() {
     setSelectedQuarterIdx(null);
   };
 
-  const runBacktest = () => {
-    if (!backtestData) return;
-    setRunning(true);
-    setSelectedQuarterIdx(null);
-    setTimeout(() => {
-      // 5. Pass the effective bypassed thresholds to the backend simulator
-      const sim = runCustomBacktest(backtestData, effectiveFilters, sectors, effectiveExitRule);
-      const metrics = computeCustomMetrics(sim.navSeries, sim.quarterlyNavSeries);
-      const baseSim = runCustomBacktest(backtestData, { ...FILTERS }, new Set(SELECTED_SECTORS), DEFAULT_EXIT_RULE);
-      const baseMetrics = computeCustomMetrics(baseSim.navSeries, baseSim.quarterlyNavSeries);
-      setResult({ sim, metrics, baseSim, baseMetrics });
-      setRunning(false);
-    }, 30);
-  };
+const runBacktest = () => {
+  if (!backtestData) return;
+  setRunning(true);
+  setSelectedQuarterIdx(null);
+  setTimeout(() => {
+    const sim = runCustomBacktest(backtestData, effectiveFilters, sectors, effectiveExitRule);
+    const metrics = computeCustomMetrics(sim.navSeries, sim.quarterlyNavSeries);
+    const baseSim = runCustomBacktest(backtestData, { ...FILTERS }, new Set(SELECTED_SECTORS), DEFAULT_EXIT_RULE);
+    const baseMetrics = computeCustomMetrics(baseSim.navSeries, baseSim.quarterlyNavSeries);
+    setResult({ sim, metrics, baseSim, baseMetrics });
+    setRunning(false);
+
+    track.backtestRun({
+      metrics_used: Object.entries(enabledFilters).filter(([, on]) => on).map(([k]) => k),
+      sectors_selected: [...sectors],
+      total_return_pct: metrics.totalPct,
+      sharpe: metrics.sharpe,
+      max_drawdown_pct: metrics.maxDrawdownPct,
+      outperformed_base: metrics.totalPct >= baseMetrics.totalPct,
+      filters_changed_from_default: filtersChanged,
+    });
+  }, 30);
+};
 
   const navChart = useMemo(() => {
     if (!result) return [];
