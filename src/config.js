@@ -11,22 +11,35 @@ export const NEXT_REBALANCE = new Date("2026-09-25");
 export const DATA_QUARTER   = "Q4 FY26";
 
 export const BASE = "https://raw.githubusercontent.com/Rishu18Raj/strategy-screener/main/data";
+
+// raw.githubusercontent.com is served through GitHub's CDN (Fastly), which
+// edge-caches responses for several minutes after a push — so a browser can
+// keep fetching a pre-update version of these files even though main is
+// already current. CACHE_BUST is computed once per page load and appended
+// to every data URL below, so each fresh page load forces a fresh CDN fetch
+// instead of serving a cached copy. (Values don't change again within the
+// same session/tab — that's expected, a manual refresh is what re-fetches.)
+const CACHE_BUST = Date.now();
+function withCacheBust(url) {
+  return `${url}?t=${CACHE_BUST}`;
+}
+
 export const URLS = {
-  fundamentals:     `${BASE}/fundamentals.csv`,
-  betas:            `${BASE}/betas.json`,
-  perfSummary:      `${BASE}/performance_summary.json`,
-  nav:              `${BASE}/nav.json`,
-  tradeLog:         `${BASE}/trade_log.json`,
-  portfolioCurrent: `${BASE}/portfolio_current.json`,
-  universeRebalancePrices: `${BASE}/historical/universe_rebalance_prices.json`,
-  universeDailyPrices: `${BASE}/historical/universe_daily_prices.json`,
+  fundamentals:     withCacheBust(`${BASE}/fundamentals.csv`),
+  betas:            withCacheBust(`${BASE}/betas.json`),
+  perfSummary:      withCacheBust(`${BASE}/performance_summary.json`),
+  nav:              withCacheBust(`${BASE}/nav.json`),
+  tradeLog:         withCacheBust(`${BASE}/trade_log.json`),
+  portfolioCurrent: withCacheBust(`${BASE}/portfolio_current.json`),
+  universeRebalancePrices: withCacheBust(`${BASE}/historical/universe_rebalance_prices.json`),
+  universeDailyPrices: withCacheBust(`${BASE}/historical/universe_daily_prices.json`),
 };
 
 // Quarterly fundamentals/beta snapshot URLs by rebalance date — used by the
 // Build & Test backtest engine to reconstruct portfolios at each historical
 // quarter under a custom filter, exactly as OverviewTab's snapshot lookup does.
-export function historicalFundamentalsUrl(label) { return `${BASE}/historical/fundamentals_${label}.csv`; }
-export function historicalBetasUrl(label)        { return `${BASE}/historical/betas_${label}.json`; }
+export function historicalFundamentalsUrl(label) { return withCacheBust(`${BASE}/historical/fundamentals_${label}.csv`); }
+export function historicalBetasUrl(label)        { return withCacheBust(`${BASE}/historical/betas_${label}.json`); }
 
 export const REBALANCE_LABELS = [
   "2024Q2","2024Q3","2024Q4","2025Q1","2025Q2","2025Q3","2025Q4","2026Q1","2026Q2",
