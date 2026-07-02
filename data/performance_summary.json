@@ -1,48 +1,48 @@
 {
-  "generated": "2026-06-29",
+  "generated": "2026-07-02",
   "period": {
     "start": "2024-06-25",
-    "end": "2026-06-29",
-    "days": 734
+    "end": "2026-07-02",
+    "days": 737
   },
   "returns": {
-    "total_pct": 74.32,
-    "annualised_pct": 31.83,
-    "sensex_total": -1.25,
-    "sensex_ann": -0.63,
-    "alpha_total": 75.57,
-    "alpha_ann": 32.46
+    "total_pct": 88.69,
+    "annualised_pct": 36.95,
+    "sensex_total": -0.71,
+    "sensex_ann": -0.35,
+    "alpha_total": 89.4,
+    "alpha_ann": 37.3
   },
   "risk": {
-    "sharpe": 1.1293,
-    "sortino": 1.3998,
-    "treynor": 24.99,
-    "jensen_alpha": 32.68,
-    "info_ratio": 1.9207,
-    "tracking_error": 16.9,
-    "beta": 1.0337,
-    "correlation": 0.6297,
-    "max_drawdown_pct": 17.44,
+    "sharpe": 1.3763,
+    "sortino": 1.8421,
+    "treynor": 33.5,
+    "jensen_alpha": 36.82,
+    "info_ratio": 2.2856,
+    "tracking_error": 16.32,
+    "beta": 0.9238,
+    "correlation": 0.5999,
+    "max_drawdown_pct": 13.99,
     "drawdown_start": "2026-01-07",
     "drawdown_end": "2026-03-23",
     "risk_free_rate": 0.06
   },
   "trades": {
-    "total_closed": 26,
-    "total_open": 10,
-    "intra_quarter": 4,
-    "rebalance_exits": 22,
-    "win_rate_pct": 69.2,
-    "avg_return_pct": 7.86,
-    "avg_winner_pct": 17.08,
+    "total_closed": 33,
+    "total_open": 8,
+    "intra_quarter": 14,
+    "rebalance_exits": 19,
+    "win_rate_pct": 75.8,
+    "avg_return_pct": 14.92,
+    "avg_winner_pct": 23.81,
     "avg_loser_pct": -12.88,
-    "avg_alpha_pct": 5.04,
-    "avg_hold_days": 157,
+    "avg_alpha_pct": 12.75,
+    "avg_hold_days": 192,
     "best_trade": {
-      "ticker": "FEDERALBNK",
-      "return_pct": 54.02,
-      "entry_date": "2025-06-25",
-      "exit_date": "2026-06-25"
+      "ticker": "CHOLAHLDNG",
+      "return_pct": 60.17,
+      "entry_date": "2024-06-25",
+      "exit_date": "2024-09-26"
     },
     "worst_trade": {
       "ticker": "AAVAS",
@@ -64,33 +64,33 @@
       "label": "Q2",
       "start_date": "2024-09-25",
       "end_date": "2024-12-25",
-      "portfolio_ret": -8.83,
+      "portfolio_ret": -8.6,
       "sensex_ret": -7.86,
-      "active_ret": -0.97
+      "active_ret": -0.74
     },
     {
       "label": "Q3",
       "start_date": "2024-12-25",
       "end_date": "2025-03-25",
-      "portfolio_ret": 3.62,
+      "portfolio_ret": 8.36,
       "sensex_ret": -0.58,
-      "active_ret": 4.2
+      "active_ret": 8.94
     },
     {
       "label": "Q4",
       "start_date": "2025-03-25",
       "end_date": "2025-06-25",
-      "portfolio_ret": 23.12,
+      "portfolio_ret": 22.89,
       "sensex_ret": 6.07,
-      "active_ret": 17.05
+      "active_ret": 16.82
     },
     {
       "label": "Q5",
       "start_date": "2025-06-25",
       "end_date": "2025-09-25",
-      "portfolio_ret": 4.24,
+      "portfolio_ret": 5.26,
       "sensex_ret": -1.93,
-      "active_ret": 6.17
+      "active_ret": 7.19
     },
     {
       "label": "Q6",
@@ -104,17 +104,17 @@
       "label": "Q7",
       "start_date": "2025-12-25",
       "end_date": "2026-03-25",
-      "portfolio_ret": -8.25,
+      "portfolio_ret": -5.02,
       "sensex_ret": -11.49,
-      "active_ret": 3.24
+      "active_ret": 6.47
     },
     {
       "label": "Q8",
       "start_date": "2026-03-25",
       "end_date": "2026-06-25",
-      "portfolio_ret": 17.4,
+      "portfolio_ret": 15.93,
       "sensex_ret": 2.43,
-      "active_ret": 14.97
+      "active_ret": 13.5
     }
   ]
 }
