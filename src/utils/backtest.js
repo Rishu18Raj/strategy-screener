@@ -143,7 +143,7 @@ function growthScoreCustom(s) { return s.pe > 0 ? (s.epsCAGR || 0) / s.pe : 0; }
  * but parameterized instead of reading the fixed FILTERS/SELECTED_SECTORS
  * constants, since OverviewTab's live table still needs those untouched.
  *
- * customFilters: { roe, revCAGR, epsCAGR, beta, pe }
+ * customFilters: { roe: {min, max}, revCAGR: {min, max}, epsCAGR: {min, max}, beta: {min, max}, pe: {min, max} }
  * selectedSectors: Set<string>
  */
 export function buildPortfolioCustom(universe, customFilters, selectedSectors) {
@@ -153,24 +153,24 @@ export function buildPortfolioCustom(universe, customFilters, selectedSectors) {
   // When customFilters === FILTERS (defaults), this produces the SAME rounds
   // as build_portfolios_and_exits.py — preserving Python parity for the base case.
   const ROUNDS = [
-    [customFilters.epsCAGR,     customFilters.pe,     0],
-    [customFilters.epsCAGR,     customFilters.pe + 5, 1],
-    [customFilters.epsCAGR - 1, customFilters.pe + 5, 2],
-    [customFilters.epsCAGR - 2, customFilters.pe + 5, 3],
-    [customFilters.epsCAGR - 3, customFilters.pe + 5, 4],
+    [customFilters.epsCAGR.max,     customFilters.pe.max,     0],
+    [customFilters.epsCAGR.max,     customFilters.pe.max + 5, 1],
+    [customFilters.epsCAGR.max - 1, customFilters.pe.max + 5, 2],
+    [customFilters.epsCAGR.max - 2, customFilters.pe.max + 5, 3],
+    [customFilters.epsCAGR.max - 3, customFilters.pe.max + 5, 4],
   ];
 
   let fp = 0, sp = 0, bp = 0, portfolio = [], roundUsed = 0;
 
   for (const [eps, pe, rnd] of ROUNDS) {
     const fund = universe.filter(s =>
-      !isNaN(s.roe) && s.roe >= customFilters.roe &&
-      !isNaN(s.revCAGR) && s.revCAGR >= customFilters.revCAGR &&
-      !isNaN(s.epsCAGR) && s.epsCAGR >= eps &&
-      !isNaN(s.pe) && s.pe <= pe
+      !isNaN(s.roe) && s.roe >= customFilters.roe.min && s.roe <= customFilters.roe.max &&
+      !isNaN(s.revCAGR) && s.revCAGR >= customFilters.revCAGR.min && s.revCAGR <= customFilters.revCAGR.max &&
+      !isNaN(s.epsCAGR) && s.epsCAGR >= customFilters.epsCAGR.min && s.epsCAGR <= eps &&
+      !isNaN(s.pe) && s.pe >= customFilters.pe.min && s.pe <= pe
     );
     const sec = fund.filter(s => selectedSectors.has(s.sector));
-    const bet = sec.filter(s => s.beta != null && s.beta <= customFilters.beta);
+    const bet = sec.filter(s => s.beta != null && s.beta >= customFilters.beta.min && s.beta <= customFilters.beta.max);
     if (rnd === 0) { fp = fund.length; sp = sec.length; bp = bet.length; }
 
     const bySec = {};

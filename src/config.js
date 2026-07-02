@@ -5,7 +5,13 @@ export const SELECTED_SECTORS = new Set([
   "Oil Gas & Consumable Fuels","Power","Textiles",
 ]);
 
-export const FILTERS = { roe:13, revCAGR:7, epsCAGR:10, beta:1.2, pe:20 };
+export const FILTERS = { 
+  roe: { min: 0, max: 35 }, 
+  revCAGR: { min: 0, max: 25 }, 
+  epsCAGR: { min: 0, max: 30 }, 
+  beta: { min: 0.3, max: 2 }, 
+  pe: { min: 5, max: 50 } 
+};
 export const LAST_REBALANCE = new Date("2026-06-25");
 export const NEXT_REBALANCE = new Date("2026-09-25");
 export const DATA_QUARTER   = "Q4 FY26";

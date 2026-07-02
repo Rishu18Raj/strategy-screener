@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
-import { C, FILTERS, SELECTED_SECTORS, SECTOR_COLORS } from "../config";
+import { C, FILTERS, SELECTED_SECTORS, SECTOR_COLORS, LAST_REBALANCE } from "../config";
 import { StatCard, FunnelBar } from "../components/primitives";
 import {
   loadBacktestData, runCustomBacktest, computeCustomMetrics,
@@ -51,6 +51,55 @@ function Slider({ label, value, min, max, step, onChange, suffix = "", enabled =
         disabled={!enabled}
         style={{ width: "100%", accentColor: "var(--accent)", cursor: enabled ? "pointer" : "not-allowed" }}
       />
+      <div style={{ display: "flex", justifyContent: "space-between", marginTop: 2 }}>
+        <span style={{ fontSize: 10, color: C.muted }}>{min}{suffix}</span>
+        <span style={{ fontSize: 10, color: C.muted }}>{max}{suffix}</span>
+      </div>
+    </div>
+  );
+}
+
+function RangeSlider({ label, minValue, maxValue, min, max, step, onChangeMin, onChangeMax, suffix = "", enabled = true, onToggle }) {
+  return (
+    <div style={{ marginBottom: 18, opacity: enabled ? 1 : 0.4, transition: "opacity 0.2s" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+        <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", userSelect: "none" }}>
+          {onToggle && (
+            <input 
+              type="checkbox" 
+              checked={enabled} 
+              onChange={onToggle} 
+              style={{ margin: 0, cursor: "pointer", accentColor: "var(--accent)" }} 
+            />
+          )}
+          <span style={{ fontSize: 12, color: C.secondary }}>{label}</span>
+        </label>
+        <span style={{ fontSize: 12, fontFamily: "var(--font-mono)", fontWeight: 600, color: enabled ? C.accent : C.muted }}>
+          {enabled ? `${minValue}${suffix} - ${maxValue}${suffix}` : "Ignored"}
+        </span>
+      </div>
+      <div style={{ position: "relative", height: 24 }}>
+        <input
+          type="range" min={min} max={max} step={step} value={minValue}
+          onChange={e => onChangeMin(Math.min(Number(e.target.value), maxValue - step))}
+          disabled={!enabled}
+          style={{ 
+            position: "absolute", width: "100%", pointerEvents: enabled ? "auto" : "none",
+            accentColor: "var(--accent)", cursor: enabled ? "pointer" : "not-allowed",
+            zIndex: minValue > max - step ? 1 : 2
+          }}
+        />
+        <input
+          type="range" min={min} max={max} step={step} value={maxValue}
+          onChange={e => onChangeMax(Math.max(Number(e.target.value), minValue + step))}
+          disabled={!enabled}
+          style={{ 
+            position: "absolute", width: "100%", pointerEvents: enabled ? "auto" : "none",
+            accentColor: "var(--accent)", cursor: enabled ? "pointer" : "not-allowed",
+            zIndex: 1
+          }}
+        />
+      </div>
       <div style={{ display: "flex", justifyContent: "space-between", marginTop: 2 }}>
         <span style={{ fontSize: 10, color: C.muted }}>{min}{suffix}</span>
         <span style={{ fontSize: 10, color: C.muted }}>{max}{suffix}</span>
@@ -316,7 +365,13 @@ export default function BuildTestTab() {
   const isMobile = useMediaQuery('(max-width: 768px)');
 
   // 1. Raw values (keeps the slider in place)
-  const [filters, setFilters] = useState({ ...FILTERS });
+  const [filters, setFilters] = useState({ 
+    roe: { min: FILTERS.roe.min, max: FILTERS.roe.max },
+    revCAGR: { min: FILTERS.revCAGR.min, max: FILTERS.revCAGR.max },
+    epsCAGR: { min: FILTERS.epsCAGR.min, max: FILTERS.epsCAGR.max },
+    beta: { min: FILTERS.beta.min, max: FILTERS.beta.max },
+    pe: { min: FILTERS.pe.min, max: FILTERS.pe.max }
+  });
   const [sectors, setSectors] = useState(new Set(SELECTED_SECTORS));
   const [exitRule, setExitRule] = useState({ ...DEFAULT_EXIT_RULE });
   
@@ -327,6 +382,7 @@ export default function BuildTestTab() {
   const [running, setRunning] = useState(false);
   const [result, setResult] = useState(null);
   const [selectedQuarterIdx, setSelectedQuarterIdx] = useState(null);
+  const [showCandidatesModal, setShowCandidatesModal] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -346,11 +402,11 @@ export default function BuildTestTab() {
 
   // 3. Bypass thresholds if unchecked (-999 for mins, 9999 for maxs)
   const effectiveFilters = useMemo(() => ({
-    roe:     enabledFilters.roe     ? filters.roe     : -999,
-    revCAGR: enabledFilters.revCAGR ? filters.revCAGR : -999,
-    epsCAGR: enabledFilters.epsCAGR ? filters.epsCAGR : -999,
-    pe:      enabledFilters.pe      ? filters.pe      : 9999,
-    beta:    enabledFilters.beta    ? filters.beta    : 9999,
+    roe:     enabledFilters.roe     ? { min: filters.roe.min, max: filters.roe.max }     : { min: -999, max: 9999 },
+    revCAGR: enabledFilters.revCAGR ? { min: filters.revCAGR.min, max: filters.revCAGR.max } : { min: -999, max: 9999 },
+    epsCAGR: enabledFilters.epsCAGR ? { min: filters.epsCAGR.min, max: filters.epsCAGR.max } : { min: -999, max: 9999 },
+    pe:      enabledFilters.pe      ? { min: filters.pe.min, max: filters.pe.max }      : { min: -999, max: 9999 },
+    beta:    enabledFilters.beta    ? { min: filters.beta.min, max: filters.beta.max }    : { min: -999, max: 9999 },
   }), [filters, enabledFilters]);
 
   const effectiveExitRule = useMemo(() => ({
@@ -360,24 +416,36 @@ export default function BuildTestTab() {
 
   // 4. Use effectiveFilters for the live funnel preview
   const liveFunnel = useMemo(() => {
-    if (!latestUniverse.length) return { fp: 0, sp: 0, bp: 0, total: 0 };
+    if (!latestUniverse.length) return { fp: 0, sp: 0, bp: 0, total: 0, candidates: [] };
+    const dates = CUSTOM_BACKTEST_REBALANCE_DATES;
+    const latestDate = dates[dates.length - 1];
+    const priceTable = backtestData?.priceTable || {};
+    const latestPrices = priceTable[latestDate] || {};
+    
     const fund = latestUniverse.filter(s =>
-      !isNaN(s.roe) && s.roe >= effectiveFilters.roe &&
-      !isNaN(s.revCAGR) && s.revCAGR >= effectiveFilters.revCAGR &&
-      !isNaN(s.epsCAGR) && s.epsCAGR >= effectiveFilters.epsCAGR &&
-      !isNaN(s.pe) && s.pe <= effectiveFilters.pe
+      !isNaN(s.roe) && s.roe >= effectiveFilters.roe.min && s.roe <= effectiveFilters.roe.max &&
+      !isNaN(s.revCAGR) && s.revCAGR >= effectiveFilters.revCAGR.min && s.revCAGR <= effectiveFilters.revCAGR.max &&
+      !isNaN(s.epsCAGR) && s.epsCAGR >= effectiveFilters.epsCAGR.min && s.epsCAGR <= effectiveFilters.epsCAGR.max &&
+      !isNaN(s.pe) && s.pe >= effectiveFilters.pe.min && s.pe <= effectiveFilters.pe.max
     );
     const sec = fund.filter(s => sectors.has(s.sector));
-    const bet = sec.filter(s => s.beta != null && s.beta <= effectiveFilters.beta);
-    return { fp: fund.length, sp: sec.length, bp: bet.length, total: latestUniverse.length };
-  }, [latestUniverse, effectiveFilters, sectors]);
+    const bet = sec.filter(s => s.beta != null && s.beta >= effectiveFilters.beta.min && s.beta <= effectiveFilters.beta.max);
+    const candidates = bet.map(s => ({ ...s, price: latestPrices[s.ticker] }));
+    return { fp: fund.length, sp: sec.length, bp: bet.length, total: latestUniverse.length, candidates };
+  }, [latestUniverse, effectiveFilters, sectors, backtestData]);
 
   const toggleSector = sec => setSectors(prev => {
     const next = new Set(prev); next.has(sec) ? next.delete(sec) : next.add(sec); return next;
   });
 
   const resetToBase = () => {
-    setFilters({ ...FILTERS });
+    setFilters({ 
+      roe: { min: FILTERS.roe.min, max: FILTERS.roe.max },
+      revCAGR: { min: FILTERS.revCAGR.min, max: FILTERS.revCAGR.max },
+      epsCAGR: { min: FILTERS.epsCAGR.min, max: FILTERS.epsCAGR.max },
+      beta: { min: FILTERS.beta.min, max: FILTERS.beta.max },
+      pe: { min: FILTERS.pe.min, max: FILTERS.pe.max }
+    });
     setEnabledFilters({ roe: true, revCAGR: true, epsCAGR: true, pe: true, beta: true });
     setSectors(new Set(SELECTED_SECTORS));
     setExitRule({ ...DEFAULT_EXIT_RULE });
@@ -393,7 +461,14 @@ const runBacktest = () => {
   setTimeout(() => {
     const sim = runCustomBacktest(backtestData, effectiveFilters, sectors, effectiveExitRule);
     const metrics = computeCustomMetrics(sim.navSeries, sim.quarterlyNavSeries);
-    const baseSim = runCustomBacktest(backtestData, { ...FILTERS }, new Set(SELECTED_SECTORS), DEFAULT_EXIT_RULE);
+    const baseFilters = { 
+      roe: { min: FILTERS.roe.min, max: FILTERS.roe.max },
+      revCAGR: { min: FILTERS.revCAGR.min, max: FILTERS.revCAGR.max },
+      epsCAGR: { min: FILTERS.epsCAGR.min, max: FILTERS.epsCAGR.max },
+      beta: { min: FILTERS.beta.min, max: FILTERS.beta.max },
+      pe: { min: FILTERS.pe.min, max: FILTERS.pe.max }
+    };
+    const baseSim = runCustomBacktest(backtestData, baseFilters, new Set(SELECTED_SECTORS), DEFAULT_EXIT_RULE);
     const baseMetrics = computeCustomMetrics(baseSim.navSeries, baseSim.quarterlyNavSeries);
     setResult({ sim, metrics, baseSim, baseMetrics });
     setRunning(false);
@@ -422,9 +497,11 @@ const runBacktest = () => {
   }, [result]);
 
   const filtersChanged =
-    filters.roe !== FILTERS.roe || filters.revCAGR !== FILTERS.revCAGR ||
-    filters.epsCAGR !== FILTERS.epsCAGR || filters.beta !== FILTERS.beta ||
-    filters.pe !== FILTERS.pe ||
+    filters.roe.min !== FILTERS.roe.min || filters.roe.max !== FILTERS.roe.max ||
+    filters.revCAGR.min !== FILTERS.revCAGR.min || filters.revCAGR.max !== FILTERS.revCAGR.max ||
+    filters.epsCAGR.min !== FILTERS.epsCAGR.min || filters.epsCAGR.max !== FILTERS.epsCAGR.max ||
+    filters.beta.min !== FILTERS.beta.min || filters.beta.max !== FILTERS.beta.max ||
+    filters.pe.min !== FILTERS.pe.min || filters.pe.max !== FILTERS.pe.max ||
     Object.values(enabledFilters).some(v => !v) ||
     sectors.size !== SELECTED_SECTORS.size ||
     [...sectors].some(s => !SELECTED_SECTORS.has(s)) ||
@@ -472,21 +549,26 @@ const runBacktest = () => {
         <div>
           <div style={{ ...card, marginBottom: 16 }}>
             <div style={sectionLabel}>Screening filters</div>
-            <Slider label="Return on Equity ≥" value={filters.roe} min={0} max={35} step={1} suffix="%" 
+            <RangeSlider label="Return on Equity" minValue={filters.roe.min} maxValue={filters.roe.max} min={0} max={35} step={1} suffix="%" 
               enabled={enabledFilters.roe} onToggle={() => setEnabledFilters(f => ({ ...f, roe: !f.roe }))} 
-              onChange={v => setFilters(f => ({ ...f, roe: v }))} />
-            <Slider label="Revenue CAGR ≥" value={filters.revCAGR} min={0} max={25} step={1} suffix="%" 
+              onChangeMin={v => setFilters(f => ({ ...f, roe: { ...f.roe, min: v } }))} 
+              onChangeMax={v => setFilters(f => ({ ...f, roe: { ...f.roe, max: v } }))} />
+            <RangeSlider label="Revenue CAGR" minValue={filters.revCAGR.min} maxValue={filters.revCAGR.max} min={0} max={25} step={1} suffix="%" 
               enabled={enabledFilters.revCAGR} onToggle={() => setEnabledFilters(f => ({ ...f, revCAGR: !f.revCAGR }))} 
-              onChange={v => setFilters(f => ({ ...f, revCAGR: v }))} />
-            <Slider label="EPS CAGR ≥" value={filters.epsCAGR} min={0} max={30} step={1} suffix="%" 
+              onChangeMin={v => setFilters(f => ({ ...f, revCAGR: { ...f.revCAGR, min: v } }))} 
+              onChangeMax={v => setFilters(f => ({ ...f, revCAGR: { ...f.revCAGR, max: v } }))} />
+            <RangeSlider label="EPS CAGR" minValue={filters.epsCAGR.min} maxValue={filters.epsCAGR.max} min={0} max={30} step={1} suffix="%" 
               enabled={enabledFilters.epsCAGR} onToggle={() => setEnabledFilters(f => ({ ...f, epsCAGR: !f.epsCAGR }))} 
-              onChange={v => setFilters(f => ({ ...f, epsCAGR: v }))} />
-            <Slider label="P/E ≤" value={filters.pe} min={5} max={50} step={1} suffix="x" 
+              onChangeMin={v => setFilters(f => ({ ...f, epsCAGR: { ...f.epsCAGR, min: v } }))} 
+              onChangeMax={v => setFilters(f => ({ ...f, epsCAGR: { ...f.epsCAGR, max: v } }))} />
+            <RangeSlider label="P/E" minValue={filters.pe.min} maxValue={filters.pe.max} min={5} max={50} step={1} suffix="x" 
               enabled={enabledFilters.pe} onToggle={() => setEnabledFilters(f => ({ ...f, pe: !f.pe }))} 
-              onChange={v => setFilters(f => ({ ...f, pe: v }))} />
-            <Slider label="Beta ≤" value={filters.beta} min={0.3} max={2} step={0.05} 
+              onChangeMin={v => setFilters(f => ({ ...f, pe: { ...f.pe, min: v } }))} 
+              onChangeMax={v => setFilters(f => ({ ...f, pe: { ...f.pe, max: v } }))} />
+            <RangeSlider label="Beta" minValue={filters.beta.min} maxValue={filters.beta.max} min={0.3} max={2} step={0.05} 
               enabled={enabledFilters.beta} onToggle={() => setEnabledFilters(f => ({ ...f, beta: !f.beta }))} 
-              onChange={v => setFilters(f => ({ ...f, beta: v }))} />
+              onChangeMin={v => setFilters(f => ({ ...f, beta: { ...f.beta, min: v } }))} 
+              onChangeMax={v => setFilters(f => ({ ...f, beta: { ...f.beta, max: v } }))} />
           </div>
 
           <div style={{ ...card, marginBottom: 16 }}>
@@ -548,7 +630,14 @@ const runBacktest = () => {
                 <FunnelBar label="Pass beta filter" count={liveFunnel.bp} total={liveFunnel.total} color="#f97316" />
               </div>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <StatCard label="Candidates this quarter" value={liveFunnel.bp} sub="Before sector cap — run backtest for full portfolio" color={C.green} />
+                <div 
+                  onClick={() => setShowCandidatesModal(true)}
+                  style={{ cursor: "pointer", transition: "transform 0.15s" }}
+                  onMouseEnter={e => e.currentTarget.style.transform = "scale(1.02)"}
+                  onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
+                >
+                  <StatCard label="Candidates this quarter" value={liveFunnel.bp} sub="Before sector cap — run backtest for full portfolio" color={C.green} />
+                </div>
               </div>
             </div>
           </div>
@@ -633,6 +722,67 @@ const runBacktest = () => {
           )}
         </div>
       </div>
+
+      {/* Candidates Modal */}
+      {showCandidatesModal && (
+        <div 
+          onClick={() => setShowCandidatesModal(false)}
+          style={{
+            position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
+            background: "rgba(0, 0, 0, 0.5)", display: "flex",
+            alignItems: "center", justifyContent: "center", zIndex: 1000
+          }}
+        >
+          <div 
+            onClick={e => e.stopPropagation()}
+            style={{
+              background: C.card, border: `0.5px solid ${C.border}`,
+              borderRadius: 12, padding: "24px", maxWidth: 700, width: "90%",
+              maxHeight: "80vh", display: "flex", flexDirection: "column"
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+              <div style={{ fontSize: 16, fontWeight: 600, color: C.primary }}>
+                Candidates This Quarter ({liveFunnel.candidates.length})
+              </div>
+              <button
+                onClick={() => setShowCandidatesModal(false)}
+                style={{
+                  background: "transparent", border: "none", fontSize: 24,
+                  color: C.muted, cursor: "pointer", padding: 0, lineHeight: 1
+                }}
+              >
+                ×
+              </button>
+            </div>
+            <div style={{ fontSize: 11, color: C.muted, marginBottom: 12 }}>
+              Prices updated as of {LAST_REBALANCE.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })} market close
+            </div>
+            <div style={{ overflowY: "auto", flex: 1, border: `0.5px solid ${C.border}`, borderRadius: 8 }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+                <thead>
+                  <tr style={{ background: C.hover }}>
+                    <th style={{ padding: "10px 12px", textAlign: "left", fontSize: 11, color: C.primary, textTransform: "uppercase", letterSpacing: "0.05em" }}>Ticker</th>
+                    <th style={{ padding: "10px 12px", textAlign: "left", fontSize: 11, color: C.primary, textTransform: "uppercase", letterSpacing: "0.05em" }}>Sector</th>
+                    <th style={{ padding: "10px 12px", textAlign: "right", fontSize: 11, color: C.primary, textTransform: "uppercase", letterSpacing: "0.05em" }}>Last Price</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {liveFunnel.candidates.map((s, i) => (
+                    <tr key={s.ticker} style={{ borderTop: `0.5px solid ${C.subtle}`, background: i % 2 === 0 ? "transparent" : C.card + "44" }}>
+                      <td style={{ padding: "10px 12px", fontWeight: 600, fontFamily: "var(--font-mono)", fontSize: 12, color: C.primary }}>{s.ticker}</td>
+                      <td style={{ padding: "10px 12px" }}>
+                        <span style={{ fontSize: 11, padding: "2px 7px", borderRadius: 4, fontWeight: 500, background: (SECTOR_COLORS[s.sector] || C.accent) + "18", color: SECTOR_COLORS[s.sector] || C.accent, whiteSpace: "nowrap" }}>{s.sector}</span>
+                      </td>
+                      <td style={{ padding: "10px 12px", textAlign: "right", color: C.primary, fontFamily: "var(--font-mono)", fontSize: 12 }}>{fmtPrice(s.price)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
