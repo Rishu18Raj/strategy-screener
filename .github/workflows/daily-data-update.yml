@@ -2,7 +2,9 @@ name: Daily data update
 
 # Refreshes the data that powers the Overview and Portfolio Performance tabs:
 #   fetch_historical_prices.py  -> data/prices_history.json
-#   monitor_exits.py            -> data/trade_log.json
+#   monitor_exits.py            -> data/trade_log.json (intra-quarter exits)
+#   update_open_positions.py    -> data/trade_log.json (live price/return/
+#                                   holding-days on still-open positions)
 #   compute_nav.py               -> data/nav.json
 #   compute_performance_metrics.py -> data/performance_summary.json
 #
@@ -53,6 +55,9 @@ jobs:
 
       - name: Check intra-quarter exit rule
         run: python monitor_exits.py
+
+      - name: Refresh open position prices/returns
+        run: python update_open_positions.py
 
       - name: Recompute NAV series
         run: python compute_nav.py
