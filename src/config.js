@@ -12,6 +12,20 @@ export const FILTERS = {
   beta: { min: 0.3, max: 2 }, 
   pe: { min: 5, max: 50 } 
 };
+
+// The actual base-strategy screening thresholds — distinct from FILTERS
+// above, which only defines the absolute slider bounds (e.g. ROE slider
+// spans 0–35%). This is what the Build & Test sliders start at, what
+// "Reset to base" restores, and what the Base Strategy backtest comparison
+// runs against. Do not change these without confirming with Rishu — this
+// is the definition of Regista's default rules-based strategy.
+export const BASE_STRATEGY_FILTERS = {
+  roe:     { min: 13,  max: 35 },  // ROE: 13%+
+  revCAGR: { min: 7,   max: 25 },  // Revenue CAGR: 7%+
+  epsCAGR: { min: 10,  max: 30 },  // EPS CAGR: 10%+
+  beta:    { min: 0.3, max: 1.2 }, // Beta: below 1.2
+  pe:      { min: 5,   max: 20 },  // P/E: below 20x
+};
 export const LAST_REBALANCE = new Date("2026-06-25");
 export const NEXT_REBALANCE = new Date("2026-09-25");
 export const DATA_QUARTER   = "Q4 FY26";

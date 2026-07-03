@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
-import { C, FILTERS, SELECTED_SECTORS, SECTOR_COLORS, LAST_REBALANCE } from "../config";
+import { C, BASE_STRATEGY_FILTERS, SELECTED_SECTORS, SECTOR_COLORS, LAST_REBALANCE } from "../config";
 import { StatCard, FunnelBar } from "../components/primitives";
 import {
   loadBacktestData, runCustomBacktest, computeCustomMetrics,
@@ -402,13 +402,14 @@ export default function BuildTestTab() {
   const [backtestData, setBacktestData] = useState(null);
   const isMobile = useMediaQuery('(max-width: 768px)');
 
-  // 1. Raw values (keeps the slider in place)
+  // 1. Raw values (keeps the slider in place) — start at the base strategy's
+  // actual default thresholds, not the full slider range.
   const [filters, setFilters] = useState({ 
-    roe: { min: FILTERS.roe.min, max: FILTERS.roe.max },
-    revCAGR: { min: FILTERS.revCAGR.min, max: FILTERS.revCAGR.max },
-    epsCAGR: { min: FILTERS.epsCAGR.min, max: FILTERS.epsCAGR.max },
-    beta: { min: FILTERS.beta.min, max: FILTERS.beta.max },
-    pe: { min: FILTERS.pe.min, max: FILTERS.pe.max }
+    roe: { min: BASE_STRATEGY_FILTERS.roe.min, max: BASE_STRATEGY_FILTERS.roe.max },
+    revCAGR: { min: BASE_STRATEGY_FILTERS.revCAGR.min, max: BASE_STRATEGY_FILTERS.revCAGR.max },
+    epsCAGR: { min: BASE_STRATEGY_FILTERS.epsCAGR.min, max: BASE_STRATEGY_FILTERS.epsCAGR.max },
+    beta: { min: BASE_STRATEGY_FILTERS.beta.min, max: BASE_STRATEGY_FILTERS.beta.max },
+    pe: { min: BASE_STRATEGY_FILTERS.pe.min, max: BASE_STRATEGY_FILTERS.pe.max }
   });
   const [sectors, setSectors] = useState(new Set(SELECTED_SECTORS));
   const [exitRule, setExitRule] = useState({ ...DEFAULT_EXIT_RULE });
@@ -478,11 +479,11 @@ export default function BuildTestTab() {
 
   const resetToBase = () => {
     setFilters({ 
-      roe: { min: FILTERS.roe.min, max: FILTERS.roe.max },
-      revCAGR: { min: FILTERS.revCAGR.min, max: FILTERS.revCAGR.max },
-      epsCAGR: { min: FILTERS.epsCAGR.min, max: FILTERS.epsCAGR.max },
-      beta: { min: FILTERS.beta.min, max: FILTERS.beta.max },
-      pe: { min: FILTERS.pe.min, max: FILTERS.pe.max }
+      roe: { min: BASE_STRATEGY_FILTERS.roe.min, max: BASE_STRATEGY_FILTERS.roe.max },
+      revCAGR: { min: BASE_STRATEGY_FILTERS.revCAGR.min, max: BASE_STRATEGY_FILTERS.revCAGR.max },
+      epsCAGR: { min: BASE_STRATEGY_FILTERS.epsCAGR.min, max: BASE_STRATEGY_FILTERS.epsCAGR.max },
+      beta: { min: BASE_STRATEGY_FILTERS.beta.min, max: BASE_STRATEGY_FILTERS.beta.max },
+      pe: { min: BASE_STRATEGY_FILTERS.pe.min, max: BASE_STRATEGY_FILTERS.pe.max }
     });
     setEnabledFilters({ roe: true, revCAGR: true, epsCAGR: true, pe: true, beta: true });
     setSectors(new Set(SELECTED_SECTORS));
@@ -500,11 +501,11 @@ const runBacktest = () => {
     const sim = runCustomBacktest(backtestData, effectiveFilters, sectors, effectiveExitRule);
     const metrics = computeCustomMetrics(sim.navSeries, sim.quarterlyNavSeries);
     const baseFilters = { 
-      roe: { min: FILTERS.roe.min, max: FILTERS.roe.max },
-      revCAGR: { min: FILTERS.revCAGR.min, max: FILTERS.revCAGR.max },
-      epsCAGR: { min: FILTERS.epsCAGR.min, max: FILTERS.epsCAGR.max },
-      beta: { min: FILTERS.beta.min, max: FILTERS.beta.max },
-      pe: { min: FILTERS.pe.min, max: FILTERS.pe.max }
+      roe: { min: BASE_STRATEGY_FILTERS.roe.min, max: BASE_STRATEGY_FILTERS.roe.max },
+      revCAGR: { min: BASE_STRATEGY_FILTERS.revCAGR.min, max: BASE_STRATEGY_FILTERS.revCAGR.max },
+      epsCAGR: { min: BASE_STRATEGY_FILTERS.epsCAGR.min, max: BASE_STRATEGY_FILTERS.epsCAGR.max },
+      beta: { min: BASE_STRATEGY_FILTERS.beta.min, max: BASE_STRATEGY_FILTERS.beta.max },
+      pe: { min: BASE_STRATEGY_FILTERS.pe.min, max: BASE_STRATEGY_FILTERS.pe.max }
     };
     const baseSim = runCustomBacktest(backtestData, baseFilters, new Set(SELECTED_SECTORS), DEFAULT_EXIT_RULE);
     const baseMetrics = computeCustomMetrics(baseSim.navSeries, baseSim.quarterlyNavSeries);
@@ -535,11 +536,11 @@ const runBacktest = () => {
   }, [result]);
 
   const filtersChanged =
-    filters.roe.min !== FILTERS.roe.min || filters.roe.max !== FILTERS.roe.max ||
-    filters.revCAGR.min !== FILTERS.revCAGR.min || filters.revCAGR.max !== FILTERS.revCAGR.max ||
-    filters.epsCAGR.min !== FILTERS.epsCAGR.min || filters.epsCAGR.max !== FILTERS.epsCAGR.max ||
-    filters.beta.min !== FILTERS.beta.min || filters.beta.max !== FILTERS.beta.max ||
-    filters.pe.min !== FILTERS.pe.min || filters.pe.max !== FILTERS.pe.max ||
+    filters.roe.min !== BASE_STRATEGY_FILTERS.roe.min || filters.roe.max !== BASE_STRATEGY_FILTERS.roe.max ||
+    filters.revCAGR.min !== BASE_STRATEGY_FILTERS.revCAGR.min || filters.revCAGR.max !== BASE_STRATEGY_FILTERS.revCAGR.max ||
+    filters.epsCAGR.min !== BASE_STRATEGY_FILTERS.epsCAGR.min || filters.epsCAGR.max !== BASE_STRATEGY_FILTERS.epsCAGR.max ||
+    filters.beta.min !== BASE_STRATEGY_FILTERS.beta.min || filters.beta.max !== BASE_STRATEGY_FILTERS.beta.max ||
+    filters.pe.min !== BASE_STRATEGY_FILTERS.pe.min || filters.pe.max !== BASE_STRATEGY_FILTERS.pe.max ||
     Object.values(enabledFilters).some(v => !v) ||
     sectors.size !== SELECTED_SECTORS.size ||
     [...sectors].some(s => !SELECTED_SECTORS.has(s)) ||
