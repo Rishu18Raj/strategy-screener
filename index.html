@@ -64,6 +64,41 @@
       input[type="range"] { accent-color: var(--accent); width: 100%; }
       textarea, input { outline: none; }
       textarea:focus, input:focus { border-color: var(--accent) !important; }
+
+      /* Dual-range sliders (Build & Test filters): the visible track/fill is
+         drawn separately underneath as plain divs. Each of these two
+         overlapping range inputs is made fully transparent and non-interactive
+         except for its own thumb, so the min and max handles never block one
+         another and both sit at the same stacking level above the track. */
+      .dual-range-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        background: transparent;
+        pointer-events: none;
+      }
+      .dual-range-thumb::-webkit-slider-runnable-track { background: transparent; }
+      .dual-range-thumb::-moz-range-track { background: transparent; border: none; }
+      .dual-range-thumb::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        pointer-events: auto;
+        width: 14px; height: 14px; border-radius: 50%;
+        background: var(--accent); border: 2px solid var(--text-primary);
+        cursor: pointer;
+      }
+      .dual-range-thumb::-moz-range-thumb {
+        pointer-events: auto;
+        width: 14px; height: 14px; border-radius: 50%;
+        background: var(--accent); border: 2px solid var(--text-primary);
+        cursor: pointer;
+      }
+      .dual-range-thumb:disabled::-webkit-slider-thumb { background: var(--text-muted); border-color: var(--border); cursor: not-allowed; }
+      .dual-range-thumb:disabled::-moz-range-thumb { background: var(--text-muted); border-color: var(--border); cursor: not-allowed; }
+
+      /* Editable min/max labels above each range slider — look like plain
+         text, not boxed inputs, and drop the native spinner arrows. */
+      .range-number-input { -moz-appearance: textfield; }
+      .range-number-input::-webkit-inner-spin-button,
+      .range-number-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
       code {
         font-family: var(--font-mono);
         background: var(--bg-hover);

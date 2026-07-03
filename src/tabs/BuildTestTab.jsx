@@ -60,93 +60,87 @@ function Slider({ label, value, min, max, step, onChange, suffix = "", enabled =
 }
 
 function RangeSlider({ label, minValue, maxValue, min, max, step, onChangeMin, onChangeMax, suffix = "", enabled = true, onToggle, showMaxPlus = false }) {
-  const displayMax = showMaxPlus ? `${max}${suffix}+` : `${maxValue}${suffix}`;
-  
+  const minPercent = ((minValue - min) / (max - min)) * 100;
+  const maxPercent = ((maxValue - min) / (max - min)) * 100;
+
+  const numberInputStyle = {
+    width: 32, padding: 0, fontSize: 12, fontFamily: "var(--font-mono)",
+    fontWeight: 600, textAlign: "right", border: "none",
+    background: "transparent", color: enabled ? C.accent : C.muted,
+    cursor: enabled ? "text" : "not-allowed",
+  };
+
+  const handleMinInput = (raw) => {
+    const val = Number(raw);
+    if (!isNaN(val)) onChangeMin(Math.min(Math.max(val, min), maxValue - step));
+  };
+  const handleMaxInput = (raw) => {
+    const val = Number(raw);
+    if (!isNaN(val)) onChangeMax(Math.max(Math.min(val, max), minValue + step));
+  };
+
   return (
     <div style={{ marginBottom: 18, opacity: enabled ? 1 : 0.4, transition: "opacity 0.2s" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
         <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", userSelect: "none" }}>
           {onToggle && (
-            <input 
-              type="checkbox" 
-              checked={enabled} 
-              onChange={onToggle} 
-              style={{ margin: 0, cursor: "pointer", accentColor: "var(--accent)" }} 
+            <input
+              type="checkbox"
+              checked={enabled}
+              onChange={onToggle}
+              style={{ margin: 0, cursor: "pointer", accentColor: "var(--accent)" }}
             />
           )}
           <span style={{ fontSize: 12, color: C.secondary }}>{label}</span>
         </label>
-        <span style={{ fontSize: 12, fontFamily: "var(--font-mono)", fontWeight: 600, color: enabled ? C.accent : C.muted }}>
-          {enabled ? `${minValue}${suffix} - ${displayMax}` : "Ignored"}
-        </span>
+        {enabled ? (
+          <div style={{ display: "flex", alignItems: "center", fontSize: 12, fontFamily: "var(--font-mono)", fontWeight: 600, color: C.accent }}>
+            <input
+              type="number" className="range-number-input" min={min} max={max} step={step}
+              value={minValue} disabled={!enabled} style={numberInputStyle}
+              onChange={e => handleMinInput(e.target.value)}
+            />
+            <span>{suffix}</span>
+            <span style={{ color: C.muted, margin: "0 4px" }}>-</span>
+            <input
+              type="number" className="range-number-input" min={min} max={max} step={step}
+              value={maxValue} disabled={!enabled} style={numberInputStyle}
+              onChange={e => handleMaxInput(e.target.value)}
+            />
+            <span>{suffix}{showMaxPlus && maxValue >= max ? "+" : ""}</span>
+          </div>
+        ) : (
+          <span style={{ fontSize: 12, fontFamily: "var(--font-mono)", fontWeight: 600, color: C.muted }}>Ignored</span>
+        )}
       </div>
-      <div style={{ position: "relative", height: 24 }}>
+
+      {/* Bottom layer: the visual track line + the highlighted range fill.
+          Neither is interactive — they exist purely to render underneath
+          both thumbs at equal z-index, so the two range inputs above them
+          never fight each other for clicks. */}
+      <div style={{ position: "relative", height: 22, display: "flex", alignItems: "center" }}>
+        <div style={{ position: "absolute", left: 0, right: 0, height: 4, borderRadius: 2, background: "var(--border)", zIndex: 0 }} />
+        <div
+          style={{
+            position: "absolute", height: 4, borderRadius: 2,
+            background: enabled ? "var(--accent)" : "var(--text-muted)",
+            left: `${minPercent}%`, width: `${Math.max(maxPercent - minPercent, 0)}%`, zIndex: 0,
+          }}
+        />
         <input
           type="range" min={min} max={max} step={step} value={minValue}
-          onChange={e => onChangeMin(Math.min(Number(e.target.value), maxValue - step))}
+          onChange={e => handleMinInput(e.target.value)}
           disabled={!enabled}
-          style={{ 
-            position: "absolute", width: "100%", pointerEvents: enabled ? "auto" : "none",
-            accentColor: "var(--accent)", cursor: enabled ? "pointer" : "not-allowed",
-            zIndex: 2, background: "transparent",
-          }}
+          className="dual-range-thumb"
+          style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", margin: 0, zIndex: 1, cursor: enabled ? "pointer" : "not-allowed" }}
         />
         <input
           type="range" min={min} max={max} step={step} value={maxValue}
-          onChange={e => onChangeMax(Math.max(Number(e.target.value), minValue + step))}
+          onChange={e => handleMaxInput(e.target.value)}
           disabled={!enabled}
-          style={{ 
-            position: "absolute", width: "100%", pointerEvents: enabled ? "auto" : "none",
-            accentColor: "var(--accent)", cursor: enabled ? "pointer" : "not-allowed",
-            zIndex: 2, background: "transparent",
-          }}
+          className="dual-range-thumb"
+          style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", margin: 0, zIndex: 1, cursor: enabled ? "pointer" : "not-allowed" }}
         />
-      </div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8, gap: 8 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-          <input
-            type="number"
-            min={min}
-            max={max}
-            step={step}
-            value={minValue}
-            onChange={e => {
-              const val = Number(e.target.value);
-              if (!isNaN(val) && val >= min && val <= max) {
-                onChangeMin(Math.min(val, maxValue - step));
-              }
-            }}
-            disabled={!enabled}
-            style={{
-              width: 60, padding: "4px 6px", fontSize: 11, borderRadius: 4,
-              border: `0.5px solid ${C.border}`, background: C.bg, color: C.primary,
-              fontFamily: "var(--font-mono)", cursor: enabled ? "pointer" : "not-allowed"
-            }}
-          />
-          <span style={{ fontSize: 10, color: C.muted }}>{suffix}</span>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-          <input
-            type="number"
-            min={min}
-            max={max}
-            step={step}
-            value={maxValue}
-            onChange={e => {
-              const val = Number(e.target.value);
-              if (!isNaN(val) && val >= min && val <= max) {
-                onChangeMax(Math.max(val, minValue + step));
-              }
-            }}
-            disabled={!enabled}
-            style={{
-              width: 60, padding: "4px 6px", fontSize: 11, borderRadius: 4,
-              border: `0.5px solid ${C.border}`, background: C.bg, color: C.primary,
-              fontFamily: "var(--font-mono)", cursor: enabled ? "pointer" : "not-allowed"
-            }}
-          />
-          <span style={{ fontSize: 10, color: C.muted }}>{suffix}</span>
-        </div>
       </div>
     </div>
   );
