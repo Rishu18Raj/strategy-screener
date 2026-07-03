@@ -306,8 +306,18 @@ export function runCustomBacktest({ universeByDate, priceTable, dailyPrices }, c
   function markToMarket(day) {
     let total = cash;
     for (const ticker in holdings) {
-      const p = priceOn(ticker, day);
-      if (p != null) total += holdings[ticker].shares * p;
+      let p = priceOn(ticker, day);
+      
+      // 1. Forward-fill if today's price is missing
+      if (p == null && holdings[ticker].lastPrice != null) {
+        p = holdings[ticker].lastPrice;
+      }
+      
+      // 2. Add to total and update the cache for the next day
+      if (p != null) {
+        total += holdings[ticker].shares * p;
+        holdings[ticker].lastPrice = p; 
+      }
     }
     return total;
   }
@@ -346,6 +356,7 @@ export function runCustomBacktest({ universeByDate, priceTable, dailyPrices }, c
               name: s.name,
               sector: s.sector,
               pe: s.pe,
+	      lastPrice: rebalPrice,	
             };
           } else if (ticker in holdings) {
             // Carried over from previous quarter — preserve original entry.
@@ -367,6 +378,7 @@ export function runCustomBacktest({ universeByDate, priceTable, dailyPrices }, c
               name: h.name,
               sector: h.sector,
               pe: s.pe,
+	      lastPrice: rebalPrice,
             };
           } else {
             // New entry this quarter
@@ -381,6 +393,7 @@ export function runCustomBacktest({ universeByDate, priceTable, dailyPrices }, c
               name: s.name,
               sector: s.sector,
               pe: s.pe,
+	      lastPrice: rebalPrice,
             };
           }
         });
