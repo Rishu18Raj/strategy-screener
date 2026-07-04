@@ -52,7 +52,7 @@
 // ─────────────────────────────────────────────────────────────────────────
 
 import Papa from "papaparse";
-import { historicalFundamentalsUrl, historicalBetasUrl, REBALANCE_LABELS, URLS } from "../config";
+import { historicalFundamentalsUrl, historicalBetasUrl, REBALANCE_LABELS, URLS, FILTERS } from "../config";
 
 export const CUSTOM_BACKTEST_REBALANCE_DATES = [
   "2024-06-25", "2024-09-25", "2024-12-25", "2025-03-25",
@@ -149,28 +149,48 @@ function growthScoreCustom(s) { return s.pe > 0 ? (s.epsCAGR || 0) / s.pe : 0; }
 export function buildPortfolioCustom(universe, customFilters, selectedSectors) {
   const caps = getSectorCapsCustom(universe);
 
-  // Cascade rounds: offsets from the user's chosen epsCAGR and pe thresholds.
-  // When customFilters === FILTERS (defaults), this produces the SAME rounds
-  // as build_portfolios_and_exits.py — preserving Python parity for the base case.
+  // A slider handle sitting at the absolute edge of its display range means
+  // "no cap on this side" — exactly what the "35%+" / "0.3x+" style labels
+  // in the UI already communicate — not "reject anything past this exact
+  // number." build_portfolios_and_exits.py's real screen only ever checks a
+  // ROE/revCAGR/epsCAGR FLOOR and a P/E/beta CEILING; it has no opposite
+  // bound at all. Without this, the default (unmoved) sliders wrongly
+  // exclude any real stock past the display max/min — e.g. a stock with
+  // epsCAGR of 33% was being rejected by a 30% "ceiling" that was only ever
+  // meant to be the slider's cosmetic top, not a real screening rule.
+  const roeMax  = customFilters.roe.max     >= FILTERS.roe.max     ? Infinity  : customFilters.roe.max;
+  const revMax  = customFilters.revCAGR.max >= FILTERS.revCAGR.max ? Infinity  : customFilters.revCAGR.max;
+  const epsMax  = customFilters.epsCAGR.max >= FILTERS.epsCAGR.max ? Infinity  : customFilters.epsCAGR.max;
+  const peMin   = customFilters.pe.min      <= FILTERS.pe.min      ? -Infinity : customFilters.pe.min;
+  const betaMin = customFilters.beta.min    <= FILTERS.beta.min    ? -Infinity : customFilters.beta.min;
+
+  // Cascade rounds: relax the EPS CAGR FLOOR downward and the P/E CEILING
+  // upward as rounds progress — mirrors build_portfolios_and_exits.py's
+  // RELAXATION_ROUNDS = [(10,20),(10,25),(9,25),(8,25),(7,25)] exactly.
+  // (Previously this cascade shrank an epsCAGR ceiling instead of relaxing
+  // the floor — backwards from the real strategy, and combined with the
+  // fixed bug above, verified to reproduce a completely different portfolio
+  // than what was actually held. Confirmed fixed by reconstructing
+  // portfolio_2024Q2.json stock-for-stock with this corrected logic.)
   const ROUNDS = [
-    [customFilters.epsCAGR.max,     customFilters.pe.max,     0],
-    [customFilters.epsCAGR.max,     customFilters.pe.max + 5, 1],
-    [customFilters.epsCAGR.max - 1, customFilters.pe.max + 5, 2],
-    [customFilters.epsCAGR.max - 2, customFilters.pe.max + 5, 3],
-    [customFilters.epsCAGR.max - 3, customFilters.pe.max + 5, 4],
+    [customFilters.epsCAGR.min,     customFilters.pe.max,     0],
+    [customFilters.epsCAGR.min,     customFilters.pe.max + 5, 1],
+    [customFilters.epsCAGR.min - 1, customFilters.pe.max + 5, 2],
+    [customFilters.epsCAGR.min - 2, customFilters.pe.max + 5, 3],
+    [customFilters.epsCAGR.min - 3, customFilters.pe.max + 5, 4],
   ];
 
   let fp = 0, sp = 0, bp = 0, portfolio = [], roundUsed = 0;
 
-  for (const [eps, pe, rnd] of ROUNDS) {
+  for (const [epsFloor, pe, rnd] of ROUNDS) {
     const fund = universe.filter(s =>
-      !isNaN(s.roe) && s.roe >= customFilters.roe.min && s.roe <= customFilters.roe.max &&
-      !isNaN(s.revCAGR) && s.revCAGR >= customFilters.revCAGR.min && s.revCAGR <= customFilters.revCAGR.max &&
-      !isNaN(s.epsCAGR) && s.epsCAGR >= customFilters.epsCAGR.min && s.epsCAGR <= eps &&
-      !isNaN(s.pe) && s.pe >= customFilters.pe.min && s.pe <= pe
+      !isNaN(s.roe) && s.roe >= customFilters.roe.min && s.roe <= roeMax &&
+      !isNaN(s.revCAGR) && s.revCAGR >= customFilters.revCAGR.min && s.revCAGR <= revMax &&
+      !isNaN(s.epsCAGR) && s.epsCAGR >= epsFloor && s.epsCAGR <= epsMax &&
+      !isNaN(s.pe) && s.pe >= peMin && s.pe <= pe
     );
     const sec = fund.filter(s => selectedSectors.has(s.sector));
-    const bet = sec.filter(s => s.beta != null && s.beta >= customFilters.beta.min && s.beta <= customFilters.beta.max);
+    const bet = sec.filter(s => s.beta != null && s.beta >= betaMin && s.beta <= customFilters.beta.max);
     if (rnd === 0) { fp = fund.length; sp = sec.length; bp = bet.length; }
 
     const bySec = {};
