@@ -2556,12 +2556,17 @@
   },
   {
     "date": "2026-07-14",
-    "portfolio_nav": 189.048,
-    "sensex_nav": 99.44
+    "portfolio_nav": 186.4561,
+    "sensex_nav": 98.7206
   },
   {
     "date": "2026-07-15",
-    "portfolio_nav": 188.2774,
-    "sensex_nav": 99.3571
+    "portfolio_nav": 186.5379,
+    "sensex_nav": 98.8878
+  },
+  {
+    "date": "2026-07-16",
+    "portfolio_nav": 189.0045,
+    "sensex_nav": 99.1973
   }
 ]
