@@ -2625,8 +2625,18 @@
     "sensex_nav": 100.0527
   },
   {
+    "date": "2026-08-03",
+    "portfolio_nav": 192.4311,
+    "sensex_nav": 100.7501
+  },
+  {
     "date": "2026-08-04",
-    "portfolio_nav": 191.4294,
-    "sensex_nav": 101.0123
+    "portfolio_nav": 191.6923,
+    "sensex_nav": 100.481
+  },
+  {
+    "date": "2026-08-05",
+    "portfolio_nav": 191.7409,
+    "sensex_nav": 100.8644
   }
 ]
