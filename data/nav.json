@@ -2576,7 +2576,7 @@
   },
   {
     "date": "2026-07-20",
-    "portfolio_nav": 188.5511,
+    "portfolio_nav": 189.1769,
     "sensex_nav": 99.558
   },
   {
@@ -2586,7 +2586,7 @@
   },
   {
     "date": "2026-07-22",
-    "portfolio_nav": 190.6454,
+    "portfolio_nav": 190.6889,
     "sensex_nav": 98.3364
   },
   {
@@ -2671,7 +2671,7 @@
   },
   {
     "date": "2026-08-14",
-    "portfolio_nav": 190.1934,
+    "portfolio_nav": 190.4324,
     "sensex_nav": 99.9433
   },
   {
@@ -2681,7 +2681,12 @@
   },
   {
     "date": "2026-08-18",
-    "portfolio_nav": 191.1696,
+    "portfolio_nav": 190.7907,
     "sensex_nav": 98.9519
+  },
+  {
+    "date": "2026-08-19",
+    "portfolio_nav": 190.5022,
+    "sensex_nav": 98.5345
   }
 ]
