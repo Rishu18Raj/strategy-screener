@@ -1,27 +1,27 @@
 {
-  "generated": "2026-08-29",
+  "generated": "2026-08-30",
   "period": {
     "start": "2024-06-25",
-    "end": "2026-08-27",
-    "days": 793
+    "end": "2026-08-28",
+    "days": 794
   },
   "returns": {
-    "total_pct": 90.0,
-    "annualised_pct": 34.37,
-    "sensex_total": -1.43,
-    "sensex_ann": -0.66,
-    "alpha_total": 91.43,
-    "alpha_ann": 35.03
+    "total_pct": 89.74,
+    "annualised_pct": 34.24,
+    "sensex_total": -1.01,
+    "sensex_ann": -0.47,
+    "alpha_total": 90.75,
+    "alpha_ann": 34.71
   },
   "risk": {
-    "sharpe": 1.3011,
-    "sortino": 1.709,
-    "treynor": 31.03,
-    "jensen_alpha": 34.46,
-    "info_ratio": 2.1893,
-    "tracking_error": 16.0,
-    "beta": 0.9142,
-    "correlation": 0.5978,
+    "sharpe": 1.2962,
+    "sortino": 1.7042,
+    "treynor": 30.91,
+    "jensen_alpha": 34.15,
+    "info_ratio": 2.1703,
+    "tracking_error": 15.99,
+    "beta": 0.9135,
+    "correlation": 0.5974,
     "max_drawdown_pct": 13.99,
     "drawdown_start": "2026-01-07",
     "drawdown_end": "2026-03-23",
