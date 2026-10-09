@@ -1,27 +1,27 @@
 {
-  "generated": "2026-10-08",
+  "generated": "2026-10-09",
   "period": {
     "start": "2024-06-25",
-    "end": "2026-10-08",
-    "days": 835
+    "end": "2026-10-09",
+    "days": 836
   },
   "returns": {
-    "total_pct": 80.76,
-    "annualised_pct": 29.53,
-    "sensex_total": -8.13,
-    "sensex_ann": -3.64,
-    "alpha_total": 88.89,
-    "alpha_ann": 33.17
+    "total_pct": 80.72,
+    "annualised_pct": 29.48,
+    "sensex_total": -7.21,
+    "sensex_ann": -3.22,
+    "alpha_total": 87.93,
+    "alpha_ann": 32.7
   },
   "risk": {
-    "sharpe": 1.1221,
-    "sortino": 1.4562,
-    "treynor": 26.02,
-    "jensen_alpha": 32.25,
-    "info_ratio": 2.0843,
-    "tracking_error": 15.91,
-    "beta": 0.9043,
-    "correlation": 0.5931,
+    "sharpe": 1.1283,
+    "sortino": 1.456,
+    "treynor": 26.07,
+    "jensen_alpha": 31.79,
+    "info_ratio": 2.0476,
+    "tracking_error": 15.97,
+    "beta": 0.9008,
+    "correlation": 0.5926,
     "max_drawdown_pct": 13.99,
     "drawdown_start": "2026-01-07",
     "drawdown_end": "2026-03-23",
@@ -112,9 +112,9 @@
       "label": "Q8",
       "start_date": "2026-03-25",
       "end_date": "2026-06-25",
-      "portfolio_ret": 15.93,
+      "portfolio_ret": 15.92,
       "sensex_ret": 2.43,
-      "active_ret": 13.5
+      "active_ret": 13.49
     }
   ]
 }
