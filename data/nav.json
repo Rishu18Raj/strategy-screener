@@ -2881,7 +2881,12 @@
   },
   {
     "date": "2026-10-21",
-    "portfolio_nav": 178.5715,
-    "sensex_nav": 94.4991
+    "portfolio_nav": 179.9158,
+    "sensex_nav": 94.4348
+  },
+  {
+    "date": "2026-10-22",
+    "portfolio_nav": 176.5874,
+    "sensex_nav": 94.0235
   }
 ]
