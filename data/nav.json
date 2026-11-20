@@ -2981,7 +2981,12 @@
   },
   {
     "date": "2026-11-19",
-    "portfolio_nav": 189.4256,
-    "sensex_nav": 106.1734
+    "portfolio_nav": 189.6957,
+    "sensex_nav": 106.3652
+  },
+  {
+    "date": "2026-11-20",
+    "portfolio_nav": 189.245,
+    "sensex_nav": 107.4953
   }
 ]
